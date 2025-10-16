@@ -1,0 +1,57 @@
+services:
+  # Service PHP avec serveur intégré Laravel
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qwizzy_app
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/var/www
+    networks:
+      - qwizzy_network
+    depends_on:
+      - db
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  # Service PostgreSQL
+  db:
+    image: postgres:16-alpine
+    container_name: qwizzy_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: qwizzy_api
+      POSTGRES_USER: qwizzy_user
+      POSTGRES_PASSWORD: qwizzy_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - qwizzy_network
+
+  # Service pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: qwizzy_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@qwizzy.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    networks:
+      - qwizzy_network
+    depends_on:
+      - db
+
+networks:
+  qwizzy_network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
