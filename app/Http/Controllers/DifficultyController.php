@@ -13,6 +13,42 @@ class DifficultyController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * 
+     * @OA\Get(
+     *      path="/api/difficulties",
+     *      operationId="getDifficultiesList",
+     *      tags={"Difficulty"},
+     *      summary="Obtenir la liste des difficultés",
+     *      description="Retourne la liste paginée des niveaux de difficulté",
+     *      @OA\Parameter(
+     *          name="current_sort",
+     *          description="Champ de tri",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="string", default="id")
+     *      ),
+     *      @OA\Parameter(
+     *          name="current_sort_dir",
+     *          description="Direction du tri",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="string", enum={"asc", "desc"}, default="asc")
+     *      ),
+     *      @OA\Parameter(
+     *          name="per_page",
+     *          description="Nombre d'éléments par page",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="integer", default=15)
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Liste des difficultés récupérée avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="difficulty", type="object")
+     *          )
+     *       )
+     * )
      */
     public function index(Request $request)
     {
@@ -34,6 +70,31 @@ class DifficultyController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * 
+     * @OA\Post(
+     *      path="/api/difficulties",
+     *      operationId="storeDifficulty",
+     *      tags={"Difficulty"},
+     *      summary="Créer une nouvelle difficulté",
+     *      description="Crée un nouveau niveau de difficulté",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"name","point"},
+     *              @OA\Property(property="name", type="string", maxLength=200, example="Facile"),
+     *              @OA\Property(property="point", type="integer", minimum=1, maximum=5, example=1),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Difficulté créée avec succès",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Erreur de validation"
+     *      )
+     * )
      */
     public function store(Request $request)
     {
