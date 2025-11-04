@@ -14,7 +14,3 @@ use Illuminate\Support\Facades\Route;
 */
 
 // La route '/' est gérée par L5-Swagger pour afficher la documentation
-Route::resource('question-type', App\Http\Controllers\QuestionTypeController::class);
-Route::resource('subject', App\Http\Controllers\SubjectController::class);
-Route::resource('difficulty', App\Http\Controllers\DifficultyController::class);
-Route::resource('question', App\Http\Controllers\QuestionController::class);

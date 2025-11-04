@@ -13,7 +13,7 @@ class DifficultyController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * 
+     *
      * @OA\Get(
      *      path="/api/difficulties",
      *      operationId="getDifficultiesList",
@@ -61,7 +61,7 @@ class DifficultyController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new resource.dock
      */
     public function create()
     {
@@ -70,7 +70,7 @@ class DifficultyController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * 
+     *
      * @OA\Post(
      *      path="/api/difficulties",
      *      operationId="storeDifficulty",
@@ -146,7 +146,7 @@ class DifficultyController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * 
+     *
      * @OA\Put(
      *      path="/api/difficulties/{id}",
      *      operationId="updateDifficulty",
@@ -209,10 +209,10 @@ class DifficultyController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * 
+     *
      * @OA\Delete(
      *      path="/api/difficulties/{id}",
-     *      operationId="deleteDifficulty", 
+     *      operationId="deleteDifficulty",
      *      tags={"Difficulty"},
      *      summary="Supprimer une difficulté",
      *      description="Supprime un niveau de difficulté existant",
