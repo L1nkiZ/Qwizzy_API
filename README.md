@@ -21,3 +21,20 @@ public function nomMethode() {
     // ...
 }
  ```
+
+## Accès à DB
+
+Dans l'application postgres du docker :
+
+* Clic droit sur "Servers" (dans le panneau de gauche) → "Register" → "Server..."
+
+* Onglet "General" :
+
+    * Name : Qwizzy DB (ou le nom de votre choix)
+    * Onglet "Connection" :
+    * Host name/address : db (nom du service Docker, pas "localhost")
+    * Port : 5432
+    * Maintenance database : qwizzy_api
+    * Username : qwizzy_user
+    * Password : qwizzy_password
+    * Cochez "Save password" > Au besoin 
