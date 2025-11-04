@@ -1,0 +1,137 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Qwizzy API Documentation",
+        "description": "Documentation de l'API Qwizzy pour la gestion des quiz",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/difficulties": {
+            "get": {
+                "tags": [
+                    "Difficulty"
+                ],
+                "summary": "Obtenir la liste des difficultés",
+                "description": "Retourne la liste paginée des niveaux de difficulté",
+                "operationId": "getDifficultiesList",
+                "parameters": [
+                    {
+                        "name": "current_sort",
+                        "in": "query",
+                        "description": "Champ de tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "id"
+                        }
+                    },
+                    {
+                        "name": "current_sort_dir",
+                        "in": "query",
+                        "description": "Direction du tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Nombre d'éléments par page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des difficultés récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "difficulty": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Difficulty"
+                ],
+                "summary": "Créer une nouvelle difficulté",
+                "description": "Crée un nouveau niveau de difficulté",
+                "operationId": "storeDifficulty",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "point"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "Facile"
+                                    },
+                                    "point": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1,
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Difficulté créée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Difficulty",
+            "description": "Endpoints pour gérer les niveaux de difficulté"
+        }
+    ]
+}
