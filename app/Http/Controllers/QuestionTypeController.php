@@ -9,7 +9,36 @@ use Illuminate\Http\Request;
 class QuestionTypeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/question-types",
+     *     summary="Afficher la liste des types de questions",
+     *     tags={"QuestionType"},
+     *     @OA\Parameter(
+     *         name="current_sort",
+     *         in="query",
+     *         required=false,
+     *         description="Champ de tri",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="current_sort_dir",
+     *         in="query",
+     *         required=false,
+     *         description="Direction du tri (asc, desc)",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         required=false,
+     *         description="Nombre d'éléments par page",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Liste paginée des types de questions"
+     *     )
+     * )
      */
     public function index(Request $request)
     {
@@ -30,7 +59,26 @@ class QuestionTypeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/question-types",
+     *     summary="Créer un nouveau type de question",
+     *     tags={"QuestionType"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", maxLength=200, example="QCM")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Type de question créé avec succès"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Erreur de validation"
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -79,7 +127,33 @@ class QuestionTypeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     *     path="/question-types/{id}",
+     *     summary="Mettre à jour un type de question",
+     *     tags={"QuestionType"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID du type de question",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", maxLength=200, example="QCM modifié")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Type de question modifié avec succès"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Erreur de validation"
+     *     )
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -105,6 +179,26 @@ class QuestionTypeController extends Controller
     }
 
     /**
+     * @OA\Delete(
+     *     path="/question-types/{id}",
+     *     summary="Supprimer un type de question",
+     *     tags={"QuestionType"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID du type de question",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Type de question supprimé avec succès"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Type de question non trouvé"
+     *     )
+     * )
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
