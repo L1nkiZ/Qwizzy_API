@@ -49,10 +49,8 @@ jobs:
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
-
       - name: Install dependencies
         run: composer install --no-progress --no-interaction
-
       - name: Lint (PHP_CodeSniffer)
         run: vendor/bin/phpcs --standard=PSR12 app/
 
@@ -71,10 +69,8 @@ jobs:
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
-
       - name: Install dependencies
         run: composer install --no-progress --no-interaction
-
       - name: Check Formatting (Laravel Pint)
         run: vendor/bin/pint --test
 
@@ -93,10 +89,8 @@ jobs:
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
-
       - name: Install dependencies
         run: composer install --no-progress --no-interaction
-
       - name: Static Analysis (PHPStan)
         run: vendor/bin/phpstan analyse --memory-limit=1G
 
@@ -115,9 +109,7 @@ jobs:
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
-
       - name: Install dependencies
         run: composer install --no-progress --no-interaction
-
       - name: Run Tests
         run: php artisan test
