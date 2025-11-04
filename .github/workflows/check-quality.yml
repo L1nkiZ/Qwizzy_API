@@ -1,0 +1,115 @@
+name: Laravel CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      composer-cache: ${{ steps.composer-cache.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+        # Set up PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, sqlite, mysql, xml, fileinfo
+          coverage: none
+
+      - name: Cache Composer dependencies
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          
+      - name: Install dependencies
+        run: composer install --no-progress --no-interaction
+
+      - name: Optimize Laravel
+        run: php artisan config:cache
+
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Restore Composer cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+      - name: Install dependencies
+        run: composer install --no-progress --no-interaction
+      - name: Lint (PHP_CodeSniffer)
+        run: vendor/bin/phpcs --standard=PSR12 app/
+
+
+  format:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Restore Composer cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+      - name: Install dependencies
+        run: composer install --no-progress --no-interaction
+      - name: Check Formatting (Laravel Pint)
+        run: vendor/bin/pint --test
+
+
+  typecheck:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Restore Composer cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+      - name: Install dependencies
+        run: composer install --no-progress --no-interaction
+      - name: Static Analysis (PHPStan)
+        run: vendor/bin/phpstan analyse --memory-limit=1G
+
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Restore Composer cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+      - name: Install dependencies
+        run: composer install --no-progress --no-interaction
+      - name: Run Tests
+        run: php artisan test
