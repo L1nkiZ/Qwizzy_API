@@ -10,7 +10,7 @@ class QuestionTypeController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/question-types",
+     *     path="/api/question-types",
      *     summary="Afficher la liste des types de questions",
      *     tags={"QuestionType"},
      *     @OA\Parameter(
@@ -60,7 +60,7 @@ class QuestionTypeController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/question-types",
+     *     path="/api/question-types",
      *     summary="Créer un nouveau type de question",
      *     tags={"QuestionType"},
      *     @OA\RequestBody(
@@ -128,7 +128,7 @@ class QuestionTypeController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/question-types/{id}",
+     *     path="/api/question-types/{id}",
      *     summary="Mettre à jour un type de question",
      *     tags={"QuestionType"},
      *     @OA\Parameter(
@@ -180,7 +180,7 @@ class QuestionTypeController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/question-types/{id}",
+     *     path="/api/question-types/{id}",
      *     summary="Supprimer un type de question",
      *     tags={"QuestionType"},
      *     @OA\Parameter(
