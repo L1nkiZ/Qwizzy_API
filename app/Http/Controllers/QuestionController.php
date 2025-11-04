@@ -16,8 +16,44 @@ class QuestionController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @OA\Get(
+     *      path="/api/questions",
+     *      operationId="getQuestionsList",
+     *      tags={"Question"},
+     *      summary="Obtenir la liste des questions",
+     *      description="Retourne la liste paginée des questions avec leurs relations",
+     *      @OA\Parameter(
+     *          name="current_sort",
+     *          description="Champ de tri",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="string", default="id")
+     *      ),
+     *      @OA\Parameter(
+     *          name="current_sort_dir",
+     *          description="Direction du tri",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="string", enum={"asc", "desc"}, default="asc")
+     *      ),
+     *      @OA\Parameter(
+     *          name="per_page",
+     *          description="Nombre d'éléments par page",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="integer", default=15)
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Liste des questions récupérée avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="questions", type="object")
+     *          )
+     *       )
+     * )
      */
-    public function index()
+    public function index(Request $request)
     {
         $questions = Question::with([
             'difficulty' => function ($query) {
@@ -38,6 +74,23 @@ class QuestionController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @OA\Get(
+     *      path="/api/questions/create",
+     *      operationId="getQuestionCreateData",
+     *      tags={"Question"},
+     *      summary="Obtenir les données pour créer une question",
+     *      description="Retourne les listes des difficultés, matières et types de questions disponibles",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Données récupérées avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="difficulties", type="array", @OA\Items(type="object")),
+     *              @OA\Property(property="subjects", type="array", @OA\Items(type="object")),
+     *              @OA\Property(property="question_types", type="array", @OA\Items(type="object"))
+     *          )
+     *       )
+     * )
      */
     public function create()
     {
@@ -58,6 +111,43 @@ class QuestionController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @OA\Post(
+     *      path="/api/questions",
+     *      operationId="storeQuestion",
+     *      tags={"Question"},
+     *      summary="Créer une nouvelle question",
+     *      description="Crée une nouvelle question avec ses propositions et sa réponse",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"question","proposal_1","proposal_2","proposal_3","answer","subject_id","difficulty_id","question_type_id"},
+     *              @OA\Property(property="question", type="string", maxLength=255, example="Quelle est la capitale de la France ?"),
+     *              @OA\Property(property="proposal_1", type="string", example="Paris"),
+     *              @OA\Property(property="proposal_2", type="string", example="Lyon"),
+     *              @OA\Property(property="proposal_3", type="string", example="Marseille"),
+     *              @OA\Property(property="answer", type="string", example="Paris"),
+     *              @OA\Property(property="subject_id", type="integer", example=1),
+     *              @OA\Property(property="difficulty_id", type="integer", example=1),
+     *              @OA\Property(property="question_type_id", type="integer", example=1),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Question créée avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="question", type="object")
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Erreur de validation",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="error", type="boolean", example=true),
+     *              @OA\Property(property="message", type="object")
+     *          )
+     *      )
+     * )
      */
     public function store(Request $request)
     {
@@ -94,9 +184,6 @@ class QuestionController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
@@ -104,6 +191,30 @@ class QuestionController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @OA\Get(
+     *      path="/api/questions/{id}/edit",
+     *      operationId="getQuestionEditData",
+     *      tags={"Question"},
+     *      summary="Obtenir les données pour éditer une question",
+     *      description="Retourne les listes des difficultés, matières et types de questions disponibles pour l'édition",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID de la question",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Données récupérées avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="difficulties", type="array", @OA\Items(type="object")),
+     *              @OA\Property(property="subjects", type="array", @OA\Items(type="object")),
+     *              @OA\Property(property="question_types", type="array", @OA\Items(type="object"))
+     *          )
+     *       )
+     * )
      */
     public function edit(string $id)
     {
@@ -124,6 +235,52 @@ class QuestionController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
+     * @OA\Put(
+     *      path="/api/questions/{id}",
+     *      operationId="updateQuestion",
+     *      tags={"Question"},
+     *      summary="Mettre à jour une question",
+     *      description="Met à jour une question existante",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID de la question",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"question","proposal_1","proposal_2","proposal_3","answer","subject_id","difficulty_id","question_type_id"},
+     *              @OA\Property(property="question", type="string", maxLength=255, example="Quelle est la capitale de la France ?"),
+     *              @OA\Property(property="proposal_1", type="string", example="Paris"),
+     *              @OA\Property(property="proposal_2", type="string", example="Lyon"),
+     *              @OA\Property(property="proposal_3", type="string", example="Marseille"),
+     *              @OA\Property(property="answer", type="string", example="Paris"),
+     *              @OA\Property(property="subject_id", type="integer", example=1),
+     *              @OA\Property(property="difficulty_id", type="integer", example=1),
+     *              @OA\Property(property="question_type_id", type="integer", example=1),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Question mise à jour avec succès",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Question non trouvée"
+     *      ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Erreur de validation",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="error", type="boolean", example=true),
+     *              @OA\Property(property="message", type="object")
+     *          )
+     *      )
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -157,6 +314,30 @@ class QuestionController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @OA\Delete(
+     *      path="/api/questions/{id}",
+     *      operationId="deleteQuestion",
+     *      tags={"Question"},
+     *      summary="Supprimer une question",
+     *      description="Supprime une question existante",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID de la question",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Question supprimée avec succès",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Question non trouvée"
+     *      )
+     * )
      */
     public function destroy(string $id)
     {
