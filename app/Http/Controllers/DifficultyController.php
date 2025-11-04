@@ -241,7 +241,14 @@ class DifficultyController extends Controller
     {
         $difficulty = Difficulty::find($id);
 
-        if($difficulty){
+        if ($difficulty) {
+            if ($difficulty->questions()->exists()) {
+                return response([
+                    'error' => true,
+                    'message' => "Une ou plusieurs questions sont reliés à cette difficulté. Vous ne pouvez pas la supprimer."
+                ]);
+            }
+
             $difficulty->delete();
 
             return response()->json($this->success("La difficulté", "supprimée"));

@@ -239,6 +239,13 @@ class SubjectController extends Controller
         $subject = Subject::find($id);
 
         if ($subject) {
+            if ($subject->questions()->exists()) {
+                return response([
+                    'error' => true,
+                    'message' => "Une ou plusieurs questions sont reliés à ce sujet. Vous ne pouvez pas le supprimer."
+                ]);
+            }
+
             $subject->delete();
 
             return response()->json($this->success("Le sujet", "supprimé"));

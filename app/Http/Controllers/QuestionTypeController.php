@@ -206,6 +206,13 @@ class QuestionTypeController extends Controller
         $questionType = QuestionType::find($id);
 
         if ($questionType) {
+            if ($questionType->questions()->exists()) {
+                return response([
+                    'error' => true,
+                    'message' => "Une ou plusieurs questions sont reliés à ce type. Vous ne pouvez pas le supprimer."
+                ]);
+            }
+
             $questionType->delete();
 
             return response()->json($this->success("Le type de question", "supprimé"));
