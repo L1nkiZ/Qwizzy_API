@@ -16,7 +16,7 @@ class Question extends Model
         'proposal_1',
         'proposal_2',
         'proposal_3',
-        'answer',
+        'proposal_4',
     ];
 
     public function difficulty()
@@ -32,5 +32,10 @@ class Question extends Model
     public function question_type()
     {
         return $this->belongsTo(QuestionType::class, 'question_type_id');
+    }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class, 'question_id');
     }
 }

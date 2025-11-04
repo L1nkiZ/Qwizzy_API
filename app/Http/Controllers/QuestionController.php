@@ -11,6 +11,7 @@ use App\Models\Question;
 use App\Models\Difficulty;
 use App\Models\Subject;
 use App\Models\QuestionType;
+use App\Models\Answer;
 
 class QuestionController extends Controller
 {
@@ -95,15 +96,15 @@ class QuestionController extends Controller
     public function create()
     {
         $difficulties = Difficulty::select('id', 'name', 'point')
-        ->orderBy('nom', 'asc')
+        ->orderBy('name', 'asc')
         ->get();
 
         $subjects = Subject::select('id', 'name')
-        ->orderBy('nom', 'asc')
+        ->orderBy('name', 'asc')
         ->get();
 
         $question_types = QuestionType::select('id', 'name')
-        ->orderBy('nom', 'asc')
+        ->orderBy('name', 'asc')
         ->get();
 
         return response()->json(compact('difficulties', 'subjects', 'question_types'));
@@ -117,26 +118,29 @@ class QuestionController extends Controller
      *      operationId="storeQuestion",
      *      tags={"Question"},
      *      summary="Créer une nouvelle question",
-     *      description="Crée une nouvelle question avec ses propositions et sa réponse",
+     *      description="Crée une nouvelle question avec 4 propositions et indique le numéro de la bonne réponse (1, 2, 3 ou 4)",
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
-     *              required={"question","proposal_1","proposal_2","proposal_3","answer","subject_id","difficulty_id","question_type_id"},
-     *              @OA\Property(property="question", type="string", maxLength=255, example="Quelle est la capitale de la France ?"),
-     *              @OA\Property(property="proposal_1", type="string", example="Paris"),
-     *              @OA\Property(property="proposal_2", type="string", example="Lyon"),
-     *              @OA\Property(property="proposal_3", type="string", example="Marseille"),
-     *              @OA\Property(property="answer", type="string", example="Paris"),
+     *              required={"question","proposal_1","proposal_2","proposal_3","proposal_4","correct_answer_number","subject_id","difficulty_id","question_type_id"},
+     *              @OA\Property(property="question", type="string", maxLength=500, example="Quelle est la capitale de la France ?"),
+     *              @OA\Property(property="proposal_1", type="string", maxLength=100, example="Paris"),
+     *              @OA\Property(property="proposal_2", type="string", maxLength=100, example="Lyon"),
+     *              @OA\Property(property="proposal_3", type="string", maxLength=100, example="Marseille"),
+     *              @OA\Property(property="proposal_4", type="string", maxLength=100, example="Bordeaux"),
+     *              @OA\Property(property="correct_answer_number", type="integer", minimum=1, maximum=4, example=1, description="Numéro de la proposition correcte (1 à 4)"),
      *              @OA\Property(property="subject_id", type="integer", example=1),
      *              @OA\Property(property="difficulty_id", type="integer", example=1),
      *              @OA\Property(property="question_type_id", type="integer", example=1),
      *          ),
      *      ),
      *      @OA\Response(
-     *          response=200,
+     *          response=201,
      *          description="Question créée avec succès",
      *          @OA\JsonContent(
-     *              @OA\Property(property="question", type="object")
+     *              @OA\Property(property="message", type="string", example="Question créée avec succès"),
+     *              @OA\Property(property="question", type="object"),
+     *              @OA\Property(property="answer", type="object")
      *          )
      *       ),
      *      @OA\Response(
@@ -156,7 +160,8 @@ class QuestionController extends Controller
             'proposal_1' => 'required|string|max:100',
             'proposal_2' => 'required|string|max:100',
             'proposal_3' => 'required|string|max:100',
-            'answer' => 'required|string|max:100',
+            'proposal_4' => 'required|string|max:100',
+            'correct_answer_number' => 'required|integer|min:1|max:4',
             'subject_id' => 'required|exists:subject,id',
             'difficulty_id' => 'required|exists:difficulty,id',
             'question_type_id' => 'required|exists:question_type,id',
@@ -168,25 +173,30 @@ class QuestionController extends Controller
                 'message' => $validator->messages()
             ]);
         }
-        else {
-            $question = Question::create([
-                'question' => $request->question,
-                'subject_id' => $request->subject_id,
-                'difficulty_id' => $request->difficulty_id,
-                'question_type_id' => $request->question_type_id,
-                'proposal_1' => $request->proposal_1,
-                'proposal_2' => $request->proposal_2,
-                'proposal_3' => $request->proposal_3,
-                'answer' => $request->answer,
-            ]);
 
-            return response()->json(compact('question'));
-        }
-    }
+        // Créer la question avec les 4 propositions
+        $question = Question::create([
+            'question' => $request->question,
+            'subject_id' => $request->subject_id,
+            'difficulty_id' => $request->difficulty_id,
+            'question_type_id' => $request->question_type_id,
+            'proposal_1' => $request->proposal_1,
+            'proposal_2' => $request->proposal_2,
+            'proposal_3' => $request->proposal_3,
+            'proposal_4' => $request->proposal_4,
+        ]);
 
-    public function show(string $id)
-    {
-        //
+        // Créer la réponse avec le numéro de la proposition correcte (1 à 4)
+        $answer = Answer::create([
+            'answer' => $request->correct_answer_number,
+            'question_id' => $question->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Question créée avec succès',
+            'question' => $question,
+            'answer' => $answer
+        ]);
     }
 
     /**
@@ -219,18 +229,20 @@ class QuestionController extends Controller
     public function edit(string $id)
     {
         $difficulties = Difficulty::select('id', 'name', 'point')
-        ->orderBy('nom', 'asc')
+        ->orderBy('name', 'asc')
         ->get();
 
         $subjects = Subject::select('id', 'name')
-        ->orderBy('nom', 'asc')
+        ->orderBy('name', 'asc')
         ->get();
 
         $question_types = QuestionType::select('id', 'name')
-        ->orderBy('nom', 'asc')
+        ->orderBy('name', 'asc')
         ->get();
 
-        return response()->json(compact('difficulties', 'subjects', 'question_types'));
+        $question = Question::with('answers')->find($id);
+
+        return response()->json(compact('difficulties', 'subjects', 'question_types', 'question'));
     }
 
     /**
@@ -241,7 +253,7 @@ class QuestionController extends Controller
      *      operationId="updateQuestion",
      *      tags={"Question"},
      *      summary="Mettre à jour une question",
-     *      description="Met à jour une question existante",
+     *      description="Met à jour une question existante avec 4 propositions et le numéro de la bonne réponse",
      *      @OA\Parameter(
      *          name="id",
      *          description="ID de la question",
@@ -252,12 +264,13 @@ class QuestionController extends Controller
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
-     *              required={"question","proposal_1","proposal_2","proposal_3","answer","subject_id","difficulty_id","question_type_id"},
-     *              @OA\Property(property="question", type="string", maxLength=255, example="Quelle est la capitale de la France ?"),
-     *              @OA\Property(property="proposal_1", type="string", example="Paris"),
-     *              @OA\Property(property="proposal_2", type="string", example="Lyon"),
-     *              @OA\Property(property="proposal_3", type="string", example="Marseille"),
-     *              @OA\Property(property="answer", type="string", example="Paris"),
+     *              required={"question","proposal_1","proposal_2","proposal_3","proposal_4","correct_answer_number","subject_id","difficulty_id","question_type_id"},
+     *              @OA\Property(property="question", type="string", maxLength=500, example="Quelle est la capitale de la France ?"),
+     *              @OA\Property(property="proposal_1", type="string", maxLength=100, example="Paris"),
+     *              @OA\Property(property="proposal_2", type="string", maxLength=100, example="Lyon"),
+     *              @OA\Property(property="proposal_3", type="string", maxLength=100, example="Marseille"),
+     *              @OA\Property(property="proposal_4", type="string", maxLength=100, example="Bordeaux"),
+     *              @OA\Property(property="correct_answer_number", type="integer", minimum=1, maximum=4, example=1, description="Numéro de la proposition correcte (1 à 4)"),
      *              @OA\Property(property="subject_id", type="integer", example=1),
      *              @OA\Property(property="difficulty_id", type="integer", example=1),
      *              @OA\Property(property="question_type_id", type="integer", example=1),
@@ -285,11 +298,12 @@ class QuestionController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(),[
-            'question' => 'required|max:500|unique:question,question',
+            'question' => 'required|string|max:500|unique:question,question,',
             'proposal_1' => 'required|string|max:100',
             'proposal_2' => 'required|string|max:100',
             'proposal_3' => 'required|string|max:100',
-            'answer' => 'required|string|max:100',
+            'proposal_4' => 'required|string|max:100',
+            'correct_answer_number' => 'required|integer|min:1|max:4',
             'subject_id' => 'required|numeric|exists:subject,id',
             'difficulty_id' => 'required|numeric|exists:difficulty,id',
             'question_type_id' => 'required|numeric|exists:question_type,id',
@@ -301,15 +315,47 @@ class QuestionController extends Controller
                 'message' => $validator->messages()
             ]);
         }
+
         $question = Question::find($id);
 
-        if($question){
-            $question->update($request->all());
-
-            return response()->json($this->success("La question", "Modifiée"));
+        if(!$question){
+            return response()->json([
+                'error' => true,
+                'message' => 'Question non trouvée'
+            ]);
         }
 
-        return response()->json($this->error);
+        // Mettre à jour la question avec les 4 propositions
+        $question->update([
+            'question' => $request->question,
+            'subject_id' => $request->subject_id,
+            'difficulty_id' => $request->difficulty_id,
+            'question_type_id' => $request->question_type_id,
+            'proposal_1' => $request->proposal_1,
+            'proposal_2' => $request->proposal_2,
+            'proposal_3' => $request->proposal_3,
+            'proposal_4' => $request->proposal_4,
+        ]);
+
+        // Mettre à jour la réponse avec le numéro de la proposition correcte
+        $answer = Answer::where('question_id', $question->id)->first();
+        if($answer) {
+            $answer->update([
+                'answer' => $request->correct_answer_number
+            ]);
+        } else {
+            // Si la réponse n'existe pas, la créer
+            Answer::create([
+                'answer' => $request->correct_answer_number,
+                'question_id' => $question->id,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Question mise à jour avec succès',
+            'question' => $question,
+            'answer' => $answer
+        ]);
     }
 
     /**
@@ -343,12 +389,21 @@ class QuestionController extends Controller
     {
         $question = Question::find($id);
 
-        if($question){
-            $question->delete();
-
-            return response()->json($this->success("La question a été", "supprimée"));
+        if(!$question){
+            return response()->json([
+                'error' => true,
+                'message' => 'Question non trouvée'
+            ], 404);
         }
 
-        return response()->json($this->error);
+        // Supprimer la ou les réponses associées
+        Answer::where('question_id', $question->id)->delete();
+
+        // Supprimer la question
+        $question->delete();
+
+        return response()->json([
+            'message' => 'Question supprimée avec succès'
+        ]);
     }
 }

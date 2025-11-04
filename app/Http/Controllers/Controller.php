@@ -27,6 +27,16 @@ use Illuminate\Routing\Controller as BaseController;
  *     name="Difficulty",
  *     description="Endpoints pour gérer les niveaux de difficulté"
  * )
+ *
+ * @OA\Tag(
+ *     name="Question",
+ *     description="Endpoints pour gérer les questions du quiz"
+ * )
+ *
+ * @OA\Tag(
+ *     name="Answer",
+ *     description="Endpoints pour gérer les réponses aux questions"
+ * )
  */
 class Controller extends BaseController
 {

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string("proposal_1");
             $table->string("proposal_2");
             $table->string("proposal_3");
-            $table->string("answer");
+            $table->string("proposal_4");
             $table->timestamps();
         });
 
@@ -33,7 +33,7 @@ return new class extends Migration
             'proposal_1' => 'Yennefer',
             'proposal_2' => 'Ratchet',
             'proposal_3' => 'Mario',
-            'answer' => 'Geralt de Riv',
+            'proposal_4' => 'Geralt de Riv',
             'created_at' => now(),
             'updated_at' => now()
         ]);

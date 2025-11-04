@@ -16,6 +16,71 @@
         }
     ],
     "paths": {
+        "/api/answers": {
+            "get": {
+                "tags": [
+                    "Answer"
+                ],
+                "summary": "Obtenir la liste des réponses",
+                "description": "Retourne la liste de toutes les réponses avec leurs questions associées",
+                "operationId": "getAnswersList",
+                "responses": {
+                    "200": {
+                        "description": "Liste des réponses récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "answers": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "question_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "answer_text": {
+                                                        "type": "string",
+                                                        "example": "Geralt de Riv"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "question": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "question": {
+                                                                "type": "string",
+                                                                "example": "Quel est le nom du personnage principal de la série The Witcher ?"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/difficulties": {
             "get": {
                 "tags": [
@@ -290,7 +355,7 @@
                     "Question"
                 ],
                 "summary": "Créer une nouvelle question",
-                "description": "Crée une nouvelle question avec ses propositions et sa réponse",
+                "description": "Crée une nouvelle question avec 4 propositions et indique le numéro de la bonne réponse (1, 2, 3 ou 4)",
                 "operationId": "storeQuestion",
                 "requestBody": {
                     "required": true,
@@ -302,7 +367,8 @@
                                     "proposal_1",
                                     "proposal_2",
                                     "proposal_3",
-                                    "answer",
+                                    "proposal_4",
+                                    "correct_answer_number",
                                     "subject_id",
                                     "difficulty_id",
                                     "question_type_id"
@@ -310,24 +376,35 @@
                                 "properties": {
                                     "question": {
                                         "type": "string",
-                                        "maxLength": 255,
+                                        "maxLength": 500,
                                         "example": "Quelle est la capitale de la France ?"
                                     },
                                     "proposal_1": {
                                         "type": "string",
+                                        "maxLength": 100,
                                         "example": "Paris"
                                     },
                                     "proposal_2": {
                                         "type": "string",
+                                        "maxLength": 100,
                                         "example": "Lyon"
                                     },
                                     "proposal_3": {
                                         "type": "string",
+                                        "maxLength": 100,
                                         "example": "Marseille"
                                     },
-                                    "answer": {
+                                    "proposal_4": {
                                         "type": "string",
-                                        "example": "Paris"
+                                        "maxLength": 100,
+                                        "example": "Bordeaux"
+                                    },
+                                    "correct_answer_number": {
+                                        "description": "Numéro de la proposition correcte (1 à 4)",
+                                        "type": "integer",
+                                        "maximum": 4,
+                                        "minimum": 1,
+                                        "example": 1
                                     },
                                     "subject_id": {
                                         "type": "integer",
@@ -355,6 +432,9 @@
                                 "schema": {
                                     "properties": {
                                         "question": {
+                                            "type": "object"
+                                        },
+                                        "answer": {
                                             "type": "object"
                                         }
                                     },
@@ -1072,7 +1152,11 @@
         },
         {
             "name": "Question",
-            "description": "Question"
+            "description": "Endpoints pour gérer les questions du quiz"
+        },
+        {
+            "name": "Answer",
+            "description": "Endpoints pour gérer les réponses aux questions"
         },
         {
             "name": "QuestionType",
