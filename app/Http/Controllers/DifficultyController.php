@@ -146,6 +146,42 @@ class DifficultyController extends Controller
 
     /**
      * Update the specified resource in storage.
+     * 
+     * @OA\Put(
+     *      path="/api/difficulties/{id}",
+     *      operationId="updateDifficulty",
+     *      tags={"Difficulty"},
+     *      summary="Mettre à jour une difficulté",
+     *      description="Met à jour un niveau de difficulté existant",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="ID de la difficulté",
+     *          required=true,
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"name","point"},
+     *              @OA\Property(property="name", type="string", maxLength=200, example="Moyen"),
+     *              @OA\Property(property="point", type="integer", minimum=1, maximum=5, example=3),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Difficulté modifiée avec succès",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Erreur de validation"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Difficulté non trouvée"
+     *      )
+     * )
      */
     public function update(Request $request, string $id)
     {
@@ -173,6 +209,30 @@ class DifficultyController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * 
+     * @OA\Delete(
+     *      path="/api/difficulties/{id}",
+     *      operationId="deleteDifficulty", 
+     *      tags={"Difficulty"},
+     *      summary="Supprimer une difficulté",
+     *      description="Supprime un niveau de difficulté existant",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="ID de la difficulté",
+     *          required=true,
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Difficulté supprimée avec succès",
+     *          @OA\JsonContent()
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Difficulté non trouvée"
+     *      )
+     * )
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
