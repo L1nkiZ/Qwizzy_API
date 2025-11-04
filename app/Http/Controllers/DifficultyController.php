@@ -99,7 +99,7 @@ class DifficultyController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:200|unique:difficulties,name',
+            'name' => 'required|string|max:200|unique:Difficulty,name',
             'point' => 'required|integer|min:1|max:5',
         ]);
 
