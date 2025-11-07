@@ -22,7 +22,7 @@
                     "Answer"
                 ],
                 "summary": "Obtenir la liste des réponses",
-                "description": "Retourne la liste de toutes les réponses avec leurs questions associées",
+                "description": "Retourne la liste de toutes les réponses avec leurs questions associées. Le champ 'answer' contient le numéro de la bonne proposition (1 à 4)",
                 "operationId": "getAnswersList",
                 "responses": {
                     "200": {
@@ -43,9 +43,12 @@
                                                         "type": "integer",
                                                         "example": 1
                                                     },
-                                                    "answer_text": {
-                                                        "type": "string",
-                                                        "example": "Geralt de Riv"
+                                                    "answer": {
+                                                        "description": "Numéro de la proposition correcte (1 à 4)",
+                                                        "type": "integer",
+                                                        "maximum": 4,
+                                                        "minimum": 1,
+                                                        "example": 1
                                                     },
                                                     "created_at": {
                                                         "type": "string",
@@ -64,6 +67,22 @@
                                                             "question": {
                                                                 "type": "string",
                                                                 "example": "Quel est le nom du personnage principal de la série The Witcher ?"
+                                                            },
+                                                            "proposal_1": {
+                                                                "type": "string",
+                                                                "example": "Geralt de Riv"
+                                                            },
+                                                            "proposal_2": {
+                                                                "type": "string",
+                                                                "example": "Yennefer"
+                                                            },
+                                                            "proposal_3": {
+                                                                "type": "string",
+                                                                "example": "Ciri"
+                                                            },
+                                                            "proposal_4": {
+                                                                "type": "string",
+                                                                "example": "Jaskier"
                                                             }
                                                         },
                                                         "type": "object"
@@ -425,12 +444,16 @@
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Question créée avec succès",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Question créée avec succès"
+                                        },
                                         "question": {
                                             "type": "object"
                                         },
@@ -566,7 +589,7 @@
                     "Question"
                 ],
                 "summary": "Mettre à jour une question",
-                "description": "Met à jour une question existante",
+                "description": "Met à jour une question existante avec 4 propositions et le numéro de la bonne réponse",
                 "operationId": "updateQuestion",
                 "parameters": [
                     {
@@ -589,7 +612,8 @@
                                     "proposal_1",
                                     "proposal_2",
                                     "proposal_3",
-                                    "answer",
+                                    "proposal_4",
+                                    "correct_answer_number",
                                     "subject_id",
                                     "difficulty_id",
                                     "question_type_id"
@@ -597,24 +621,35 @@
                                 "properties": {
                                     "question": {
                                         "type": "string",
-                                        "maxLength": 255,
+                                        "maxLength": 500,
                                         "example": "Quelle est la capitale de la France ?"
                                     },
                                     "proposal_1": {
                                         "type": "string",
+                                        "maxLength": 100,
                                         "example": "Paris"
                                     },
                                     "proposal_2": {
                                         "type": "string",
+                                        "maxLength": 100,
                                         "example": "Lyon"
                                     },
                                     "proposal_3": {
                                         "type": "string",
+                                        "maxLength": 100,
                                         "example": "Marseille"
                                     },
-                                    "answer": {
+                                    "proposal_4": {
                                         "type": "string",
-                                        "example": "Paris"
+                                        "maxLength": 100,
+                                        "example": "Bordeaux"
+                                    },
+                                    "correct_answer_number": {
+                                        "description": "Numéro de la proposition correcte (1 à 4)",
+                                        "type": "integer",
+                                        "maximum": 4,
+                                        "minimum": 1,
+                                        "example": 1
                                     },
                                     "subject_id": {
                                         "type": "integer",
@@ -1128,6 +1163,38 @@
                     }
                 }
             }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Vérifier l'authentification de l'user",
+                "description": "Retourne les informations de l'user authentifié (à condition de founir le bon token)",
+                "operationId": "getUserAuth",
+                "parameters": [
+                    {
+                        "name": "current_sort",
+                        "in": "query",
+                        "description": "Champ de tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Renvoie 'user' => 'ok' si le token est valide, sinon 'message' => 'Token invalide ou manquant'"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1142,6 +1209,16 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Entrer le token (le token correct est 'token123') :",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
@@ -1165,6 +1242,10 @@
         {
             "name": "Subjects",
             "description": "Subjects"
+        },
+        {
+            "name": "User",
+            "description": "User"
         }
     ]
 }
