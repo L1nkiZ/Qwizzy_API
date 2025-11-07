@@ -11,6 +11,8 @@ use App\Models\Difficulty;
 
 class DifficultyController extends Controller
 {
+    use ErrorTrait;
+
     /**
      * Display a listing of the resource.
      *
@@ -99,7 +101,7 @@ class DifficultyController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:200|unique:Difficulty,name',
+            'name' => 'required|string|max:200|unique:difficulty,name',
             'point' => 'required|integer|min:1|max:5',
         ]);
 
@@ -186,7 +188,7 @@ class DifficultyController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:200',
+            'name' => 'required|string|max:200|unique:difficulty,name,' . $id,
             'point' => 'required|integer|min:1|max:5',
         ]);
 

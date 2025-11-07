@@ -4,50 +4,50 @@ namespace App\Http\Controllers;
 
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Validator;
+use App\Http\Traits\ErrorTrait;
 
 class SubjectController extends Controller
 {
+    use ErrorTrait;
+
     /**
-     * @OA\Schema(
-     *     schema="Subject",
-     *     @OA\Property(property="id", type="integer"),
-     *     @OA\Property(property="name", type="string"),
-     * )
+     * Display a listing of the resource.
+     *
      * @OA\Get(
-     *     path="/api/subjects",
-     *     summary="Retrieve a list of subjects",
-     *     tags={"Subjects"},
-     *     @OA\Parameter(
-     *         name="current_sort",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="current_sort_dir",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"asc", "desc"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="per_page",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="integer", format="int32", example=10)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Subject")),
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Subjects not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Subjects not found")
-     *         )
-     *     )
+     *      path="/api/subjects",
+     *      operationId="getSubjectsList",
+     *      tags={"Subject"},
+     *      summary="Obtenir la liste des sujets",
+     *      description="Retourne la liste paginée des sujets",
+     *      @OA\Parameter(
+     *          name="current_sort",
+     *          description="Champ de tri",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="string", default="id")
+     *      ),
+     *      @OA\Parameter(
+     *          name="current_sort_dir",
+     *          description="Direction du tri",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="string", enum={"asc", "desc"}, default="asc")
+     *      ),
+     *      @OA\Parameter(
+     *          name="per_page",
+     *          description="Nombre d'éléments par page",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(type="integer", default=15)
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Liste des sujets récupérée avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="subject", type="object")
+     *          )
+     *       )
      * )
      */
     public function index(Request $request)
@@ -70,37 +70,35 @@ class SubjectController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
      * @OA\Post(
-     *     path="/api/subjects",
-     *     summary="Create a new subject",
-     *     tags={"Subjects"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name","point"},
-     *             @OA\Property(property="name", type="string", maxLength=200, example="Mathematics"),
-     *             @OA\Property(property="point", type="integer", format="int32", minimum=1, maximum=5, example=3)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Created",
-     *         @OA\JsonContent(ref="#/components/schemas/Subject")
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation Error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="boolean", example=true),
-     *             @OA\Property(property="message", type="object")
-     *         )
-     *     )
+     *      path="/api/subjects",
+     *      operationId="storeSubject",
+     *      tags={"Subject"},
+     *      summary="Créer un nouveau sujet",
+     *      description="Crée un nouveau sujet",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"name"},
+     *              @OA\Property(property="name", type="string", maxLength=200, example="Mathématiques"),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Sujet créé avec succès",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Erreur de validation"
+     *      )
      * )
      */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:200|unique:Subject,name',
+            'name' => 'required|string|max:200|unique:subject,name',
         ]);
 
         if ($validator->fails()) {
@@ -145,50 +143,46 @@ class SubjectController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
      * @OA\Put(
-     *     path="/api/subjects/{id}",
-     *     summary="Update an existing subject",
-     *     tags={"Subjects"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name"},
-     *             @OA\Property(property="name", type="string", maxLength=200, example="Mathematics")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/Subject")
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Subject not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Subject not found")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation Error",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="boolean", example=true),
-     *             @OA\Property(property="message", type="object")
-     *         )
-     *     )
+     *      path="/api/subjects/{id}",
+     *      operationId="updateSubject",
+     *      tags={"Subject"},
+     *      summary="Mettre à jour un sujet",
+     *      description="Met à jour un sujet existant",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="ID du sujet",
+     *          required=true,
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"name"},
+     *              @OA\Property(property="name", type="string", maxLength=200, example="Histoire"),
+     *          ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Sujet modifié avec succès",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Erreur de validation"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Sujet non trouvé"
+     *      )
      * )
      */
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:200',
+            'name' => 'required|string|max:200|unique:subject,name,' . $id,
         ]);
 
         if ($validator->fails()) {
@@ -210,29 +204,33 @@ class SubjectController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @OA\Delete(
-     *     path="/api/subjects/{id}",
-     *     summary="Delete an existing subject",
-     *     tags={"Subjects"},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="No Content"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Subject not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="error", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Subject not found")
-     *         )
-     *     )
+     *      path="/api/subjects/{id}",
+     *      operationId="deleteSubject",
+     *      tags={"Subject"},
+     *      summary="Supprimer un sujet",
+     *      description="Supprime un sujet existant",
+     *      @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="ID du sujet",
+     *          required=true,
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Sujet supprimé avec succès",
+     *          @OA\JsonContent()
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Sujet non trouvé"
+     *      )
      * )
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy(string $id)
     {
