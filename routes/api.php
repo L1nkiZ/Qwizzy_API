@@ -6,6 +6,7 @@ use App\Http\Controllers\DifficultyController;
 use App\Http\Controllers\QuestionTypeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AnswerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,4 +28,11 @@ Route::middleware('auth.token')->get('/user', function (Request $request) {
 Route::apiResource('difficulties', DifficultyController::class);
 Route::apiResource('question-types', QuestionTypeController::class);
 Route::apiResource('subjects', SubjectController::class);
+
+// Route spécifique pour create avant apiResource
+Route::get('questions/create', [QuestionController::class, 'create']);
+Route::get('questions/{id}/edit', [QuestionController::class, 'edit']);
+Route::get('questions/by-theme', [QuestionController::class, 'byTheme']);
 Route::apiResource('questions', QuestionController::class);
+
+Route::apiResource('answers', AnswerController::class);

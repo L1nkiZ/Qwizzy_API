@@ -16,6 +16,69 @@ use App\Models\Answer;
 class QuestionController extends Controller
 {
     /**
+     * Filtrer les questions par thème (subject.name)
+     *
+     * @OA\Get(
+     *      path="/api/questions/by-theme",
+     *      operationId="getQuestionsByTheme",
+     *      tags={"Question"},
+     *      summary="Obtenir les questions par thème",
+     *      description="Retourne toutes les questions associées à un thème (nom de la matière)",
+     *      @OA\Parameter(
+     *          name="theme",
+     *          description="Nom du thème (correspond au nom de la matière)",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(type="string", example="The Witcher")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Liste des questions filtrée avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="questions", type="array", @OA\Items(type="object"))
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Erreur de validation",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="error", type="boolean", example=true),
+     *              @OA\Property(property="message", type="object")
+     *          )
+     *      )
+     * )
+     */
+    public function byTheme(Request $request)
+    {
+        $theme = $request->input('theme');
+
+        if(!$theme) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Le thème est requis'
+            ]);
+        }
+        else{
+            $questions = Question::with([
+                'difficulty' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'subject' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'question_type' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'answers'
+            ])->whereHas('subject', function ($q) use ($theme) {
+                $q->where('name', 'like', '%' . $theme . '%');
+            })->get();
+
+            return response()->json(compact('questions'));
+        }
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @OA\Get(
@@ -67,6 +130,26 @@ class QuestionController extends Controller
                 $query->select('id', 'name');
             },
         ])
+        ->orderBy($request->current_sort, $request->current_sort_dir)
+        ->paginate($request->per_page);
+
+        return response()->json(compact('questions'));
+    }
+
+    public function indexFiltered(Request $request)
+    {
+        $questions = Question::with([
+            'difficulty' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'subject' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'question_type' => function ($query) {
+                $query->select('id', 'name');
+            },
+        ])
+        ->where('subject_id', $request->subject_id)
         ->orderBy($request->current_sort, $request->current_sort_dir)
         ->paginate($request->per_page);
 
@@ -200,6 +283,60 @@ class QuestionController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @OA\Get(
+     *      path="/api/questions/{id}",
+     *      operationId="showQuestion",
+     *      tags={"Question"},
+     *      summary="Afficher une question",
+     *      description="Retourne les détails d'une question spécifique avec ses relations (difficulté, sujet, type, réponses)",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID de la question",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Question récupérée avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="question", type="object")
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Question non trouvée"
+     *      )
+     * )
+     */
+    public function show(string $id)
+    {
+        $question = Question::with([
+            'difficulty' => function ($query) {
+                $query->select('id', 'name', 'point');
+            },
+            'subject' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'question_type' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'answers'
+        ])->find($id);
+
+        if (!$question) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Question non trouvée'
+            ], 404);
+        }
+
+        return response()->json(compact('question'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @OA\Get(
@@ -298,7 +435,7 @@ class QuestionController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(),[
-            'question' => 'required|string|max:500|unique:question,question,',
+            'question' => 'required|string|max:500|unique:question,question,' . $id,
             'proposal_1' => 'required|string|max:100',
             'proposal_2' => 'required|string|max:100',
             'proposal_3' => 'required|string|max:100',
