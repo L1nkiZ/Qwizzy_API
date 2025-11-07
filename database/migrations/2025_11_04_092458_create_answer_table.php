@@ -12,14 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('question', function (Blueprint $table) {
+        Schema::create('answer', function (Blueprint $table) {
             $table->id();
-            $table->integer("answer");
-            $table->foreignId('question_id')->constrained('question')->onDelete('cascade');
+            $table->string('answer');
+            $table->foreignId('question_id')->constrained('question');
             $table->timestamps();
         });
 
-        DB::table('question')->insert([
+        DB::table('answer')->insert([
             'answer' => '4',
             'question_id' => 1,
             'created_at' => now(),
