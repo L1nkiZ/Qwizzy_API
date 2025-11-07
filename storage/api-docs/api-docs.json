@@ -312,6 +312,51 @@
                 "tags": [
                     "Question"
                 ],
+                "summary": "Obtenir les questions par ID de thème",
+                "description": "Retourne toutes les questions associées à un thème en utilisant l'ID de la matière",
+                "operationId": "getQuestionsByThemeId",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du thème (subject)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des questions filtrée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "questions": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Thème non trouvé"
+                    }
+                }
+            }
+        },
+        "/api/questions/by-theme": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
                 "summary": "Obtenir les questions par thème",
                 "description": "Retourne toutes les questions associées à un thème (ID de la matière)",
                 "operationId": "getQuestionsByTheme",

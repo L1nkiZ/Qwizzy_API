@@ -16,7 +16,64 @@ use App\Models\Answer;
 class QuestionController extends Controller
 {
     /**
-     * Filtrer les questions par thème (subject.id)
+     * Filtrer les questions par thème via son ID (subject.id)
+     *
+     * @OA\Get(
+     *      path="/api/questions/theme/{id}",
+     *      operationId="getQuestionsByThemeId",
+     *      tags={"Question"},
+     *      summary="Obtenir les questions par ID de thème",
+     *      description="Retourne toutes les questions associées à un thème en utilisant l'ID de la matière",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID du thème (subject)",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(type="integer", example=1)
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Liste des questions filtrée avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="questions", type="array", @OA\Items(type="object"))
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Thème non trouvé"
+     *      )
+     * )
+     */
+    public function byThemeId(int $id)
+    {
+        $subject = Subject::find($id);
+
+        if (!$subject) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Thème non trouvé'
+            ], 404);
+        }
+
+        $questions = Question::with([
+            'difficulty' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'subject' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'question_type' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'answers'
+        ])
+        ->where('subject_id', $id)
+        ->get();
+
+        return response()->json(compact('questions'));
+    }
+    /**
+     * Filtrer les questions par thème (subject.name)
      *
      * @OA\Get(
      *      path="/api/questions/theme/{id}",
