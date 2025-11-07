@@ -31,7 +31,8 @@ Route::apiResource('subjects', SubjectController::class);
 // Route spécifique pour create avant apiResource
 Route::get('questions/create', [QuestionController::class, 'create']);
 Route::get('questions/{id}/edit', [QuestionController::class, 'edit']);
-Route::get('questions/by-theme', [QuestionController::class, 'byTheme']);
+// Filtrer les questions par id de thème (subject)
+Route::get('questions/theme/{id}', [QuestionController::class, 'byTheme']);
 Route::apiResource('questions', QuestionController::class);
 
 Route::apiResource('answers', AnswerController::class);

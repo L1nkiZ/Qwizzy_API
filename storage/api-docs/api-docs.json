@@ -307,23 +307,23 @@
                 }
             }
         },
-        "/api/questions/by-theme": {
+        "/api/questions/theme/{id}": {
             "get": {
                 "tags": [
                     "Question"
                 ],
                 "summary": "Obtenir les questions par thème",
-                "description": "Retourne toutes les questions associées à un thème (nom de la matière)",
+                "description": "Retourne toutes les questions associées à un thème (ID de la matière)",
                 "operationId": "getQuestionsByTheme",
                 "parameters": [
                     {
-                        "name": "theme",
-                        "in": "query",
-                        "description": "Nom du thème (correspond au nom de la matière)",
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du thème (subject), le thème 1 correspond à 'The Witcher'",
                         "required": true,
                         "schema": {
-                            "type": "string",
-                            "example": "The Witcher"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
@@ -346,24 +346,8 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Erreur de validation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                    "404": {
+                        "description": "Thème non trouvé"
                     }
                 }
             }
