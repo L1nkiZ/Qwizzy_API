@@ -33,6 +33,8 @@ Route::apiResource('subjects', SubjectController::class);
 Route::get('questions/create', [QuestionController::class, 'create']);
 Route::get('questions/{id}/edit', [QuestionController::class, 'edit']);
 Route::get('questions/by-theme', [QuestionController::class, 'byTheme']);
+// Recherche par id de thème (subject_id)
+Route::get('questions/theme/{id}', [QuestionController::class, 'byThemeId'])->whereNumber('id');
 Route::apiResource('questions', QuestionController::class);
 
 Route::apiResource('answers', AnswerController::class);
