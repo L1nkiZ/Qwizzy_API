@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('difficulty', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->smallInteger('point')->unique();
+            $table->smallInteger('point');
             $table->timestamps();
         });
 
