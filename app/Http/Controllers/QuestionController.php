@@ -76,17 +76,17 @@ class QuestionController extends Controller
      * Filtrer les questions par thème (subject.name)
      *
      * @OA\Get(
-     *      path="/api/questions/theme/{id}",
+     *      path="/api/questions/by-theme",
      *      operationId="getQuestionsByTheme",
      *      tags={"Question"},
      *      summary="Obtenir les questions par thème",
-     *      description="Retourne toutes les questions associées à un thème (ID de la matière)",
+     *      description="Retourne toutes les questions associées à un thème (nom de la matière)",
      *      @OA\Parameter(
-     *          name="id",
-     *          description="ID du thème (subject), le thème 1 correspond à 'The Witcher'",
+     *          name="theme",
+     *          description="Nom du thème (correspond au nom de la matière)",
      *          required=true,
-     *          in="path",
-     *          @OA\Schema(type="integer", example=1)
+     *          in="query",
+     *          @OA\Schema(type="string", example="The Witcher")
      *      ),
      *      @OA\Response(
      *          response=200,
@@ -96,38 +96,43 @@ class QuestionController extends Controller
      *          )
      *       ),
      *      @OA\Response(
-     *          response=404,
-     *          description="Thème non trouvé"
+     *          response=422,
+     *          description="Erreur de validation",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="error", type="boolean", example=true),
+     *              @OA\Property(property="message", type="object")
+     *          )
      *      )
      * )
      */
-    public function byTheme(int $id)
+    public function byTheme(Request $request)
     {
-        $subject = Subject::find($id);
+        $theme = $request->input('theme');
 
-        if (!$subject) {
+        if(!$theme) {
             return response()->json([
                 'error' => true,
-                'message' => 'Thème non trouvé'
+                'message' => 'Le thème est requis'
             ]);
         }
+        else{
+            $questions = Question::with([
+                'difficulty' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'subject' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'question_type' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'answers'
+            ])->whereHas('subject', function ($q) use ($theme) {
+                $q->where('name', 'like', '%' . $theme . '%');
+            })->get();
 
-        $questions = Question::with([
-            'difficulty' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'subject' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'question_type' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'answers'
-        ])
-        ->where('subject_id', $id)
-        ->get();
-
-        return response()->json(compact('questions'));
+            return response()->json(compact('questions'));
+        }
     }
 
     /**
