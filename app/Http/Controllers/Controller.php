@@ -37,6 +37,16 @@ use Illuminate\Routing\Controller as BaseController;
  *     name="Answer",
  *     description="Endpoints pour gérer les réponses aux questions"
  * )
+ * 
+ * @OA\SecurityScheme(
+ *     type="http",
+ *     description="Entrer le token (le token correct est 'token123') :",
+ *     name="Authorization",
+ *     in="header",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     securityScheme="bearerAuth",
+ * )
  */
 class Controller extends BaseController
 {
