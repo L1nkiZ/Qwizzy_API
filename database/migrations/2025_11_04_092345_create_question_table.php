@@ -15,9 +15,9 @@ return new class extends Migration
         Schema::create('question', function (Blueprint $table) {
             $table->id();
             $table->string("question")->unique();
-            $table->foreignId('subject_id')->constrained('subject')->onDelete('cascade');
-            $table->foreignId('difficulty_id')->constrained('difficulty')->onDelete('cascade');
-            $table->foreignId('question_type_id')->constrained('question_type')->onDelete('cascade');
+            $table->foreignId('subject_id')->constrained('subject');
+            $table->foreignId('difficulty_id')->constrained('difficulty');
+            $table->foreignId('question_type_id')->constrained('question_type');
             $table->string("proposal_1");
             $table->string("proposal_2");
             $table->string("proposal_3");
