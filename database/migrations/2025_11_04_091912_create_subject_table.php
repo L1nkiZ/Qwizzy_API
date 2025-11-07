@@ -21,6 +21,12 @@ return new class extends Migration
         DB::table("subject")->insert([
             ['name' => "The Witcher", 'created_at' => now(), 'updated_at' => now()],
         ]);
+        DB::table("subject")->insert([
+            ['name' => "Le cinéma", 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        DB::table("subject")->insert([
+            ['name' => "La moto", 'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
 
     /**
