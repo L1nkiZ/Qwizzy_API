@@ -1,0 +1,1247 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Qwizzy API Documentation",
+        "description": "Documentation de l'API Qwizzy pour la gestion des quiz",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "API Server"
+        }
+    ],
+    "paths": {
+        "/api/answers": {
+            "get": {
+                "tags": [
+                    "Answer"
+                ],
+                "summary": "Obtenir la liste des réponses",
+                "description": "Retourne la liste de toutes les réponses avec leurs questions associées. Le champ 'answer' contient le numéro de la bonne proposition (1 à 4)",
+                "operationId": "getAnswersList",
+                "responses": {
+                    "200": {
+                        "description": "Liste des réponses récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "answers": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "question_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "answer": {
+                                                        "description": "Numéro de la proposition correcte (1 à 4)",
+                                                        "type": "integer",
+                                                        "maximum": 4,
+                                                        "minimum": 1,
+                                                        "example": 1
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "question": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "question": {
+                                                                "type": "string",
+                                                                "example": "Quel est le nom du personnage principal de la série The Witcher ?"
+                                                            },
+                                                            "proposal_1": {
+                                                                "type": "string",
+                                                                "example": "Geralt de Riv"
+                                                            },
+                                                            "proposal_2": {
+                                                                "type": "string",
+                                                                "example": "Yennefer"
+                                                            },
+                                                            "proposal_3": {
+                                                                "type": "string",
+                                                                "example": "Ciri"
+                                                            },
+                                                            "proposal_4": {
+                                                                "type": "string",
+                                                                "example": "Jaskier"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/difficulties": {
+            "get": {
+                "tags": [
+                    "Difficulty"
+                ],
+                "summary": "Obtenir la liste des difficultés",
+                "description": "Retourne la liste paginée des niveaux de difficulté",
+                "operationId": "getDifficultiesList",
+                "parameters": [
+                    {
+                        "name": "current_sort",
+                        "in": "query",
+                        "description": "Champ de tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "id"
+                        }
+                    },
+                    {
+                        "name": "current_sort_dir",
+                        "in": "query",
+                        "description": "Direction du tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Nombre d'éléments par page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des difficultés récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "difficulty": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Difficulty"
+                ],
+                "summary": "Créer une nouvelle difficulté",
+                "description": "Crée un nouveau niveau de difficulté",
+                "operationId": "storeDifficulty",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "point"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "Facile"
+                                    },
+                                    "point": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1,
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Difficulté créée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/difficulties/{id}": {
+            "put": {
+                "tags": [
+                    "Difficulty"
+                ],
+                "summary": "Mettre à jour une difficulté",
+                "description": "Met à jour un niveau de difficulté existant",
+                "operationId": "updateDifficulty",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la difficulté",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "point"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "Moyen"
+                                    },
+                                    "point": {
+                                        "type": "integer",
+                                        "maximum": 5,
+                                        "minimum": 1,
+                                        "example": 3
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Difficulté modifiée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    },
+                    "404": {
+                        "description": "Difficulté non trouvée"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Difficulty"
+                ],
+                "summary": "Supprimer une difficulté",
+                "description": "Supprime un niveau de difficulté existant",
+                "operationId": "deleteDifficulty",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la difficulté",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Difficulté supprimée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Difficulté non trouvée"
+                    }
+                }
+            }
+        },
+        "/api/questions/by-theme": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Obtenir les questions par thème",
+                "description": "Retourne toutes les questions associées à un thème (nom de la matière)",
+                "operationId": "getQuestionsByTheme",
+                "parameters": [
+                    {
+                        "name": "theme",
+                        "in": "query",
+                        "description": "Nom du thème (correspond au nom de la matière)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "The Witcher"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des questions filtrée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "questions": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/questions": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Obtenir la liste des questions",
+                "description": "Retourne la liste paginée des questions avec leurs relations",
+                "operationId": "getQuestionsList",
+                "parameters": [
+                    {
+                        "name": "current_sort",
+                        "in": "query",
+                        "description": "Champ de tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "id"
+                        }
+                    },
+                    {
+                        "name": "current_sort_dir",
+                        "in": "query",
+                        "description": "Direction du tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Nombre d'éléments par page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des questions récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "questions": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Créer une nouvelle question",
+                "description": "Crée une nouvelle question avec 4 propositions et indique le numéro de la bonne réponse (1, 2, 3 ou 4)",
+                "operationId": "storeQuestion",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "question",
+                                    "proposal_1",
+                                    "proposal_2",
+                                    "proposal_3",
+                                    "proposal_4",
+                                    "correct_answer_number",
+                                    "subject_id",
+                                    "difficulty_id",
+                                    "question_type_id"
+                                ],
+                                "properties": {
+                                    "question": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Quelle est la capitale de la France ?"
+                                    },
+                                    "proposal_1": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Paris"
+                                    },
+                                    "proposal_2": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Lyon"
+                                    },
+                                    "proposal_3": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Marseille"
+                                    },
+                                    "proposal_4": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Bordeaux"
+                                    },
+                                    "correct_answer_number": {
+                                        "description": "Numéro de la proposition correcte (1 à 4)",
+                                        "type": "integer",
+                                        "maximum": 4,
+                                        "minimum": 1,
+                                        "example": 1
+                                    },
+                                    "subject_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "difficulty_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "question_type_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Question créée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Question créée avec succès"
+                                        },
+                                        "question": {
+                                            "type": "object"
+                                        },
+                                        "answer": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/questions/create": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Obtenir les données pour créer une question",
+                "description": "Retourne les listes des difficultés, matières et types de questions disponibles",
+                "operationId": "getQuestionCreateData",
+                "responses": {
+                    "200": {
+                        "description": "Données récupérées avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "difficulties": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "subjects": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "question_types": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/questions/{id}": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Afficher une question",
+                "description": "Retourne les détails d'une question spécifique avec ses relations (difficulté, sujet, type, réponses)",
+                "operationId": "showQuestion",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Question récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "question": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question non trouvée"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Mettre à jour une question",
+                "description": "Met à jour une question existante avec 4 propositions et le numéro de la bonne réponse",
+                "operationId": "updateQuestion",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "question",
+                                    "proposal_1",
+                                    "proposal_2",
+                                    "proposal_3",
+                                    "proposal_4",
+                                    "correct_answer_number",
+                                    "subject_id",
+                                    "difficulty_id",
+                                    "question_type_id"
+                                ],
+                                "properties": {
+                                    "question": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Quelle est la capitale de la France ?"
+                                    },
+                                    "proposal_1": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Paris"
+                                    },
+                                    "proposal_2": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Lyon"
+                                    },
+                                    "proposal_3": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Marseille"
+                                    },
+                                    "proposal_4": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Bordeaux"
+                                    },
+                                    "correct_answer_number": {
+                                        "description": "Numéro de la proposition correcte (1 à 4)",
+                                        "type": "integer",
+                                        "maximum": 4,
+                                        "minimum": 1,
+                                        "example": 1
+                                    },
+                                    "subject_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "difficulty_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "question_type_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Question mise à jour avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question non trouvée"
+                    },
+                    "422": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Supprimer une question",
+                "description": "Supprime une question existante",
+                "operationId": "deleteQuestion",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Question supprimée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question non trouvée"
+                    }
+                }
+            }
+        },
+        "/api/questions/{id}/edit": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Obtenir les données pour éditer une question",
+                "description": "Retourne les listes des difficultés, matières et types de questions disponibles pour l'édition",
+                "operationId": "getQuestionEditData",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Données récupérées avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "difficulties": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "subjects": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "question_types": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/question-types": {
+            "get": {
+                "tags": [
+                    "QuestionType"
+                ],
+                "summary": "Obtenir la liste des types de questions",
+                "description": "Retourne la liste paginée des types de questions",
+                "operationId": "getQuestionTypesList",
+                "parameters": [
+                    {
+                        "name": "current_sort",
+                        "in": "query",
+                        "description": "Champ de tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "id"
+                        }
+                    },
+                    {
+                        "name": "current_sort_dir",
+                        "in": "query",
+                        "description": "Direction du tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Nombre d'éléments par page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des types de questions récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "questionType": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "QuestionType"
+                ],
+                "summary": "Créer un nouveau type de question",
+                "description": "Crée un nouveau type de question",
+                "operationId": "storeQuestionType",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "QCM"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Type de question créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/question-types/{id}": {
+            "put": {
+                "tags": [
+                    "QuestionType"
+                ],
+                "summary": "Mettre à jour un type de question",
+                "description": "Met à jour un type de question existant",
+                "operationId": "updateQuestionType",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du type de question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "QCM modifié"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Type de question modifié avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    },
+                    "404": {
+                        "description": "Type de question non trouvé"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "QuestionType"
+                ],
+                "summary": "Supprimer un type de question",
+                "description": "Supprime un type de question existant",
+                "operationId": "deleteQuestionType",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du type de question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Type de question supprimé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Type de question non trouvé"
+                    }
+                }
+            }
+        },
+        "/api/subjects": {
+            "get": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "Obtenir la liste des sujets",
+                "description": "Retourne la liste paginée des sujets",
+                "operationId": "getSubjectsList",
+                "parameters": [
+                    {
+                        "name": "current_sort",
+                        "in": "query",
+                        "description": "Champ de tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "id"
+                        }
+                    },
+                    {
+                        "name": "current_sort_dir",
+                        "in": "query",
+                        "description": "Direction du tri",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "asc",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Nombre d'éléments par page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des sujets récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "subject": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "Créer un nouveau sujet",
+                "description": "Crée un nouveau sujet",
+                "operationId": "storeSubject",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "Mathématiques"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sujet créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/subjects/{id}": {
+            "put": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "Mettre à jour un sujet",
+                "description": "Met à jour un sujet existant",
+                "operationId": "updateSubject",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du sujet",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "Histoire"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sujet modifié avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    },
+                    "404": {
+                        "description": "Sujet non trouvé"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "Supprimer un sujet",
+                "description": "Supprime un sujet existant",
+                "operationId": "deleteSubject",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID du sujet",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sujet supprimé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Sujet non trouvé"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Difficulty",
+            "description": "Endpoints pour gérer les niveaux de difficulté"
+        },
+        {
+            "name": "Question",
+            "description": "Endpoints pour gérer les questions du quiz"
+        },
+        {
+            "name": "Answer",
+            "description": "Endpoints pour gérer les réponses aux questions"
+        },
+        {
+            "name": "QuestionType",
+            "description": "QuestionType"
+        },
+        {
+            "name": "Subject",
+            "description": "Subject"
+        }
+    ]
+}

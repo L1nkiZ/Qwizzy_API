@@ -1,66 +1,317 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🙋‍♂️❓ Qwizzy API - Documentation Complète 
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## � Table des matières
+- [Vue d'ensemble](#-vue-densemble)
+- [Architecture Docker](#-architecture-docker)
+- [Accès aux Services](#-accès-aux-services)
+- [Installation et Démarrage](#-installation-et-démarrage)
+- [Documentation API (Swagger)](#-documentation-api-swagger)
+- [Gestion de la Base de Données](#-gestion-de-la-base-de-données)
+- [Commandes Utiles](#-commandes-utiles)
+- [Structure de l'API](#-structure-de-lapi)
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🎯 Vue d'ensemble
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Qwizzy API est une application Laravel pour la gestion de questions et de quiz. L'API utilise PostgreSQL comme base de données et est entièrement conteneurisée avec Docker.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Technologies utilisées:**
+- Laravel 13
+- PHP 8.2
+- PostgreSQL 16
+- Swagger/OpenAPI 3.0
+- Docker & Docker Compose
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🐳 Architecture Docker
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. **qwizzy_app** - Application Laravel
+- **Image**: PHP 8.2-FPM
+- **Port**: `8000`
+- **Rôle**: Exécute l'API Laravel
+- **Container**: `qwizzy_app`
 
-## Laravel Sponsors
+### 2. **qwizzy_db** - Base de données PostgreSQL
+- **Image**: `postgres:16-alpine`
+- **Port**: `5432`
+- **Rôle**: Stocke les données de l'application
+- **Container**: `qwizzy_db`
+- **Login/Mot de passe**:
+  - Database: `qwizzy_api`
+  - User: `qwizzy_user`
+  - Password: `qwizzy_password`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### 3. **qwizzy_pgadmin** - Interface de gestion PostgreSQL
+- **Image**: `dpage/pgadmin4:latest`
+- **Port**: `8080`
+- **Rôle**: Interface web pour gérer la base de données
+- **Container**: `qwizzy_pgadmin`
+- **Login/Mot de passe**:
+  - Email: `admin@qwizzy.com`
+  - Password: `admin`
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## 🌐 Accès aux Services
 
-## Contributing
+### **Application Laravel**
+- URL : http://localhost:8000
+- Serveur de développement Laravel intégré
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### **pgAdmin** (Interface PostgreSQL)
+1. Ouvrez : http://localhost:8080
+2. Connectez-vous avec :
+   - Email : `admin@qwizzy.com`
+   - Password : `admin`
+3. Ajoutez un serveur (première fois uniquement) :
+   - Clic droit sur "Servers" → "Register" → "Server"
+   - **General Tab** :
+     - Name : `Qwizzy DB`
+   - **Connection Tab** :
+     - Host : `db` (nom du conteneur)
+     - Port : `5432`
+     - Database : `qwizzy_api`
+     - Username : `qwizzy_user`
+     - Password : `qwizzy_password`
+   - (Facultatif) Cochez "Save password"
+   - Cliquez sur "Save"
 
-## Code of Conduct
+### **Base de données PostgreSQL** (connexion externe)
+- Host : `localhost`
+- Port : `5432`
+- Database : `qwizzy_api`
+- Username : `qwizzy_user`
+- Password : `qwizzy_password`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 🚀 Installation et Démarrage
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Prérequis
+- `Docker`
+- `Git`
 
-## License
+### Étapes d'installation
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **Cloner le projet**
+```bash
+git clone https://github.com/L1nkiZ/Qwizzy_API.git
+cd Qwizzy_API
+```
+
+2. **Configurer l'environnement**
+```bash
+# Copier le fichier .env.example
+cp .env.example .env
+```
+
+3. **Démarrer les conteneurs Docker**
+```bash
+# Construire et démarrer tous les conteneurs
+docker-compose up -d --build
+```
+
+4. **Accès au swagger de l'api**
+`http://localhost:8000/`
+
+---
+
+## 🌐 Accès aux Services
+
+Une fois les conteneurs démarrés, vous pouvez accéder à:
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par default |
+| **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
+| **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
+
+---
+
+## 📖 Documentation API (Swagger)
+
+### Accéder à Swagger
+Ouvrez votre navigateur et accédez à:
+```
+http://localhost:8000/
+```
+
+### Régénérer la documentation Swagger
+Après avoir modifié les annotations dans vos controllers:
+```bash
+docker exec -it qwizzy_app php artisan l5-swagger:generate
+```
+
+---
+
+## 🗄️ Gestion de la Base de Données
+
+### Se connecter à pgAdmin
+
+1. Accédez à `http://localhost:8080`
+2. Connectez-vous avec:
+   - **Email**: `admin@qwizzy.com`
+   - **Password**: `admin`
+
+3. Ajoutez un nouveau serveur:
+   - Clic droit sur "Servers" → "Register" → "Server..."
+   
+   **Onglet General:**
+   - Name: `Qwizzy DB`
+   
+   **Onglet Connection:**
+   - Host name/address: `db` (⚠️ Attention pas "localhost" ⚠️)
+   - Port: `5432`
+   - Maintenance database: `qwizzy_api`
+   - Username: `qwizzy_user`
+   - Password: `qwizzy_password`
+   - (Optionnelle → Cochez "Save password")
+
+### Se connecter directement à PostgreSQL
+
+```bash
+# Depuis votre machine locale
+psql -h localhost -p 5432 -U qwizzy_user -d qwizzy_api
+
+# Depuis le conteneur
+docker exec -it qwizzy_db psql -U qwizzy_user -d qwizzy_api
+```
+
+---
+
+## ⚙️ Commandes Utiles
+
+### Docker
+
+```bash
+# Démarrer les conteneurs
+docker-compose up -d
+
+# Arrêter les conteneurs
+docker-compose down
+
+# Voir les logs
+docker-compose logs -f
+
+# Voir les logs d'un conteneur spécifique
+docker logs -f qwizzy_app
+
+# Redémarrer un conteneur
+docker restart qwizzy_app
+
+# Reconstruire les images
+docker-compose up -d --build
+
+# Supprimer tout (conteneurs + volumes)
+docker-compose down -v
+```
+
+### Laravel (dans le conteneur)
+
+```bash
+# Exécuter des commandes Artisan
+docker exec -it qwizzy_app php artisan <commande>
+
+# Migrations
+docker exec -it qwizzy_app php artisan migrate
+docker exec -it qwizzy_app php artisan migrate:fresh  # ⚠️ Réinitialise la DB ⚠️
+docker exec -it qwizzy_app php artisan migrate:rollback
+
+# Cache
+docker exec -it qwizzy_app php artisan cache:clear
+docker exec -it qwizzy_app php artisan config:clear
+docker exec -it qwizzy_app php artisan route:clear
+
+# Générer Swagger
+docker exec -it qwizzy_app php artisan l5-swagger:generate
+
+# Accéder au shell du conteneur
+docker exec -it qwizzy_app bash
+```
+
+### Composer
+
+```bash
+# Installer les dépendances
+docker exec -it qwizzy_app composer install
+
+# Mettre à jour les dépendances
+docker exec -it qwizzy_app composer update
+
+# Ajouter un package
+docker exec -it qwizzy_app composer require nom/package
+```
+
+---
+
+## 🏗️ Structure de l'API
+
+### Endpoints disponibles
+
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| **Difficulties** |||
+| GET | `/api/difficulties` | Liste des difficultés |
+| POST | `/api/difficulties` | Créer une difficulté |
+| GET | `/api/difficulties/{id}/edit` | Obtenir une difficulté pour édition |
+| PUT | `/api/difficulties/{id}` | Modifier une difficulté |
+| DELETE | `/api/difficulties/{id}` | Supprimer une difficulté |
+| **Subjects** |||
+| GET | `/api/subjects` | Liste des sujets |
+| POST | `/api/subjects` | Créer un sujet |
+| GET | `/api/subjects/{id}/edit` | Obtenir un sujet pour édition |
+| PUT | `/api/subjects/{id}` | Modifier un sujet |
+| DELETE | `/api/subjects/{id}` | Supprimer un sujet |
+| **Question Types** |||
+| GET | `/api/question-types` | Liste des types de questions |
+| POST | `/api/question-types` | Créer un type de question |
+| GET | `/api/question-types/{id}/edit` | Obtenir un type pour édition |
+| PUT | `/api/question-types/{id}` | Modifier un type de question |
+| DELETE | `/api/question-types/{id}` | Supprimer un type de question |
+| **Questions** |||
+| GET | `/api/questions` | Liste des questions |
+| GET | `/api/questions/create` | Données pour créer une question |
+| POST | `/api/questions` | Créer une question |
+| GET | `/api/questions/{id}` | Afficher une question |
+| GET | `/api/questions/{id}/edit` | Données pour éditer une question |
+| PUT | `/api/questions/{id}` | Modifier une question |
+| DELETE | `/api/questions/{id}` | Supprimer une question |
+| **Answers** |||
+| GET | `/api/answers` | Liste des réponses |
+
+### Paramètres de pagination
+
+Tous les endpoints de liste supportent ces paramètres:
+- `current_sort`: Champ de tri (défaut: `id`)
+- `current_sort_dir`: Direction du tri - `asc` ou `desc` (défaut: `asc`)
+- `per_page`: Nombre d'éléments par page (défaut: `15`)
+
+**Exemple:**
+```
+GET /api/questions?current_sort=created_at&current_sort_dir=desc&per_page=20
+```
+
+---
+
+## 📝 Notes importantes
+
+### Pour powershell
+
+Si vous utilisez powershell, certaines commandes peuvent nécessiter des ajustements:
+
+```powershell
+# Restart et génération Swagger
+docker restart qwizzy_app
+docker exec -it qwizzy_app php artisan l5-swagger:generate
+
+# Migration fresh
+docker exec qwizzy_app php artisan migrate:fresh
+```
+
+---
+
+**Développé avec ❤️ par l'équipe Qwizzy**

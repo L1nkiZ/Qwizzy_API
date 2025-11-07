@@ -2,6 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DifficultyController;
+use App\Http\Controllers\QuestionTypeController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AnswerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +22,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Routes pour les ressources
+Route::apiResource('difficulties', DifficultyController::class);
+Route::apiResource('question-types', QuestionTypeController::class);
+Route::apiResource('subjects', SubjectController::class);
+
+// Route spécifique pour create avant apiResource
+Route::get('questions/create', [QuestionController::class, 'create']);
+Route::get('questions/{id}/edit', [QuestionController::class, 'edit']);
+Route::get('questions/by-theme', [QuestionController::class, 'byTheme']);
+Route::apiResource('questions', QuestionController::class);
+
+Route::apiResource('answers', AnswerController::class);
