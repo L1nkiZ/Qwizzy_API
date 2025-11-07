@@ -3,8 +3,8 @@
 ## � Table des matières
 - [Vue d'ensemble](#-vue-densemble)
 - [Architecture Docker](#-architecture-docker)
-- [Installation et Démarrage](#-installation-et-démarrage)
 - [Accès aux Services](#-accès-aux-services)
+- [Installation et Démarrage](#-installation-et-démarrage)
 - [Documentation API (Swagger)](#-documentation-api-swagger)
 - [Gestion de la Base de Données](#-gestion-de-la-base-de-données)
 - [Commandes Utiles](#-commandes-utiles)
@@ -53,6 +53,39 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 - **Login/Mot de passe**:
   - Email: `admin@qwizzy.com`
   - Password: `admin`
+
+---
+
+## 🌐 Accès aux Services
+
+### **Application Laravel**
+- URL : http://localhost:8000
+- Serveur de développement Laravel intégré
+
+### **pgAdmin** (Interface PostgreSQL)
+1. Ouvrez : http://localhost:8080
+2. Connectez-vous avec :
+   - Email : `admin@qwizzy.com`
+   - Password : `admin`
+3. Ajoutez un serveur (première fois uniquement) :
+   - Clic droit sur "Servers" → "Register" → "Server"
+   - **General Tab** :
+     - Name : `Qwizzy DB`
+   - **Connection Tab** :
+     - Host : `db` (nom du conteneur)
+     - Port : `5432`
+     - Database : `qwizzy_api`
+     - Username : `qwizzy_user`
+     - Password : `qwizzy_password`
+   - Cochez "Save password"
+   - Cliquez sur "Save"
+
+### **Base de données PostgreSQL** (connexion externe)
+- Host : `localhost`
+- Port : `5432`
+- Database : `qwizzy_api`
+- Username : `qwizzy_user`
+- Password : `qwizzy_password`
 
 ---
 
