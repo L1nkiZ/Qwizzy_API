@@ -38,3 +38,8 @@ Dans l'application postgres du docker :
     * Username : qwizzy_user
     * Password : qwizzy_password
     * Cochez "Save password" > Au besoin 
+
+Note pour Powershell :
+docker restart qwizzy_app
+docker exec -it qwizzy_app php artisan l5-swagger:generate
+docker exec qwizzy_app php artisan migrate:fresh

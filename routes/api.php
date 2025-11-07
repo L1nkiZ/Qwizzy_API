@@ -6,6 +6,7 @@ use App\Http\Controllers\DifficultyController;
 use App\Http\Controllers\QuestionTypeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AnswerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,4 @@ Route::apiResource('difficulties', DifficultyController::class);
 Route::apiResource('question-types', QuestionTypeController::class);
 Route::apiResource('subjects', SubjectController::class);
 Route::apiResource('questions', QuestionController::class);
+Route::apiResource('answers', AnswerController::class);
