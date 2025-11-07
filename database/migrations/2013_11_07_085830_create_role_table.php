@@ -12,20 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subject', function (Blueprint $table) {
+        Schema::create('role', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
             $table->timestamps();
         });
 
-        DB::table("subject")->insert([
-            ['name' => "The Witcher", 'created_at' => now(), 'updated_at' => now()],
-        ]);
-        DB::table("subject")->insert([
-            ['name' => "Le cinéma", 'created_at' => now(), 'updated_at' => now()],
-        ]);
-        DB::table("subject")->insert([
-            ['name' => "La moto", 'created_at' => now(), 'updated_at' => now()],
+        DB::table('role')->insert([
+            'name' => 'admin',
         ]);
     }
 
@@ -34,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subject');
+        Schema::dropIfExists('role');
     }
 };

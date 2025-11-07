@@ -1204,6 +1204,38 @@
                     }
                 }
             }
+        },
+        "/api/user": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Vérifier l'authentification de l'user",
+                "description": "Retourne les informations de l'user authentifié (à condition de founir le bon token)",
+                "operationId": "getUserAuth",
+                "responses": {
+                    "200": {
+                        "description": "Renvoie 'user' => 'ok' si le token est valide, sinon 'message' => 'Token invalide ou manquant'"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Entrer le token (le token correct est 'token123') :",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
@@ -1226,6 +1258,10 @@
         {
             "name": "Subject",
             "description": "Subject"
+        },
+        {
+            "name": "User",
+            "description": "User"
         }
     ]
 }

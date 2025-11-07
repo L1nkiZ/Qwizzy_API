@@ -19,8 +19,9 @@ use App\Http\Controllers\AnswerController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth.token')->get('/user', function (Request $request) {
+    //return $request->user();
+    return ['user' => 'ok'];
 });
 
 // Routes pour les ressources

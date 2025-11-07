@@ -146,6 +146,23 @@ Après avoir modifié les annotations dans vos controllers:
 docker exec -it qwizzy_app php artisan l5-swagger:generate
 ```
 
+### La route user (authentification)
+
+Cliquer sur le bouton 🔓Authorize en haut du Swagger et le remplir avec "token123".
+Tester la route user avec "Try it out" puis "Execute", 
+la réponse si le token est bon : 
+```
+{
+  "user": "ok"
+}
+```
+la réponse si le token est invalide ou manquant : 
+```
+{
+  "message": "Token invalide ou manquant"
+}
+```
+
 ---
 
 ## 🗄️ Gestion de la Base de Données
