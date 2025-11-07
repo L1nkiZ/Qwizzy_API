@@ -77,7 +77,7 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
      - Database : `qwizzy_api`
      - Username : `qwizzy_user`
      - Password : `qwizzy_password`
-   - Cochez "Save password"
+   - (Facultatif) Cochez "Save password"
    - Cliquez sur "Save"
 
 ### **Base de données PostgreSQL** (connexion externe)
