@@ -3,8 +3,8 @@
 ## � Table des matières
 - [Vue d'ensemble](#-vue-densemble)
 - [Architecture Docker](#-architecture-docker)
-- [Installation et Démarrage](#-installation-et-démarrage)
 - [Accès aux Services](#-accès-aux-services)
+- [Installation et Démarrage](#-installation-et-démarrage)
 - [Documentation API (Swagger)](#-documentation-api-swagger)
 - [Gestion de la Base de Données](#-gestion-de-la-base-de-données)
 - [Commandes Utiles](#-commandes-utiles)
@@ -56,28 +56,61 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 ---
 
+## 🌐 Accès aux Services
+
+### **Application Laravel**
+- URL : http://localhost:8000
+- Serveur de développement Laravel intégré
+
+### **pgAdmin** (Interface PostgreSQL)
+1. Ouvrez : http://localhost:8080
+2. Connectez-vous avec :
+   - Email : `admin@qwizzy.com`
+   - Password : `admin`
+3. Ajoutez un serveur (première fois uniquement) :
+   - Clic droit sur "Servers" → "Register" → "Server"
+   - **General Tab** :
+     - Name : `Qwizzy DB`
+   - **Connection Tab** :
+     - Host : `db` (nom du conteneur)
+     - Port : `5432`
+     - Database : `qwizzy_api`
+     - Username : `qwizzy_user`
+     - Password : `qwizzy_password`
+   - (Facultatif) Cochez "Save password"
+   - Cliquez sur "Save"
+
+### **Base de données PostgreSQL** (connexion externe)
+- Host : `localhost`
+- Port : `5432`
+- Database : `qwizzy_api`
+- Username : `qwizzy_user`
+- Password : `qwizzy_password`
+
+---
+
 ## 🚀 Installation et Démarrage
 
 ### Prérequis
-- Application → `Docker Desktop`
+- `Docker`
 - `Git`
 
 ### Étapes d'installation
 
 1. **Cloner le projet**
-```powershell
+```bash
 git clone https://github.com/L1nkiZ/Qwizzy_API.git
 cd Qwizzy_API
 ```
 
 2. **Configurer l'environnement**
-```powershell
+```bash
 # Copier le fichier .env.example
 cp .env.example .env
 ```
 
 3. **Démarrer les conteneurs Docker**
-```powershell
+```bash
 # Construire et démarrer tous les conteneurs
 docker-compose up -d --build
 ```
@@ -109,7 +142,7 @@ http://localhost:8000/
 
 ### Régénérer la documentation Swagger
 Après avoir modifié les annotations dans vos controllers:
-```powershell
+```bash
 docker exec -it qwizzy_app php artisan l5-swagger:generate
 ```
 
@@ -140,7 +173,7 @@ docker exec -it qwizzy_app php artisan l5-swagger:generate
 
 ### Se connecter directement à PostgreSQL
 
-```powershell
+```bash
 # Depuis votre machine locale
 psql -h localhost -p 5432 -U qwizzy_user -d qwizzy_api
 
@@ -154,7 +187,7 @@ docker exec -it qwizzy_db psql -U qwizzy_user -d qwizzy_api
 
 ### Docker
 
-```powershell
+```bash
 # Démarrer les conteneurs
 docker-compose up -d
 
@@ -179,7 +212,7 @@ docker-compose down -v
 
 ### Laravel (dans le conteneur)
 
-```powershell
+```bash
 # Exécuter des commandes Artisan
 docker exec -it qwizzy_app php artisan <commande>
 
@@ -202,7 +235,7 @@ docker exec -it qwizzy_app bash
 
 ### Composer
 
-```powershell
+```bash
 # Installer les dépendances
 docker exec -it qwizzy_app composer install
 
@@ -266,9 +299,9 @@ GET /api/questions?current_sort=created_at&current_sort_dir=desc&per_page=20
 
 ## 📝 Notes importantes
 
-### Pour PowerShell
+### Pour powershell
 
-Si vous utilisez PowerShell, certaines commandes peuvent nécessiter des ajustements:
+Si vous utilisez powershell, certaines commandes peuvent nécessiter des ajustements:
 
 ```powershell
 # Restart et génération Swagger
