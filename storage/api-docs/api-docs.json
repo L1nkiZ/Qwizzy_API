@@ -307,6 +307,67 @@
                 }
             }
         },
+        "/api/questions/by-theme": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Obtenir les questions par thème",
+                "description": "Retourne toutes les questions associées à un thème (nom de la matière)",
+                "operationId": "getQuestionsByTheme",
+                "parameters": [
+                    {
+                        "name": "theme",
+                        "in": "query",
+                        "description": "Nom du thème (correspond au nom de la matière)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "The Witcher"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste des questions filtrée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "questions": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/questions": {
             "get": {
                 "tags": [
