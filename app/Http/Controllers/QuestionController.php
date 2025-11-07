@@ -200,6 +200,60 @@ class QuestionController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @OA\Get(
+     *      path="/api/questions/{id}",
+     *      operationId="showQuestion",
+     *      tags={"Question"},
+     *      summary="Afficher une question",
+     *      description="Retourne les détails d'une question spécifique avec ses relations (difficulté, sujet, type, réponses)",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="ID de la question",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(type="integer")
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Question récupérée avec succès",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="question", type="object")
+     *          )
+     *       ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Question non trouvée"
+     *      )
+     * )
+     */
+    public function show(string $id)
+    {
+        $question = Question::with([
+            'difficulty' => function ($query) {
+                $query->select('id', 'name', 'point');
+            },
+            'subject' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'question_type' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'answers'
+        ])->find($id);
+
+        if (!$question) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Question non trouvée'
+            ], 404);
+        }
+
+        return response()->json(compact('question'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @OA\Get(
@@ -298,7 +352,7 @@ class QuestionController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(),[
-            'question' => 'required|string|max:500|unique:question,question,',
+            'question' => 'required|string|max:500|unique:question,question,' . $id,
             'proposal_1' => 'required|string|max:100',
             'proposal_2' => 'required|string|max:100',
             'proposal_3' => 'required|string|max:100',
