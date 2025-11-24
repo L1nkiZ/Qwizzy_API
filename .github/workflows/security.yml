@@ -1,14 +1,15 @@
-name: 🔒 Security Audit
+# Workflow temporairement désactivé - À réactiver après configuration CORS et APP_DEBUG
+# name: 🔒 Security Audit
 
-on:
-  push:
-    branches: [master, develop]
-  pull_request:
-      types: [opened, edited, synchronize, reopened]
-  schedule:
-    # Tous les lundis à 9h
-    - cron: '0 9 * * 1'
-  workflow_dispatch:
+# on:
+#   push:
+#     branches: [master, develop]
+#   pull_request:
+#       types: [opened, edited, synchronize, reopened]
+#   schedule:
+#     # Tous les lundis à 9h
+#     - cron: '0 9 * * 1'
+#   workflow_dispatch:
 
 jobs:
   composer-audit:
