@@ -42,5 +42,6 @@ Route::post('auth/login', [UserController::class, 'login']);
 //groupe for auth.token
 Route::middleware('auth.token')->group(function () {
     Route::post('questions', [QuestionController::class, 'store']);
+    Route::put('questions/{id}', [QuestionController::class, 'update'])->whereNumber('id');
     Route::post('auth/logout', [UserController::class, 'logout']);
 });

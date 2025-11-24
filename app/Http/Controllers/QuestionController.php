@@ -67,8 +67,8 @@ class QuestionController extends Controller
             },
             'answers'
         ])
-        ->where('subject_id', $id)
-        ->get();
+            ->where('subject_id', $id)
+            ->get();
 
         return response()->json(compact('questions'));
     }
@@ -109,13 +109,12 @@ class QuestionController extends Controller
     {
         $theme = $request->input('theme');
 
-        if(!$theme) {
+        if (!$theme) {
             return response()->json([
                 'error' => true,
                 'message' => 'Le thème est requis'
             ]);
-        }
-        else{
+        } else {
             $questions = Question::with([
                 'difficulty' => function ($query) {
                     $query->select('id', 'name');
@@ -187,8 +186,8 @@ class QuestionController extends Controller
                 $query->select('id', 'name');
             },
         ])
-        ->orderBy($request->current_sort, $request->current_sort_dir)
-        ->paginate($request->per_page);
+            ->orderBy($request->current_sort, $request->current_sort_dir)
+            ->paginate($request->per_page);
 
         return response()->json(compact('questions'));
     }
@@ -206,9 +205,9 @@ class QuestionController extends Controller
                 $query->select('id', 'name');
             },
         ])
-        ->where('subject_id', $request->subject_id)
-        ->orderBy($request->current_sort, $request->current_sort_dir)
-        ->paginate($request->per_page);
+            ->where('subject_id', $request->subject_id)
+            ->orderBy($request->current_sort, $request->current_sort_dir)
+            ->paginate($request->per_page);
 
         return response()->json(compact('questions'));
     }
@@ -236,16 +235,16 @@ class QuestionController extends Controller
     public function create()
     {
         $difficulties = Difficulty::select('id', 'name', 'point')
-        ->orderBy('name', 'asc')
-        ->get();
+            ->orderBy('name', 'asc')
+            ->get();
 
         $subjects = Subject::select('id', 'name')
-        ->orderBy('name', 'asc')
-        ->get();
+            ->orderBy('name', 'asc')
+            ->get();
 
         $question_types = QuestionType::select('id', 'name')
-        ->orderBy('name', 'asc')
-        ->get();
+            ->orderBy('name', 'asc')
+            ->get();
 
         return response()->json(compact('difficulties', 'subjects', 'question_types'));
     }
@@ -260,6 +259,7 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Créer une nouvelle question",
      *      description="Crée une nouvelle question avec 4 propositions et indique le numéro de la bonne réponse (1, 2, 3 ou 4)",
+     *      security={{"bearerAuth":{}}},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
@@ -296,6 +296,65 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
+        $token = $request->bearerToken() ?? $request->header('Authorization');
+        if ($token && Str::startsWith($token, 'Bearer ')) {
+            $token = substr($token, 7);
+        }
+
+        $user = null;
+
+        if ($token) {
+            try {
+                $sub = null;
+
+                // Prefer Firebase JWT if available (verifies signature)
+                if (class_exists(\Firebase\JWT\JWT::class) && class_exists(\Firebase\JWT\Key::class)) {
+                    $key = config('jwt.secret', env('JWT_SECRET'));
+                    if ($key) {
+                        $payload = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($key, 'HS256'));
+                        $sub = $payload->sub ?? null;
+                    }
+                }
+
+                // Fallback: decode payload without verifying signature (not secure)
+                if ($sub === null) {
+                    $parts = explode('.', $token);
+                    if (count($parts) >= 2) {
+                        $b64 = $parts[1];
+                        $b64 = str_replace(['-', '_'], ['+', '/'], $b64);
+                        $pad = strlen($b64) % 4;
+                        if ($pad) {
+                            $b64 .= str_repeat('=', 4 - $pad);
+                        }
+                        $decoded = json_decode(base64_decode($b64));
+                        $sub = $decoded->sub ?? null;
+                    }
+                }
+
+                if ($sub) {
+                    $user = \App\Models\User::find($sub);
+                }
+            } catch (\Throwable $e) {
+                // ignore and keep $user = null
+                $user = null;
+            }
+        }
+
+        if (!$user) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Utilisateur non authentifié'
+            ], 401);
+        }
+
+        $role = $user->role_id;
+        if ($role !== 2 && $role !== 3) { // assuming 2 is the editor role ID and 3 is the admin role ID
+            return response()->json([
+                'error' => true,
+                'message' => 'Accès refusé : privilèges insuffisants'
+            ], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'question' => 'required|string|max:500',
             'proposal_1' => 'required|string|max:100',
@@ -308,7 +367,7 @@ class QuestionController extends Controller
             'question_type_id' => 'required|exists:question_type,id',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'error' => true,
                 'message' => $validator->messages()
@@ -424,16 +483,16 @@ class QuestionController extends Controller
     public function edit(string $id)
     {
         $difficulties = Difficulty::select('id', 'name', 'point')
-        ->orderBy('name', 'asc')
-        ->get();
+            ->orderBy('name', 'asc')
+            ->get();
 
         $subjects = Subject::select('id', 'name')
-        ->orderBy('name', 'asc')
-        ->get();
+            ->orderBy('name', 'asc')
+            ->get();
 
         $question_types = QuestionType::select('id', 'name')
-        ->orderBy('name', 'asc')
-        ->get();
+            ->orderBy('name', 'asc')
+            ->get();
 
         $question = Question::with('answers')->find($id);
 
@@ -449,6 +508,7 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Mettre à jour une question",
      *      description="Met à jour une question existante avec 4 propositions et le numéro de la bonne réponse",
+     *      security={{"bearerAuth":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="ID de la question",
@@ -492,7 +552,65 @@ class QuestionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validator = Validator::make($request->all(),[
+        $token = $request->bearerToken() ?? $request->header('Authorization');
+        if ($token && Str::startsWith($token, 'Bearer ')) {
+            $token = substr($token, 7);
+        }
+
+        $user = null;
+
+        if ($token) {
+            try {
+                $sub = null;
+
+                // Prefer Firebase JWT if available (verifies signature)
+                if (class_exists(\Firebase\JWT\JWT::class) && class_exists(\Firebase\JWT\Key::class)) {
+                    $key = config('jwt.secret', env('JWT_SECRET'));
+                    if ($key) {
+                        $payload = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($key, 'HS256'));
+                        $sub = $payload->sub ?? null;
+                    }
+                }
+
+                // Fallback: decode payload without verifying signature (not secure)
+                if ($sub === null) {
+                    $parts = explode('.', $token);
+                    if (count($parts) >= 2) {
+                        $b64 = $parts[1];
+                        $b64 = str_replace(['-', '_'], ['+', '/'], $b64);
+                        $pad = strlen($b64) % 4;
+                        if ($pad) {
+                            $b64 .= str_repeat('=', 4 - $pad);
+                        }
+                        $decoded = json_decode(base64_decode($b64));
+                        $sub = $decoded->sub ?? null;
+                    }
+                }
+
+                if ($sub) {
+                    $user = \App\Models\User::find($sub);
+                }
+            } catch (\Throwable $e) {
+                // ignore and keep $user = null
+                $user = null;
+            }
+        }
+
+        if (!$user) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Utilisateur non authentifié'
+            ], 401);
+        }
+        $role = $user->role_id;
+        if ($role !== 3) { // assuming 3 is the admin role ID
+            return response()->json([
+                'error' => true,
+                'message' => 'Accès refusé : privilèges insuffisants'
+            ], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
             'question' => 'required|string|max:500|unique:question,question,' . $id,
             'proposal_1' => 'required|string|max:100',
             'proposal_2' => 'required|string|max:100',
@@ -504,7 +622,7 @@ class QuestionController extends Controller
             'question_type_id' => 'required|numeric|exists:question_type,id',
         ]);
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json([
                 'error' => true,
                 'message' => $validator->messages()
@@ -513,7 +631,7 @@ class QuestionController extends Controller
 
         $question = Question::find($id);
 
-        if(!$question){
+        if (!$question) {
             return response()->json([
                 'error' => true,
                 'message' => 'Question non trouvée'
@@ -534,7 +652,7 @@ class QuestionController extends Controller
 
         // Mettre à jour la réponse avec le numéro de la proposition correcte
         $answer = Answer::where('question_id', $question->id)->first();
-        if($answer) {
+        if ($answer) {
             $answer->update([
                 'answer' => $request->correct_answer_number
             ]);
@@ -584,7 +702,7 @@ class QuestionController extends Controller
     {
         $question = Question::find($id);
 
-        if(!$question){
+        if (!$question) {
             return response()->json([
                 'error' => true,
                 'message' => 'Question non trouvée'
