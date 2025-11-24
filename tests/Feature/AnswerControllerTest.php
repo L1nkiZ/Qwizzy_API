@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Answer;
-use App\Models\Question;
-use App\Models\Subject;
 use App\Models\Difficulty;
+use App\Models\Question;
 use App\Models\QuestionType;
+use App\Models\Subject;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class AnswerControllerTest extends TestCase
 {
@@ -20,9 +20,9 @@ class AnswerControllerTest extends TestCase
         parent::setUp();
 
         // Créer les données nécessaires pour les questions avec des noms uniques
-        $this->subject = Subject::create(['name' => 'Test Subject ' . uniqid()]);
-        $this->difficulty = Difficulty::create(['name' => 'Test Diff ' . uniqid(), 'point' => 1]);
-        $this->questionType = QuestionType::create(['name' => 'QCM Test ' . uniqid()]);
+        $this->subject = Subject::create(['name' => 'Test Subject '.uniqid()]);
+        $this->difficulty = Difficulty::create(['name' => 'Test Diff '.uniqid(), 'point' => 1]);
+        $this->questionType = QuestionType::create(['name' => 'QCM Test '.uniqid()]);
     }
 
     #[Test]
@@ -40,17 +40,17 @@ class AnswerControllerTest extends TestCase
         $response = $this->getJson('/api/answers');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'answers' => [
-                         '*' => ['id', 'answer', 'question_id', 'question']
-                     ]
-                 ])
-                 ->assertJsonFragment([
-                     'answer' => "1"  // L'API retourne answer comme string
-                 ])
-                 ->assertJsonFragment([
-                     'answer' => "2"
-                 ]);
+            ->assertJsonStructure([
+                'answers' => [
+                    '*' => ['id', 'answer', 'question_id', 'question'],
+                ],
+            ])
+            ->assertJsonFragment([
+                'answer' => '1',  // L'API retourne answer comme string
+            ])
+            ->assertJsonFragment([
+                'answer' => '2',
+            ]);
     }
 
     #[Test]
@@ -59,8 +59,8 @@ class AnswerControllerTest extends TestCase
         $response = $this->getJson('/api/answers');
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'answers' => []
-                 ]);
+            ->assertJson([
+                'answers' => [],
+            ]);
     }
 }

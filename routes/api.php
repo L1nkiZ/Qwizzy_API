@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\DifficultyController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionTypeController;
 use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\AnswerController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ use App\Http\Controllers\AnswerController;
 */
 
 Route::middleware('auth.token')->get('/user', function (Request $request) {
-    //return $request->user();
+    // return $request->user();
     return ['user' => 'ok'];
 });
 

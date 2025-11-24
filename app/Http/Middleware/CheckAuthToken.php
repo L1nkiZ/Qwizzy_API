@@ -13,8 +13,8 @@ class CheckAuthToken
         $token = str_replace('Bearer ', '', $bearer);
 
         $validToken = env('AUTH_TOKEN');
-        
-        if (!$token || $token !== $validToken) {
+
+        if (! $token || $token !== $validToken) {
             return response()->json(['message' => 'Token invalide ou manquant'], 401);
         }
 

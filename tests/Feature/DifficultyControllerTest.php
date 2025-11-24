@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Difficulty;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class DifficultyControllerTest extends TestCase
 {
@@ -20,17 +20,17 @@ class DifficultyControllerTest extends TestCase
         $response = $this->getJson('/api/difficulties?current_sort=id&current_sort_dir=asc&per_page=15');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'difficulty' => [
-                         'data' => [
-                             '*' => ['id', 'name', 'point']
-                         ]
-                     ]
-                 ])
-                 ->assertJsonFragment([
-                     'name' => 'Facile Test Unique',
-                     'point' => 1
-                 ]);
+            ->assertJsonStructure([
+                'difficulty' => [
+                    'data' => [
+                        '*' => ['id', 'name', 'point'],
+                    ],
+                ],
+            ])
+            ->assertJsonFragment([
+                'name' => 'Facile Test Unique',
+                'point' => 1,
+            ]);
     }
 
     #[Test]
@@ -38,20 +38,20 @@ class DifficultyControllerTest extends TestCase
     {
         $difficultyData = [
             'name' => 'Expert',
-            'point' => 5
+            'point' => 5,
         ];
 
         $response = $this->postJson('/api/difficulties', $difficultyData);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'La difficulté a été créée avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'La difficulté a été créée avec succès',
+            ]);
 
         $this->assertDatabaseHas('difficulty', [
             'name' => 'Expert',
-            'point' => 5
+            'point' => 5,
         ]);
     }
 
@@ -61,9 +61,9 @@ class DifficultyControllerTest extends TestCase
         $response = $this->postJson('/api/difficulties', []);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true
-                 ]);
+            ->assertJson([
+                'error' => true,
+            ]);
     }
 
     #[Test]
@@ -71,15 +71,15 @@ class DifficultyControllerTest extends TestCase
     {
         $difficultyData = [
             'name' => 'Test Numeric',
-            'point' => 'not-a-number'
+            'point' => 'not-a-number',
         ];
 
         $response = $this->postJson('/api/difficulties', $difficultyData);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true
-                 ]);
+            ->assertJson([
+                'error' => true,
+            ]);
     }
 
     #[Test]
@@ -89,21 +89,21 @@ class DifficultyControllerTest extends TestCase
 
         $updateData = [
             'name' => 'Très Facile',
-            'point' => 1
+            'point' => 1,
         ];
 
         $response = $this->putJson("/api/difficulties/{$difficulty->id}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'La difficulté a été modifiée avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'La difficulté a été modifiée avec succès',
+            ]);
 
         $this->assertDatabaseHas('difficulty', [
             'id' => $difficulty->id,
             'name' => 'Très Facile',
-            'point' => 1
+            'point' => 1,
         ]);
     }
 
@@ -115,13 +115,13 @@ class DifficultyControllerTest extends TestCase
         $response = $this->deleteJson("/api/difficulties/{$difficulty->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'La difficulté a été supprimée avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'La difficulté a été supprimée avec succès',
+            ]);
 
         $this->assertDatabaseMissing('difficulty', [
-            'id' => $difficulty->id
+            'id' => $difficulty->id,
         ]);
     }
 
@@ -132,12 +132,12 @@ class DifficultyControllerTest extends TestCase
 
         $response = $this->postJson('/api/difficulties', [
             'name' => 'Normal',
-            'point' => 2
+            'point' => 2,
         ]);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true
-                 ]);
+            ->assertJson([
+                'error' => true,
+            ]);
     }
 }

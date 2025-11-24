@@ -15,7 +15,7 @@ class SubjectFactory extends Factory
         $counter++;
 
         return [
-            'name' => $this->faker->unique()->words(2, true) . ' ' . $counter,
+            'name' => $this->faker->unique()->words(2, true).' '.$counter,
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Answer;
 
 class AnswerController extends Controller
@@ -16,14 +15,19 @@ class AnswerController extends Controller
      *      tags={"Answer"},
      *      summary="Obtenir la liste des réponses",
      *      description="Retourne la liste de toutes les réponses avec leurs questions associées. Le champ 'answer' contient le numéro de la bonne proposition (1 à 4)",
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Liste des réponses récupérée avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(
      *                  property="answers",
      *                  type="array",
+     *
      *                  @OA\Items(
+     *
      *                      @OA\Property(property="id", type="integer", example=1),
      *                      @OA\Property(property="question_id", type="integer", example=1),
      *                      @OA\Property(property="answer", type="integer", minimum=1, maximum=4, example=1, description="Numéro de la proposition correcte (1 à 4)"),
@@ -48,6 +52,7 @@ class AnswerController extends Controller
     public function index()
     {
         $answers = Answer::with(['question'])->get();
+
         return response()->json(compact('answers'));
     }
 }

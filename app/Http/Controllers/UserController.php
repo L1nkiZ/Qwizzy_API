@@ -28,6 +28,7 @@ class UserController extends Controller
      *      tags={"User"},
      *      summary="Vérifier l'authentification de l'user",
      *      description="Retourne les informations de l'user authentifié (à condition de founir le bon token)",
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Renvoie 'user' => 'ok' si le token est valide, sinon 'message' => 'Token invalide ou manquant'",

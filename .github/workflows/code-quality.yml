@@ -1,0 +1,92 @@
+name: 📊 Code Quality
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+      types: [opened, edited, synchronize, reopened]
+
+jobs:
+  lint:
+    name: Lint (PHP CodeSniffer)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2, phpcs
+
+      - name: 📦 Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: 📦 Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: 🔍 Run PHP CodeSniffer
+        run: vendor/bin/phpcs --standard=PSR12 app/ --report=summary
+        continue-on-error: true
+
+  format:
+    name: Format (Laravel Pint)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: 📦 Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: 🎨 Run Laravel Pint
+        run: vendor/bin/pint --test
+        continue-on-error: true
+
+      - name: 📝 Show Pint issues (if any)
+        if: failure()
+        run: echo "⚠️ Code style issues detected. Run 'vendor/bin/pint' locally to fix."
+
+  typecheck:
+    name: Type Check (PHPStan)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: 📦 Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+
+      - name: 📦 Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: 🔍 Run PHPStan
+        run: |
+          composer require --dev phpstan/phpstan --with-all-dependencies
+          vendor/bin/phpstan analyse app --level=5 --error-format=github
+        continue-on-error: true

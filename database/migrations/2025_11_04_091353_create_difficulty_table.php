@@ -19,10 +19,10 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table("difficulty")->insert([
-            ['name' => "Facile", 'point' => 1, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => "Moyen", 'point' => 3, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => "Difficile", 'point' => 5, 'created_at' => now(), 'updated_at' => now()],
+        DB::table('difficulty')->insert([
+            ['name' => 'Facile', 'point' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Moyen', 'point' => 3, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Difficile', 'point' => 5, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 

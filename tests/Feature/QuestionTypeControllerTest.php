@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\QuestionType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class QuestionTypeControllerTest extends TestCase
 {
@@ -20,35 +20,35 @@ class QuestionTypeControllerTest extends TestCase
         $response = $this->getJson('/api/question-types?current_sort=id&current_sort_dir=asc&per_page=15');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'questionType' => [
-                         'data' => [
-                             '*' => ['id', 'name']
-                         ]
-                     ]
-                 ])
-                 ->assertJsonFragment([
-                     'name' => 'QCM Test Unique'
-                 ]);
+            ->assertJsonStructure([
+                'questionType' => [
+                    'data' => [
+                        '*' => ['id', 'name'],
+                    ],
+                ],
+            ])
+            ->assertJsonFragment([
+                'name' => 'QCM Test Unique',
+            ]);
     }
 
     #[Test]
     public function it_can_create_a_question_type()
     {
         $typeData = [
-            'name' => 'Question à choix multiples'
+            'name' => 'Question à choix multiples',
         ];
 
         $response = $this->postJson('/api/question-types', $typeData);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'Le type de question a été créé avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'Le type de question a été créé avec succès',
+            ]);
 
         $this->assertDatabaseHas('question_type', [
-            'name' => 'Question à choix multiples'
+            'name' => 'Question à choix multiples',
         ]);
     }
 
@@ -58,9 +58,9 @@ class QuestionTypeControllerTest extends TestCase
         $response = $this->postJson('/api/question-types', []);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true
-                 ]);
+            ->assertJson([
+                'error' => true,
+            ]);
     }
 
     #[Test]
@@ -73,14 +73,14 @@ class QuestionTypeControllerTest extends TestCase
         $response = $this->putJson("/api/question-types/{$type->id}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'Le type de question a été modifié avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'Le type de question a été modifié avec succès',
+            ]);
 
         $this->assertDatabaseHas('question_type', [
             'id' => $type->id,
-            'name' => 'QCM avancé'
+            'name' => 'QCM avancé',
         ]);
     }
 
@@ -92,13 +92,13 @@ class QuestionTypeControllerTest extends TestCase
         $response = $this->deleteJson("/api/question-types/{$type->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'Le type de question a été supprimé avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'Le type de question a été supprimé avec succès',
+            ]);
 
         $this->assertDatabaseMissing('question_type', [
-            'id' => $type->id
+            'id' => $type->id,
         ]);
     }
 
@@ -110,8 +110,8 @@ class QuestionTypeControllerTest extends TestCase
         $response = $this->postJson('/api/question-types', ['name' => 'Réponse courte']);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true
-                 ]);
+            ->assertJson([
+                'error' => true,
+            ]);
     }
 }
