@@ -1266,24 +1266,192 @@
                 }
             }
         },
-        "/api/user": {
-            "get": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Créer un nouvel utilisateur",
+                "description": "Enregistre un nouvel utilisateur et lui attribue un rôle (par défaut : Membre).",
+                "operationId": "storeUser",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Nom d'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Guiguiz"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Adresse e-mail de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "guiguiz@exemple.com"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "Mot de passe de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "password",
+                            "example": "motdepasse123"
+                        }
+                    },
+                    {
+                        "name": "role_id",
+                        "in": "query",
+                        "description": "ID du rôle à attribuer à l'utilisateur (1 pour 'Membre', 2 pour 'Rédacteur', 3 pour 'Administrateur')",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Utilisateur créé avec succès"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Guiguiz"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "guiguiz@exemple.com"
+                                                },
+                                                "role_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreurs de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": "The email field is required."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Échec de la création de l'utilisateur"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
                 "tags": [
                     "User"
                 ],
                 "summary": "Vérifier l'authentification de l'user",
-                "description": "Retourne les informations de l'user authentifié (à condition de founir le bon token)",
+                "description": "Login de l'utilisateur dans le système",
                 "operationId": "getUserAuth",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Nom d'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Guiguiz"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Adresse e-mail de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "guiguiz@exemple.com"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "Mot de passe de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "password",
+                            "example": "motdepasse123"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Renvoie 'user' => 'ok' si le token est valide, sinon 'message' => 'Token invalide ou manquant'"
+                        "description": "Renvoie 'Authentification réussie' si le token est valide, sinon 'Échec de l'authentification : identifiants invalides'"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         }
     },
