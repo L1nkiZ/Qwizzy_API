@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Validator;
-use Illuminate\Support\Str;
 use App\Http\Traits\ErrorTrait;
-
-use App\Models\Question;
-use App\Models\Difficulty;
-use App\Models\Subject;
-use App\Models\QuestionType;
 use App\Models\Answer;
+use App\Models\Difficulty;
+use App\Models\Question;
+use App\Models\QuestionType;
+use App\Models\Subject;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class QuestionController extends Controller
 {

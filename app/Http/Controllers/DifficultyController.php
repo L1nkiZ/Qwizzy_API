@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Validator;
-use Illuminate\Support\Str;
 use App\Http\Traits\ErrorTrait;
-
 use App\Models\Difficulty;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class DifficultyController extends Controller
 {

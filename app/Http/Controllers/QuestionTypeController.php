@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ErrorTrait;
 use App\Models\QuestionType;
 use Illuminate\Http\Request;
-use Validator;
-use App\Http\Traits\ErrorTrait;
-
+use Illuminate\Support\Facades\Validator;
 
 class QuestionTypeController extends Controller
 {
