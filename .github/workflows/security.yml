@@ -1,15 +1,14 @@
-# Workflow temporairement désactivé - À réactiver après configuration CORS et APP_DEBUG
-# name: 🔒 Security Audit
+name: 🔒 Security Audit
 
-# on:
-#   push:
-#     branches: [master, develop]
-#   pull_request:
-#       types: [opened, edited, synchronize, reopened]
-#   schedule:
-#     # Tous les lundis à 9h
-#     - cron: '0 9 * * 1'
-#   workflow_dispatch:
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+  schedule:
+    # Tous les lundis à 9h
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
 
 jobs:
   composer-audit:
@@ -75,7 +74,14 @@ jobs:
           fi
 
           echo "🔍 Checking CORS configuration..."
-          if grep -q "'allowed_origins' => \['\*'\]" config/cors.php 2>/dev/null; then
+          # Vérifier si CORS accepte tous les domaines avec le wildcard *
+          if grep -E "'allowed_origins'\s*=>\s*\[\s*'\*'\s*\]" config/cors.php 2>/dev/null; then
+            echo "::error::CORS allows all origins (*) - Security risk!"
+            exit 1
+          fi
+
+          # Vérifier aussi le pattern avec guillemets doubles
+          if grep -E '"allowed_origins"\s*=>\s*\[\s*"\*"\s*\]' config/cors.php 2>/dev/null; then
             echo "::error::CORS allows all origins (*) - Security risk!"
             exit 1
           fi
