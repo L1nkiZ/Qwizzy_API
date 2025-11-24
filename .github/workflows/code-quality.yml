@@ -55,18 +55,11 @@ jobs:
 
       - name: 🎨 Run Laravel Pint
         run: vendor/bin/pint --test
-
-      - name: 📝 Auto-fix with Pint (on PR)
-        if: github.event_name == 'pull_request'
-        run: vendor/bin/pint
-
-      - name: 📤 Commit fixes (if any)
-        if: github.event_name == 'pull_request'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git diff --quiet || (git add -A && git commit -m "style: Auto-fix code style with Pint" && git push)
         continue-on-error: true
+
+      - name: 📝 Show Pint issues (if any)
+        if: failure()
+        run: echo "⚠️ Code style issues detected. Run 'vendor/bin/pint' locally to fix."
 
   typecheck:
     name: Type Check (PHPStan)

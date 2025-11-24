@@ -15,7 +15,7 @@ class DifficultyFactory extends Factory
         $counter++;
 
         return [
-            'name' => $this->faker->unique()->word() . ' ' . $counter,
+            'name' => $this->faker->unique()->word().' '.$counter,
             'point' => $this->faker->numberBetween(1, 5),
         ];
     }

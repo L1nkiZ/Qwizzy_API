@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::table("question_type")->insert([
+        DB::table('question_type')->insert([
             ['name' => "J'suis pas sûr", 'created_at' => now(), 'updated_at' => now()],
             ['name' => "J'crois je l'ai", 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Let me cook', 'created_at' => now(), 'updated_at' => now()],

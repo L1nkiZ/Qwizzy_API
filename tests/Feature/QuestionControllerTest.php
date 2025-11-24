@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\Question;
-use App\Models\Subject;
-use App\Models\Difficulty;
-use App\Models\QuestionType;
 use App\Models\Answer;
+use App\Models\Difficulty;
+use App\Models\Question;
+use App\Models\QuestionType;
+use App\Models\Subject;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class QuestionControllerTest extends TestCase
 {
@@ -21,16 +21,16 @@ class QuestionControllerTest extends TestCase
 
         // Créer des données de test avec des noms uniques
         $this->difficulty = Difficulty::create([
-            'name' => 'Facile Test ' . uniqid(),
-            'point' => 1
+            'name' => 'Facile Test '.uniqid(),
+            'point' => 1,
         ]);
 
         $this->subject = Subject::create([
-            'name' => 'The Witcher Test ' . uniqid()
+            'name' => 'The Witcher Test '.uniqid(),
         ]);
 
         $this->questionType = QuestionType::create([
-            'name' => 'QCM Test ' . uniqid()
+            'name' => 'QCM Test '.uniqid(),
         ]);
     }
 
@@ -47,14 +47,14 @@ class QuestionControllerTest extends TestCase
         $response = $this->getJson('/api/questions?current_sort=id&current_sort_dir=asc&per_page=10');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'questions' => [
-                         'data',
-                         'current_page',
-                         'per_page',
-                         'total'
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'questions' => [
+                    'data',
+                    'current_page',
+                    'per_page',
+                    'total',
+                ],
+            ]);
     }
 
     #[Test]
@@ -70,18 +70,18 @@ class QuestionControllerTest extends TestCase
         $response = $this->getJson('/api/questions/by-theme?theme=Witcher');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'questions' => [
-                         '*' => [
-                             'id',
-                             'question',
-                             'subject',
-                             'difficulty',
-                             'question_type',
-                             'answers'
-                         ]
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'questions' => [
+                    '*' => [
+                        'id',
+                        'question',
+                        'subject',
+                        'difficulty',
+                        'question_type',
+                        'answers',
+                    ],
+                ],
+            ]);
     }
 
     #[Test]
@@ -90,10 +90,10 @@ class QuestionControllerTest extends TestCase
         $response = $this->getJson('/api/questions/by-theme');
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true,
-                     'message' => 'Le thème est requis'
-                 ]);
+            ->assertJson([
+                'error' => true,
+                'message' => 'Le thème est requis',
+            ]);
     }
 
     #[Test]
@@ -108,24 +108,24 @@ class QuestionControllerTest extends TestCase
 
         Answer::create([
             'answer' => 1,
-            'question_id' => $question->id
+            'question_id' => $question->id,
         ]);
 
         $response = $this->getJson("/api/questions/theme/{$this->subject->id}");
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'questions' => [
-                         '*' => [
-                             'id',
-                             'question',
-                             'subject',
-                             'difficulty',
-                             'question_type',
-                             'answers'
-                         ]
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'questions' => [
+                    '*' => [
+                        'id',
+                        'question',
+                        'subject',
+                        'difficulty',
+                        'question_type',
+                        'answers',
+                    ],
+                ],
+            ]);
     }
 
     #[Test]
@@ -134,10 +134,10 @@ class QuestionControllerTest extends TestCase
         $response = $this->getJson('/api/questions/theme/999');
 
         $response->assertStatus(404)
-                 ->assertJson([
-                     'error' => true,
-                     'message' => 'Thème non trouvé'
-                 ]);
+            ->assertJson([
+                'error' => true,
+                'message' => 'Thème non trouvé',
+            ]);
     }
 
     #[Test]
@@ -146,11 +146,11 @@ class QuestionControllerTest extends TestCase
         $response = $this->getJson('/api/questions/create');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'difficulties',
-                     'subjects',
-                     'question_types'
-                 ]);
+            ->assertJsonStructure([
+                'difficulties',
+                'subjects',
+                'question_types',
+            ]);
     }
 
     #[Test]
@@ -171,11 +171,11 @@ class QuestionControllerTest extends TestCase
         $response = $this->postJson('/api/questions', $questionData);
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'message',
-                     'question',
-                     'answer'
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'question',
+                'answer',
+            ]);
 
         $this->assertDatabaseHas('question', [
             'question' => 'Quelle est la capitale de la France ?',
@@ -183,7 +183,7 @@ class QuestionControllerTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('answer', [
-            'answer' => 1
+            'answer' => 1,
         ]);
     }
 
@@ -193,13 +193,13 @@ class QuestionControllerTest extends TestCase
         $response = $this->postJson('/api/questions', []);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true
-                 ])
-                 ->assertJsonStructure([
-                     'error',
-                     'message'
-                 ]);
+            ->assertJson([
+                'error' => true,
+            ])
+            ->assertJsonStructure([
+                'error',
+                'message',
+            ]);
     }
 
     #[Test]
@@ -213,22 +213,22 @@ class QuestionControllerTest extends TestCase
 
         Answer::create([
             'answer' => 1,
-            'question_id' => $question->id
+            'question_id' => $question->id,
         ]);
 
         $response = $this->getJson("/api/questions/{$question->id}");
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'question' => [
-                         'id',
-                         'question',
-                         'subject',
-                         'difficulty',
-                         'question_type',
-                         'answers'
-                     ]
-                 ]);
+            ->assertJsonStructure([
+                'question' => [
+                    'id',
+                    'question',
+                    'subject',
+                    'difficulty',
+                    'question_type',
+                    'answers',
+                ],
+            ]);
     }
 
     #[Test]
@@ -237,10 +237,10 @@ class QuestionControllerTest extends TestCase
         $response = $this->getJson('/api/questions/999');
 
         $response->assertStatus(404)
-                 ->assertJson([
-                     'error' => true,
-                     'message' => 'Question non trouvée'
-                 ]);
+            ->assertJson([
+                'error' => true,
+                'message' => 'Question non trouvée',
+            ]);
     }
 
     #[Test]
@@ -255,12 +255,12 @@ class QuestionControllerTest extends TestCase
         $response = $this->getJson("/api/questions/{$question->id}/edit");
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'difficulties',
-                     'subjects',
-                     'question_types',
-                     'question'
-                 ]);
+            ->assertJsonStructure([
+                'difficulties',
+                'subjects',
+                'question_types',
+                'question',
+            ]);
     }
 
     #[Test]
@@ -274,7 +274,7 @@ class QuestionControllerTest extends TestCase
 
         Answer::create([
             'answer' => 1,
-            'question_id' => $question->id
+            'question_id' => $question->id,
         ]);
 
         $updateData = [
@@ -292,11 +292,11 @@ class QuestionControllerTest extends TestCase
         $response = $this->putJson("/api/questions/{$question->id}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'message',
-                     'question',
-                     'answer'
-                 ]);
+            ->assertJsonStructure([
+                'message',
+                'question',
+                'answer',
+            ]);
 
         $this->assertDatabaseHas('question', [
             'id' => $question->id,
@@ -305,7 +305,7 @@ class QuestionControllerTest extends TestCase
 
         $this->assertDatabaseHas('answer', [
             'question_id' => $question->id,
-            'answer' => 2
+            'answer' => 2,
         ]);
     }
 
@@ -327,10 +327,10 @@ class QuestionControllerTest extends TestCase
         $response = $this->putJson('/api/questions/999', $updateData);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true,
-                     'message' => 'Question non trouvée'
-                 ]);
+            ->assertJson([
+                'error' => true,
+                'message' => 'Question non trouvée',
+            ]);
     }
 
     #[Test]
@@ -344,22 +344,22 @@ class QuestionControllerTest extends TestCase
 
         Answer::create([
             'answer' => 1,
-            'question_id' => $question->id
+            'question_id' => $question->id,
         ]);
 
         $response = $this->deleteJson("/api/questions/{$question->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'message' => 'Question supprimée avec succès'
-                 ]);
+            ->assertJson([
+                'message' => 'Question supprimée avec succès',
+            ]);
 
         $this->assertDatabaseMissing('question', [
-            'id' => $question->id
+            'id' => $question->id,
         ]);
 
         $this->assertDatabaseMissing('answer', [
-            'question_id' => $question->id
+            'question_id' => $question->id,
         ]);
     }
 
@@ -369,9 +369,9 @@ class QuestionControllerTest extends TestCase
         $response = $this->deleteJson('/api/questions/999');
 
         $response->assertStatus(404)
-                 ->assertJson([
-                     'error' => true,
-                     'message' => 'Question non trouvée'
-                 ]);
+            ->assertJson([
+                'error' => true,
+                'message' => 'Question non trouvée',
+            ]);
     }
 }

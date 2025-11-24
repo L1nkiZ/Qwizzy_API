@@ -13,9 +13,9 @@ class QuestionTypeFactory extends Factory
     {
         static $counter = 0;
         $counter++;
-        
+
         return [
-            'name' => $this->faker->unique()->word() . ' Type ' . $counter,
+            'name' => $this->faker->unique()->word().' Type '.$counter,
         ];
     }
 }

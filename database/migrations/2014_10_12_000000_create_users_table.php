@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        //ajouter d'un user admin par défaut
+        // ajouter d'un user admin par défaut
         DB::table('users')->insert([
             'name' => 'Admin',
             'email' => 'user@example.com',

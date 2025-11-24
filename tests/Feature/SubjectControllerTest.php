@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Subject;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class SubjectControllerTest extends TestCase
 {
@@ -20,35 +20,35 @@ class SubjectControllerTest extends TestCase
         $response = $this->getJson('/api/subjects?current_sort=id&current_sort_dir=asc&per_page=15');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'subject' => [
-                         'data' => [
-                             '*' => ['id', 'name']
-                         ]
-                     ]
-                 ])
-                 ->assertJsonFragment([
-                     'name' => 'The Witcher Test Unique'
-                 ]);
+            ->assertJsonStructure([
+                'subject' => [
+                    'data' => [
+                        '*' => ['id', 'name'],
+                    ],
+                ],
+            ])
+            ->assertJsonFragment([
+                'name' => 'The Witcher Test Unique',
+            ]);
     }
 
     #[Test]
     public function it_can_create_a_subject()
     {
         $subjectData = [
-            'name' => 'Le Seigneur des Anneaux'
+            'name' => 'Le Seigneur des Anneaux',
         ];
 
         $response = $this->postJson('/api/subjects', $subjectData);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'Le sujet a été créé avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'Le sujet a été créé avec succès',
+            ]);
 
         $this->assertDatabaseHas('subject', [
-            'name' => 'Le Seigneur des Anneaux'
+            'name' => 'Le Seigneur des Anneaux',
         ]);
     }
 
@@ -58,9 +58,9 @@ class SubjectControllerTest extends TestCase
         $response = $this->postJson('/api/subjects', []);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true
-                 ]);
+            ->assertJson([
+                'error' => true,
+            ]);
     }
 
     #[Test]
@@ -73,14 +73,14 @@ class SubjectControllerTest extends TestCase
         $response = $this->putJson("/api/subjects/{$subject->id}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'Le sujet a été modifié avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'Le sujet a été modifié avec succès',
+            ]);
 
         $this->assertDatabaseHas('subject', [
             'id' => $subject->id,
-            'name' => 'Marvel Cinematic Universe'
+            'name' => 'Marvel Cinematic Universe',
         ]);
     }
 
@@ -92,13 +92,13 @@ class SubjectControllerTest extends TestCase
         $response = $this->deleteJson("/api/subjects/{$subject->id}");
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => false,
-                     'message' => 'Le sujet a été supprimé avec succès'
-                 ]);
+            ->assertJson([
+                'error' => false,
+                'message' => 'Le sujet a été supprimé avec succès',
+            ]);
 
         $this->assertDatabaseMissing('subject', [
-            'id' => $subject->id
+            'id' => $subject->id,
         ]);
     }
 
@@ -110,8 +110,8 @@ class SubjectControllerTest extends TestCase
         $response = $this->postJson('/api/subjects', ['name' => 'Pokemon']);
 
         $response->assertStatus(200)
-                 ->assertJson([
-                     'error' => true
-                 ]);
+            ->assertJson([
+                'error' => true,
+            ]);
     }
 }
