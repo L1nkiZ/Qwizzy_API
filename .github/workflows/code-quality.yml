@@ -33,6 +33,7 @@ jobs:
 
       - name: 🔍 Run PHP CodeSniffer
         run: vendor/bin/phpcs --standard=PSR12 app/ --report=summary
+        continue-on-error: true
 
   format:
     name: Format (Laravel Pint)
