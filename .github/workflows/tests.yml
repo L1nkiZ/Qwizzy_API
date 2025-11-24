@@ -2,9 +2,9 @@ name: Tests Laravel
 
 on:
   push:
-    branches: [ main, master, develop, feat/*, fix/* ]
+    branches: [ master, develop, fix/* ]
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [  master, develop ]
 
 jobs:
   tests:
@@ -51,7 +51,7 @@ jobs:
         echo "DB_PASSWORD=password" >> .env
 
     - name: Run migrations
-      run: php artisan migrate --force
+      run: php artisan migrate
 
     - name: Execute tests
       run: php artisan test
