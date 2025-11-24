@@ -40,7 +40,7 @@ use Illuminate\Routing\Controller as BaseController;
  * 
  * @OA\SecurityScheme(
  *     type="http",
- *     description="Entrer le token (le token correct est 'token123') :",
+ *     description="Entrer le token :",
  *     name="Authorization",
  *     in="header",
  *     scheme="bearer",

@@ -256,6 +256,7 @@ class QuestionController extends Controller
      * @OA\Post(
      *      path="/api/questions",
      *      operationId="storeQuestion",
+     *      security={{"bearerAuth":{}}},
      *      tags={"Question"},
      *      summary="Créer une nouvelle question",
      *      description="Crée une nouvelle question avec 4 propositions et indique le numéro de la bonne réponse (1, 2, 3 ou 4)",

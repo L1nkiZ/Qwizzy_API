@@ -31,7 +31,6 @@ Route::apiResource('users', UserController::class);
 
 // Route spécifique pour create avant apiResource
 Route::get('questions/create', [QuestionController::class, 'create']);
-Route::get('questions/store', [QuestionController::class, 'store'])->middleware('auth.token');
 Route::get('questions/{id}/edit', [QuestionController::class, 'edit']);
 Route::get('questions/by-theme', [QuestionController::class, 'byTheme']);
 // Recherche par id de thème (subject_id)
@@ -39,3 +38,9 @@ Route::get('questions/theme/{id}', [QuestionController::class, 'byThemeId'])->wh
 
 Route::post('auth/register', [UserController::class, 'store']);
 Route::post('auth/login', [UserController::class, 'login']);
+
+//groupe for auth.token
+Route::middleware('auth.token')->group(function () {
+    Route::post('questions', [QuestionController::class, 'store']);
+    Route::post('auth/logout', [UserController::class, 'logout']);
+});

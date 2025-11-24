@@ -166,7 +166,7 @@ class UserController extends Controller
     /**
      * @OA\SecurityScheme(
      *     type="http",
-     *     description="Entrer le token sous la forme: Bearer {votre_token}",
+     *     description="Entrer le token :",
      *     name="Authorization",
      *     in="header",
      *     scheme="bearer",
@@ -176,8 +176,6 @@ class UserController extends Controller
      */
 
     /**
-     * Display a listing of the resource.
-     *
      * @OA\Post(
      *      path="/api/auth/login",
      *      operationId="getUserAuth",
@@ -262,5 +260,40 @@ class UserController extends Controller
                 'message' => "Échec de l'authentification : identifiants invalides"
             ]);
         }
+    }
+
+    /**
+     * @OA\Post(
+     *   path="/api/auth/logout",
+     *   operationId="logoutUser",
+     *   tags={"User"},
+     *   summary="Déconnecter l'utilisateur",
+     *   description="Demande de déconnexion. Comme les JWT sont sans état, le client doit supprimer le token.",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(
+     *       response=200,
+     *       description="Déconnexion réussie",
+     *       @OA\JsonContent(
+     *           @OA\Property(property="error", type="boolean", example=false),
+     *           @OA\Property(property="message", type="string", example="Déconnexion réussie. Veuillez supprimer le token côté client.")
+     *       )
+     *   ),
+     *   @OA\Response(
+     *       response=401,
+     *       description="Non autorisé / Token invalide",
+     *       @OA\JsonContent(
+     *           @OA\Property(property="error", type="boolean", example=true),
+     *           @OA\Property(property="message", type="string", example="Token absent ou invalide")
+     *       )
+     *   )
+     * )
+     */
+    public function logout(Request $request)
+    {
+        // Since JWTs are stateless, to "logout" we can simply inform the client to delete the token.
+        return response()->json([
+            'error' => false,
+            'message' => 'Déconnexion réussie. Veuillez supprimer le token côté client.'
+        ]);
     }
 }
