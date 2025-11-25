@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ErrorTrait;
 use App\Models\QuestionType;
 use Illuminate\Http\Request;
-use Validator;
-use App\Http\Traits\ErrorTrait;
-
+use Illuminate\Support\Facades\Validator;
 
 class QuestionTypeController extends Controller
 {
@@ -21,31 +20,40 @@ class QuestionTypeController extends Controller
      *      tags={"QuestionType"},
      *      summary="Obtenir la liste des types de questions",
      *      description="Retourne la liste paginée des types de questions",
+     *
      *      @OA\Parameter(
      *          name="current_sort",
      *          description="Champ de tri",
      *          required=false,
      *          in="query",
+     *
      *          @OA\Schema(type="string", default="id")
      *      ),
+     *
      *      @OA\Parameter(
      *          name="current_sort_dir",
      *          description="Direction du tri",
      *          required=false,
      *          in="query",
+     *
      *          @OA\Schema(type="string", enum={"asc", "desc"}, default="asc")
      *      ),
+     *
      *      @OA\Parameter(
      *          name="per_page",
      *          description="Nombre d'éléments par page",
      *          required=false,
      *          in="query",
+     *
      *          @OA\Schema(type="integer", default=15)
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Liste des types de questions récupérée avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="questionType", type="object")
      *          )
      *       )
@@ -55,8 +63,8 @@ class QuestionTypeController extends Controller
     {
         $questionType =
             QuestionType::select('id', 'name')
-            ->orderby($request->current_sort, $request->current_sort_dir)
-            ->paginate($request->per_page);
+                ->orderby($request->current_sort, $request->current_sort_dir)
+                ->paginate($request->per_page);
 
         return response()->json(compact('questionType'));
     }
@@ -78,18 +86,24 @@ class QuestionTypeController extends Controller
      *      tags={"QuestionType"},
      *      summary="Créer un nouveau type de question",
      *      description="Crée un nouveau type de question",
+     *
      *      @OA\RequestBody(
      *          required=true,
+     *
      *          @OA\JsonContent(
      *              required={"name"},
+     *
      *              @OA\Property(property="name", type="string", maxLength=200, example="QCM"),
      *          ),
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Type de question créé avec succès",
+     *
      *          @OA\JsonContent()
      *       ),
+     *
      *      @OA\Response(
      *          response=422,
      *          description="Erreur de validation"
@@ -105,7 +119,7 @@ class QuestionTypeController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => true,
-                'message' => $validator->messages()
+                'message' => $validator->messages(),
             ]);
         }
 
@@ -114,7 +128,7 @@ class QuestionTypeController extends Controller
         ]);
 
         if ($questionType) {
-            return response()->json($this->success("Le type de question", "créé", $questionType));
+            return response()->json($this->success('Le type de question', 'créé', $questionType));
         }
 
         return response()->json($this->error);
@@ -151,25 +165,33 @@ class QuestionTypeController extends Controller
      *      tags={"QuestionType"},
      *      summary="Mettre à jour un type de question",
      *      description="Met à jour un type de question existant",
+     *
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
      *          description="ID du type de question",
      *          required=true,
+     *
      *          @OA\Schema(type="integer")
      *      ),
+     *
      *      @OA\RequestBody(
      *          required=true,
+     *
      *          @OA\JsonContent(
      *              required={"name"},
+     *
      *              @OA\Property(property="name", type="string", maxLength=200, example="QCM modifié"),
      *          ),
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Type de question modifié avec succès",
+     *
      *          @OA\JsonContent()
      *       ),
+     *
      *      @OA\Response(
      *          response=422,
      *          description="Erreur de validation"
@@ -183,13 +205,13 @@ class QuestionTypeController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:200|unique:question_type,name,' . $id,
+            'name' => 'required|string|max:200|unique:question_type,name,'.$id,
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'error' => true,
-                'message' => $validator->messages()
+                'message' => $validator->messages(),
             ]);
         }
 
@@ -197,7 +219,8 @@ class QuestionTypeController extends Controller
 
         if ($questionType) {
             $questionType->update($request->all());
-            return response()->json($this->success("Le type de question", "modifié", $questionType));
+
+            return response()->json($this->success('Le type de question', 'modifié', $questionType));
         }
 
         return response()->json($this->error);
@@ -212,18 +235,23 @@ class QuestionTypeController extends Controller
      *      tags={"QuestionType"},
      *      summary="Supprimer un type de question",
      *      description="Supprime un type de question existant",
+     *
      *      @OA\Parameter(
      *          name="id",
      *          in="path",
      *          description="ID du type de question",
      *          required=true,
+     *
      *          @OA\Schema(type="integer")
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Type de question supprimé avec succès",
+     *
      *          @OA\JsonContent()
      *      ),
+     *
      *      @OA\Response(
      *          response=404,
      *          description="Type de question non trouvé"
@@ -241,13 +269,13 @@ class QuestionTypeController extends Controller
             if ($questionType->questions()->exists()) {
                 return response([
                     'error' => true,
-                    'message' => "Une ou plusieurs questions sont reliés à ce type. Vous ne pouvez pas le supprimer."
+                    'message' => 'Une ou plusieurs questions sont reliés à ce type. Vous ne pouvez pas le supprimer.',
                 ]);
             }
 
             $questionType->delete();
 
-            return response()->json($this->success("Le type de question", "supprimé"));
+            return response()->json($this->success('Le type de question', 'supprimé'));
         }
 
         return response()->json($this->error);

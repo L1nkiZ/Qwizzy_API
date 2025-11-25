@@ -43,3 +43,5 @@ Note pour Powershell :
 docker restart qwizzy_app
 docker exec -it qwizzy_app php artisan l5-swagger:generate
 docker exec qwizzy_app php artisan migrate:fresh
+
+docker exec -it qwizzy_app vendor/bin/pint //Commande de pour regler les probleme de lint
