@@ -224,7 +224,7 @@ class QuestionControllerTest extends TestCase
             'question_id' => $question->id,
         ]);
 
-        $response = $this->getJson("/api/questions/{$question->id}");
+        $response = $this->getJson("/api/questions/show/{$question->id}");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
