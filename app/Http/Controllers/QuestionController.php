@@ -200,6 +200,12 @@ class QuestionController extends Controller
      */
     public function index(Request $request)
     {
+        // Whitelist des colonnes autorisées pour éviter les injections SQL
+        $allowedColumns = ['id', 'question', 'subject_id', 'difficulty_id', 'question_type_id', 'created_at', 'updated_at'];
+        $sortColumn = in_array($request->current_sort, $allowedColumns) ? $request->current_sort : 'id';
+        $sortDir = in_array(strtolower($request->current_sort_dir), ['asc', 'desc']) ? $request->current_sort_dir : 'asc';
+        $perPage = max(1, min((int)$request->per_page, 100)); // Limiter entre 1 et 100
+
         $questions = Question::with([
             'difficulty' => function ($query) {
                 $query->select('id', 'name');
@@ -211,14 +217,20 @@ class QuestionController extends Controller
                 $query->select('id', 'name');
             },
         ])
-            ->orderBy($request->current_sort, $request->current_sort_dir)
-            ->paginate($request->per_page);
+            ->orderBy($sortColumn, $sortDir)
+            ->paginate($perPage);
 
         return response()->json(compact('questions'));
     }
 
     public function indexFiltered(Request $request)
     {
+        // Whitelist des colonnes autorisées pour éviter les injections SQL
+        $allowedColumns = ['id', 'question', 'subject_id', 'difficulty_id', 'question_type_id', 'created_at', 'updated_at'];
+        $sortColumn = in_array($request->current_sort, $allowedColumns) ? $request->current_sort : 'id';
+        $sortDir = in_array(strtolower($request->current_sort_dir), ['asc', 'desc']) ? $request->current_sort_dir : 'asc';
+        $perPage = max(1, min((int)$request->per_page, 100)); // Limiter entre 1 et 100
+
         $questions = Question::with([
             'difficulty' => function ($query) {
                 $query->select('id', 'name');
@@ -231,8 +243,8 @@ class QuestionController extends Controller
             },
         ])
             ->where('subject_id', $request->subject_id)
-            ->orderBy($request->current_sort, $request->current_sort_dir)
-            ->paginate($request->per_page);
+            ->orderBy($sortColumn, $sortDir)
+            ->paginate($perPage);
 
         return response()->json(compact('questions'));
     }

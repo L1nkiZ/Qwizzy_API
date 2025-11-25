@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\DifficultyController;
+use App\Http\Controllers\MetricsController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionTypeController;
 use App\Http\Controllers\SubjectController;
@@ -27,6 +28,9 @@ Route::get('questions/show/{id}', [QuestionController::class, 'show'])->whereNum
 Route::get('questions/by-theme', [QuestionController::class, 'byTheme']);
 // Recherche par id de thème (subject_id)
 Route::get('questions/theme/{id}', [QuestionController::class, 'byThemeId'])->whereNumber('id');
+
+// Metrics endpoint for Prometheus
+Route::get('/metrics', [MetricsController::class, 'metrics']);
 
 // Routes pour les ressources
 Route::apiResource('difficulties', DifficultyController::class);
