@@ -196,7 +196,7 @@ class QuestionControllerTest extends TestCase
     #[Test]
     public function it_validates_required_fields_when_creating_question()
     {
-        $response = $this->postJson('/api/questions', [
+        $response = $this->postJson('/api/questions',[], [
             'Authorization' => 'Bearer ' . $this->tokens["admin_token"],
         ]);
 
