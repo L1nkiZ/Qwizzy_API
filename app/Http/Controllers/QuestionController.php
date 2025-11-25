@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\RoleHelper;
+use Illuminate\Http\Request;
+use Validator;
+use Illuminate\Support\Str;
+use App\Http\Traits\ErrorTrait;
+
+use App\Models\Question;
 use App\Models\Answer;
 use App\Models\Difficulty;
-use App\Models\Question;
 use App\Models\QuestionType;
 use App\Models\Subject;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class QuestionController extends Controller
 {
@@ -121,7 +125,7 @@ class QuestionController extends Controller
     {
         $theme = $request->input('theme');
 
-        if (! $theme) {
+        if (!$theme) {
             return response()->json([
                 'error' => true,
                 'message' => 'Le thème est requis',
@@ -291,6 +295,7 @@ class QuestionController extends Controller
      * @OA\Post(
      *      path="/api/questions",
      *      operationId="storeQuestion",
+     *      security={{"bearerAuth":{}}},
      *      tags={"Question"},
      *      summary="Créer une nouvelle question",
      *      description="Crée une nouvelle question avec 4 propositions et indique le numéro de la bonne réponse (1, 2, 3 ou 4)",
@@ -339,6 +344,20 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
+        $token = $request->bearerToken() ?? $request->header('Authorization');
+        if ($token && Str::startsWith($token, 'Bearer ')) {
+            $token = substr($token, 7);
+        }
+
+        $role = RoleHelper::getRole($token);
+
+        if ($role !== 2 && $role !== 3) { // assuming 2 is the editor role ID and 3 is the admin role ID
+            return response()->json([
+                'error' => true,
+                'message' => 'Accès refusé : privilèges insuffisants'
+            ], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'question' => 'required|string|max:500',
             'proposal_1' => 'required|string|max:100',
@@ -387,7 +406,7 @@ class QuestionController extends Controller
      * Display the specified resource.
      *
      * @OA\Get(
-     *      path="/api/questions/{id}",
+     *      path="/api/questions/show/{id}",
      *      operationId="showQuestion",
      *      tags={"Question"},
      *      summary="Afficher une question",
@@ -447,7 +466,7 @@ class QuestionController extends Controller
      * Show the form for editing the specified resource.
      *
      * @OA\Get(
-     *      path="/api/questions/{id}/edit",
+     *      path="/api/questions/edit/{id}",
      *      operationId="getQuestionEditData",
      *      tags={"Question"},
      *      summary="Obtenir les données pour éditer une question",
@@ -503,7 +522,7 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Mettre à jour une question",
      *      description="Met à jour une question existante avec 4 propositions et le numéro de la bonne réponse",
-     *
+     *      security={{"bearerAuth":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="ID de la question",
@@ -556,8 +575,22 @@ class QuestionController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $token = $request->bearerToken() ?? $request->header('Authorization');
+        if ($token && Str::startsWith($token, 'Bearer ')) {
+            $token = substr($token, 7);
+        }
+
+        $role = RoleHelper::getRole($token);
+
+        if ($role !== 3) { // assuming 3 is the admin role ID
+            return response()->json([
+                'error' => true,
+                'message' => 'Accès refusé : privilèges insuffisants'
+            ], 403);
+        }
+
         $validator = Validator::make($request->all(), [
-            'question' => 'required|string|max:500|unique:question,question,'.$id,
+            'question' => 'required|string|max:500|unique:question,question,' . $id,
             'proposal_1' => 'required|string|max:100',
             'proposal_2' => 'required|string|max:100',
             'proposal_3' => 'required|string|max:100',
@@ -577,7 +610,7 @@ class QuestionController extends Controller
 
         $question = Question::find($id);
 
-        if (! $question) {
+        if (!$question) {
             return response()->json([
                 'error' => true,
                 'message' => 'Question non trouvée',
@@ -653,7 +686,7 @@ class QuestionController extends Controller
     {
         $question = Question::find($id);
 
-        if (! $question) {
+        if (!$question) {
             return response()->json([
                 'error' => true,
                 'message' => 'Question non trouvée',

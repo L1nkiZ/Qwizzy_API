@@ -27,10 +27,24 @@ return new class extends Migration
 
         // ajouter d'un user admin par défaut
         DB::table('users')->insert([
-            'name' => 'Admin',
-            'email' => 'user@example.com',
-            'password' => bcrypt('password'),
-            'role_id' => 1,
+            [
+                'name' => 'Member',
+                'email' => 'member@example.com',
+                'password' => bcrypt('password'),
+                'role_id' => 1,
+            ],
+            [
+                'name' => 'Redactor',
+                'email' => 'redactor@example.com',
+                'password' => bcrypt('password'),
+                'role_id' => 2,
+            ],
+            [
+                'name' => 'Admin',
+                'email' => 'admin@example.com',
+                'password' => bcrypt('password'),
+                'role_id' => 3,
+            ]
         ]);
     }
 

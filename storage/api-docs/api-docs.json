@@ -591,7 +591,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/questions/create": {
@@ -636,7 +641,7 @@
                 }
             }
         },
-        "/api/questions/{id}": {
+        "/api/questions/show/{id}": {
             "get": {
                 "tags": [
                     "Question"
@@ -675,7 +680,62 @@
                         "description": "Question non trouvée"
                     }
                 }
-            },
+            }
+        },
+        "/api/questions/edit/{id}": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Obtenir les données pour éditer une question",
+                "description": "Retourne les listes des difficultés, matières et types de questions disponibles pour l'édition",
+                "operationId": "getQuestionEditData",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Données récupérées avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "difficulties": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "subjects": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "question_types": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/questions/{id}": {
             "put": {
                 "tags": [
                     "Question"
@@ -792,7 +852,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -823,59 +888,6 @@
                     },
                     "404": {
                         "description": "Question non trouvée"
-                    }
-                }
-            }
-        },
-        "/api/questions/{id}/edit": {
-            "get": {
-                "tags": [
-                    "Question"
-                ],
-                "summary": "Obtenir les données pour éditer une question",
-                "description": "Retourne les listes des difficultés, matières et types de questions disponibles pour l'édition",
-                "operationId": "getQuestionEditData",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID de la question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Données récupérées avec succès",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "difficulties": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        },
-                                        "subjects": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        },
-                                        "question_types": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
                     }
                 }
             }
@@ -1266,17 +1278,242 @@
                 }
             }
         },
-        "/api/user": {
-            "get": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Créer un nouvel utilisateur",
+                "description": "Enregistre un nouvel utilisateur et lui attribue un rôle (par défaut : Membre).",
+                "operationId": "storeUser",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Nom d'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Guiguiz"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Adresse e-mail de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "guiguiz@exemple.com"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "Mot de passe de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "password",
+                            "example": "motdepasse123"
+                        }
+                    },
+                    {
+                        "name": "role_id",
+                        "in": "query",
+                        "description": "ID du rôle à attribuer à l'utilisateur (1 pour 'Membre', 2 pour 'Rédacteur', 3 pour 'Administrateur')",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Utilisateur créé avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Utilisateur créé avec succès"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Guiguiz"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "guiguiz@exemple.com"
+                                                },
+                                                "role_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreurs de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "object",
+                                            "example": {
+                                                "email": "The email field is required."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Échec de la création de l'utilisateur"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
                 "tags": [
                     "User"
                 ],
                 "summary": "Vérifier l'authentification de l'user",
-                "description": "Retourne les informations de l'user authentifié (à condition de founir le bon token)",
+                "description": "Login de l'utilisateur dans le système",
                 "operationId": "getUserAuth",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Nom d'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Guiguiz"
+                        }
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Adresse e-mail de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "guiguiz@exemple.com"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "Mot de passe de l'utilisateur",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "password",
+                            "example": "motdepasse123"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Renvoie 'user' => 'ok' si le token est valide, sinon 'message' => 'Token invalide ou manquant'"
+                        "description": "Renvoie 'Authentification réussie' si le token est valide, sinon 'Échec de l'authentification : identifiants invalides'"
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Déconnecter l'utilisateur",
+                "description": "Demande de déconnexion. Comme les JWT sont sans état, le client doit supprimer le token.",
+                "operationId": "logoutUser",
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Déconnexion réussie. Veuillez supprimer le token côté client."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé / Token invalide",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token absent ou invalide"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -1291,7 +1528,7 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
-                "description": "Entrer le token (le token correct est 'token123') :",
+                "description": "Entrer le token :",
                 "name": "Authorization",
                 "in": "header",
                 "bearerFormat": "JWT",
