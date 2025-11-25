@@ -454,7 +454,7 @@ class QuestionController extends Controller
      * Show the form for editing the specified resource.
      *
      * @OA\Get(
-     *      path="/api/questions/{id}/edit",
+     *      path="/api/questions/edit/{id}",
      *      operationId="getQuestionEditData",
      *      tags={"Question"},
      *      summary="Obtenir les données pour éditer une question",

@@ -641,7 +641,7 @@
                 }
             }
         },
-        "/api/questions/{id}": {
+        "/api/questions/show/{id}": {
             "get": {
                 "tags": [
                     "Question"
@@ -680,7 +680,62 @@
                         "description": "Question non trouvée"
                     }
                 }
-            },
+            }
+        },
+        "/api/questions/edit/{id}": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Obtenir les données pour éditer une question",
+                "description": "Retourne les listes des difficultés, matières et types de questions disponibles pour l'édition",
+                "operationId": "getQuestionEditData",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Données récupérées avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "difficulties": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "subjects": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "question_types": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/questions/{id}": {
             "put": {
                 "tags": [
                     "Question"
@@ -833,59 +888,6 @@
                     },
                     "404": {
                         "description": "Question non trouvée"
-                    }
-                }
-            }
-        },
-        "/api/questions/{id}/edit": {
-            "get": {
-                "tags": [
-                    "Question"
-                ],
-                "summary": "Obtenir les données pour éditer une question",
-                "description": "Retourne les listes des difficultés, matières et types de questions disponibles pour l'édition",
-                "operationId": "getQuestionEditData",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID de la question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Données récupérées avec succès",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "difficulties": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        },
-                                        "subjects": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        },
-                                        "question_types": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
                     }
                 }
             }

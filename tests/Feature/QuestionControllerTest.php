@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Helpers\TokenHelper;
 use App\Models\Answer;
 use App\Models\Difficulty;
 use App\Models\Question;
@@ -32,6 +33,9 @@ class QuestionControllerTest extends TestCase
         $this->questionType = QuestionType::create([
             'name' => 'QCM Test '.uniqid(),
         ]);
+
+        $this->tokens = TokenHelper::createTokens();
+
     }
 
     #[Test]
@@ -168,7 +172,9 @@ class QuestionControllerTest extends TestCase
             'question_type_id' => $this->questionType->id,
         ];
 
-        $response = $this->postJson('/api/questions', $questionData);
+        $response = $this->postJson('/api/questions', $questionData, [
+            'Authorization' => 'Bearer ' . $this->tokens["admin_token"],
+        ]);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -190,7 +196,9 @@ class QuestionControllerTest extends TestCase
     #[Test]
     public function it_validates_required_fields_when_creating_question()
     {
-        $response = $this->postJson('/api/questions', []);
+        $response = $this->postJson('/api/questions', [
+            'Authorization' => 'Bearer ' . $this->tokens["admin_token"],
+        ]);
 
         $response->assertStatus(200)
             ->assertJson([
@@ -252,7 +260,7 @@ class QuestionControllerTest extends TestCase
             'question_type_id' => $this->questionType->id,
         ]);
 
-        $response = $this->getJson("/api/questions/{$question->id}/edit");
+        $response = $this->getJson("/api/questions/edit/{$question->id}");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -289,7 +297,9 @@ class QuestionControllerTest extends TestCase
             'question_type_id' => $this->questionType->id,
         ];
 
-        $response = $this->putJson("/api/questions/{$question->id}", $updateData);
+        $response = $this->putJson("/api/questions/{$question->id}", $updateData, [
+            'Authorization' => 'Bearer ' . $this->tokens["admin_token"],
+        ]);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -324,7 +334,9 @@ class QuestionControllerTest extends TestCase
             'question_type_id' => $this->questionType->id,
         ];
 
-        $response = $this->putJson('/api/questions/999', $updateData);
+        $response = $this->putJson('/api/questions/999', $updateData, [
+            'Authorization' => 'Bearer ' . $this->tokens["admin_token"],
+        ]);
 
         $response->assertStatus(200)
             ->assertJson([

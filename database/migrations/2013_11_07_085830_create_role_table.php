@@ -19,9 +19,9 @@ return new class extends Migration
         });
 
         DB::table('role')->insert([
-            'name' => 'Membre',
-            'name' => 'Rédacteur',
-            'name' => 'Administrateur',
+            ['name' => 'Membre'],
+            ['name' => 'Rédacteur'],
+            ['name' => 'Administrateur'],
         ]);
     }
 
