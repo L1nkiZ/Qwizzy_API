@@ -31,7 +31,8 @@ Route::apiResource('users', UserController::class);
 
 // Route spécifique pour create avant apiResource
 Route::get('questions/create', [QuestionController::class, 'create']);
-Route::get('questions/{id}/edit', [QuestionController::class, 'edit']);
+Route::get('questions/{id}/edit', [QuestionController::class, 'edit'])->whereNumber('id');
+Route::get('questions/show/{id}', [QuestionController::class, 'show'])->whereNumber('id');
 Route::get('questions/by-theme', [QuestionController::class, 'byTheme']);
 // Recherche par id de thème (subject_id)
 Route::get('questions/theme/{id}', [QuestionController::class, 'byThemeId'])->whereNumber('id');

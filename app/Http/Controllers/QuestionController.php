@@ -394,7 +394,7 @@ class QuestionController extends Controller
      * Display the specified resource.
      *
      * @OA\Get(
-     *      path="/api/questions/{id}",
+     *      path="/api/questions/show/{id}",
      *      operationId="showQuestion",
      *      tags={"Question"},
      *      summary="Afficher une question",
