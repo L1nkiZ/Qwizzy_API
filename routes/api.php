@@ -20,15 +20,6 @@ use App\Http\Controllers\UserController;
 |
 */
 
-// Routes pour les ressources
-Route::apiResource('difficulties', DifficultyController::class);
-Route::apiResource('question-types', QuestionTypeController::class);
-Route::apiResource('subjects', SubjectController::class);
-Route::apiResource('questions', QuestionController::class);
-Route::apiResource('answers', AnswerController::class);
-Route::apiResource('users', UserController::class);
-
-
 // Route spécifique pour create avant apiResource
 Route::get('questions/create', [QuestionController::class, 'create']);
 Route::get('questions/edit/{id}', [QuestionController::class, 'edit'])->whereNumber('id');
@@ -36,6 +27,14 @@ Route::get('questions/show/{id}', [QuestionController::class, 'show'])->whereNum
 Route::get('questions/by-theme', [QuestionController::class, 'byTheme']);
 // Recherche par id de thème (subject_id)
 Route::get('questions/theme/{id}', [QuestionController::class, 'byThemeId'])->whereNumber('id');
+
+// Routes pour les ressources
+Route::apiResource('difficulties', DifficultyController::class);
+Route::apiResource('question-types', QuestionTypeController::class);
+Route::apiResource('subjects', SubjectController::class);
+Route::apiResource('questions', QuestionController::class);
+Route::apiResource('answers', AnswerController::class);
+Route::apiResource('users', UserController::class);
 
 Route::post('auth/register', [UserController::class, 'store']);
 Route::post('auth/login', [UserController::class, 'login']);

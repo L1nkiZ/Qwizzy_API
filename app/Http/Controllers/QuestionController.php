@@ -338,7 +338,7 @@ class QuestionController extends Controller
         }
 
         $role = RoleHelper::getRole($token);
-        
+
         if ($role !== 2 && $role !== 3) { // assuming 2 is the editor role ID and 3 is the admin role ID
             return response()->json([
                 'error' => true,
