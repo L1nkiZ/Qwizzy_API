@@ -1,4 +1,4 @@
-name: 🏗️ Build & Deploy
+name: 🏗️ Build
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -37,41 +37,17 @@ jobs:
           php artisan route:cache
           php artisan view:cache
 
-      - name: 📦 Create deployment artifact
-        run: |
-          tar -czf qwizzy-api-${{ github.sha }}.tar.gz \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            --exclude='tests' \
-            --exclude='.env' \
-            .
-
-      - name: 📤 Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: qwizzy-api-build
-          path: qwizzy-api-${{ github.sha }}.tar.gz
-          retention-days: 30
-
   docker-build:
     name: Build Docker Image
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
       - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: 🔐 Log in to Docker Hub (optional)
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-        continue-on-error: true
 
       - name: 📝 Extract metadata
         id: meta
@@ -99,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, docker-build]
     if: always()
-    
+
     steps:
       - name: 📊 Check build status
         run: |
