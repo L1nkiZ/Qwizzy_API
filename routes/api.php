@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\DifficultyController;
-use App\Http\Controllers\MetricsController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionTypeController;
 use App\Http\Controllers\SubjectController;
@@ -24,9 +23,6 @@ Route::middleware('auth.token')->get('/user', function (Request $request) {
     // return $request->user();
     return ['user' => 'ok'];
 });
-
-// Metrics endpoint for Prometheus
-Route::get('/metrics', [MetricsController::class, 'metrics']);
 
 // Routes pour les ressources
 Route::apiResource('difficulties', DifficultyController::class);
