@@ -1,14 +1,19 @@
 # 🙋‍♂️❓ Qwizzy API - Documentation Complète 
 
-## � Table des matières
+## 📋 Table des matières
 - [Vue d'ensemble](#-vue-densemble)
 - [Architecture Docker](#-architecture-docker)
 - [Accès aux Services](#-accès-aux-services)
 - [Installation et Démarrage](#-installation-et-démarrage)
+- [Tableau récapitulatif des services](#-tableau-récapitulatif-des-services)
 - [Documentation API (Swagger)](#-documentation-api-swagger)
 - [Gestion de la Base de Données](#-gestion-de-la-base-de-données)
 - [Commandes Utiles](#-commandes-utiles)
 - [Structure de l'API](#-structure-de-lapi)
+- [Tests Automatisés](#-tests-automatisés)
+- [Monitoring & Métriques](#-monitoring--métriques)
+- [Logs des conteneurs](#-logs-des-conteneurs)
+- [Notes importantes](#-notes-importantes)
 
 ---
 
@@ -27,7 +32,7 @@ Qwizzy API est une application Laravel pour la gestion de questions et de quiz. 
 
 ## 🐳 Architecture Docker
 
-Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
+Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 ### 1. **qwizzy_app** - Application Laravel
 - **Image**: PHP 8.2-FPM
@@ -52,6 +57,21 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 - **Container**: `qwizzy_pgadmin`
 - **Login/Mot de passe**:
   - Email: `admin@qwizzy.com`
+  - Password: `admin`
+
+### 4. **qwizzy_prometheus** - Collecte des métriques
+- **Image**: `prom/prometheus:latest`
+- **Port**: `9090`
+- **Rôle**: Collecte et stocke les métriques de l'API
+- **Container**: `qwizzy_prometheus`
+
+### 5. **qwizzy_grafana** - Visualisation des métriques
+- **Image**: `grafana/grafana:latest`
+- **Port**: `3000`
+- **Rôle**: Dashboards de monitoring en temps réel
+- **Container**: `qwizzy_grafana`
+- **Login/Mot de passe**:
+  - Username: `admin`
   - Password: `admin`
 
 ---
@@ -87,6 +107,24 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 - Username : `qwizzy_user`
 - Password : `qwizzy_password`
 
+
+### **Grafana** (Monitoring & Dashboards)
+1. Ouvrez : http://localhost:3000
+2. Connectez-vous avec :
+   - Username : `admin`
+   - Password : `admin`
+3. Accédez au dashboard **"Qwizzy API Monitoring"** dans le menu Dashboards
+4. Visualisez en temps réel :
+   - Taux de requêtes par seconde
+   - Temps de réponse (P95/P99)
+   - Codes HTTP (200, 404, 500...)
+   - Taux d'erreurs
+   - Taille des réponses
+
+### **Prometheus** (Métriques)
+- URL : http://localhost:9090
+- Collecte automatique des métriques toutes les 5 secondes
+- Consultez les targets : Status → Targets
 ---
 
 ## 🚀 Installation et Démarrage
@@ -126,9 +164,12 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par default |
+| **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
 | **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
 | **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
+| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
+| **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
+| **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
 
 ---
 
@@ -216,9 +257,23 @@ docker-compose logs -f
 
 # Voir les logs d'un conteneur spécifique
 docker logs -f qwizzy_app
+docker logs -f qwizzy_db
+docker logs -f qwizzy_pgadmin
+docker logs -f qwizzy_prometheus
+docker logs -f qwizzy_grafana
+
+# Voir les 50 dernières lignes de logs
+docker logs qwizzy_app --tail 50
+
+# Suivre les logs en temps réel
+docker logs qwizzy_app -f --tail 100
 
 # Redémarrer un conteneur
 docker restart qwizzy_app
+
+# Vérifier l'état des conteneurs
+docker ps
+docker ps -a  # Inclut les conteneurs arrêtés
 
 # Reconstruire les images
 docker-compose up -d --build
@@ -377,11 +432,52 @@ Pour plus de détails, consultez `TESTS_README.md` ou `TEST_SUMMARY.md`.
 
 ---
 
+## 📊 Monitoring & Métriques
+
+### Accès au monitoring
+
+Le projet inclut du monitoring avec **Prometheus** et **Grafana**.
+
+**Dashboard Grafana** : http://localhost:3000
+- Username: `admin`
+- Password: `admin`
+
+### Métriques collectées automatiquement
+
+L'API expose des métriques Prometheus sur `/api/metrics` :
+
+```bash
+# Consulter les métriques brutes
+curl http://localhost:8000/api/metrics
+
+# Vérifier Prometheus
+curl http://localhost:9090/api/v1/query?query=qwizzy_http_requests_total
+```
+
+### Rate Limiting
+
+L'API implémente une limitation du nombre de requêtes :
+
+| Niveau | Limite | Usage |
+|--------|--------|-------|
+| **API Standard** | 100 req/min | Appliqué par défaut à toutes les routes API |
+| **Strict** | 20 req/min | Pour les opérations sensibles |
+| **Guest** | 30 req/min | Pour les utilisateurs non authentifiés |
+
+**Tester le rate limiting** :
+```powershell
+# PowerShell - Faire 150 requêtes pour dépasser la limite
+for ($i=1; $i -le 150; $i++) { 
+    curl http://localhost:8000/api/difficulties -UseBasicParsing
+}
+# Après 100 requêtes → Erreur 429 (Too Many Requests)
+```
+
 ## 📝 Notes importantes
 
-### Pour powershell
+### Pour PowerShell
 
-Si vous utilisez powershell, certaines commandes peuvent nécessiter des ajustements:
+Si vous utilisez PowerShell, certaines commandes peuvent nécessiter des ajustements:
 
 ```powershell
 # Restart et génération Swagger
