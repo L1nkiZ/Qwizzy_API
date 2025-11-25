@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Prometheus\CollectorRegistry;
 use Prometheus\Storage\APC;
+use Prometheus\Storage\InMemory;
 use Symfony\Component\HttpFoundation\Response;
 
 class PrometheusMiddleware
@@ -14,7 +15,9 @@ class PrometheusMiddleware
 
     public function __construct()
     {
-        $this->registry = new CollectorRegistry(new APC());
+        // Use InMemory storage for testing environment to avoid APCu dependency
+        $storage = app()->environment('testing') ? new InMemory() : new APC();
+        $this->registry = new CollectorRegistry($storage);
     }
 
     /**
