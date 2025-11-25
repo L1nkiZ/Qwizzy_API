@@ -263,6 +263,28 @@ docker exec -it qwizzy_app composer update
 docker exec -it qwizzy_app composer require nom/package
 ```
 
+### Tests
+
+```bash
+# Exécuter tous les tests
+docker exec -it qwizzy_app php artisan test
+
+# Exécuter les tests avec détails
+docker exec -it qwizzy_app php artisan test --testdox
+
+# Exécuter un fichier de test spécifique
+docker exec -it qwizzy_app php artisan test --filter QuestionControllerTest
+
+# Exécuter les tests avec couverture de code (nécessite xdebug)
+docker exec -it qwizzy_app php artisan test --coverage
+
+# Exécuter uniquement les tests d'un groupe spécifique
+docker exec -it qwizzy_app php artisan test tests/Feature
+
+# Exécuter les tests en mode parallèle (plus rapide)
+docker exec -it qwizzy_app php artisan test --parallel
+```
+
 ---
 
 ## 🏗️ Structure de l'API
@@ -311,6 +333,47 @@ Tous les endpoints de liste supportent ces paramètres:
 ```
 GET /api/questions?current_sort=created_at&current_sort_dir=desc&per_page=20
 ```
+
+---
+
+## 🧪 Tests Automatisés
+
+Le projet inclut **38 tests automatisés** couvrant tous les controllers de l'API.
+
+### Exécution locale
+
+```bash
+# Tous les tests
+docker exec -it qwizzy_app php artisan test
+
+# Avec plus de détails
+docker exec -it qwizzy_app php artisan test --testdox
+
+# Test spécifique
+docker exec -it qwizzy_app php artisan test --filter QuestionControllerTest
+```
+
+### GitHub Actions (CI/CD)
+
+Les tests s'exécutent **automatiquement** sur GitHub lors de :
+- ✅ Push sur `main`, `master`, `develop`, `feat/*`, `fix/*`
+- ✅ Pull Request vers `main`, `master`, `develop`
+
+Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
+
+### Fichiers de test
+
+| Fichier | Tests | Description |
+|---------|-------|-------------|
+| `QuestionControllerTest.php` | 15 | CRUD questions, filtrage par thème |
+| `SubjectControllerTest.php` | 6 | CRUD sujets, validation |
+| `DifficultyControllerTest.php` | 7 | CRUD difficultés, validation points |
+| `QuestionTypeControllerTest.php` | 6 | CRUD types de questions |
+| `AnswerControllerTest.php` | 2 | Liste des réponses |
+
+**Total : 38 tests** avec 209 assertions
+
+Pour plus de détails, consultez `TESTS_README.md` ou `TEST_SUMMARY.md`.
 
 ---
 

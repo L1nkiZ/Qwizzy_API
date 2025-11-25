@@ -9,10 +9,13 @@ use Illuminate\Support\Str;
 use App\Http\Traits\ErrorTrait;
 
 use App\Models\Question;
-use App\Models\Difficulty;
-use App\Models\Subject;
-use App\Models\QuestionType;
 use App\Models\Answer;
+use App\Models\Difficulty;
+use App\Models\Question;
+use App\Models\QuestionType;
+use App\Models\Subject;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class QuestionController extends Controller
 {
@@ -25,20 +28,26 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Obtenir les questions par ID de thème",
      *      description="Retourne toutes les questions associées à un thème en utilisant l'ID de la matière",
+     *
      *      @OA\Parameter(
      *          name="id",
      *          description="ID du thème (subject)",
      *          required=true,
      *          in="path",
+     *
      *          @OA\Schema(type="integer", example=1)
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Liste des questions filtrée avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="questions", type="array", @OA\Items(type="object"))
      *          )
      *       ),
+     *
      *      @OA\Response(
      *          response=404,
      *          description="Thème non trouvé"
@@ -49,10 +58,10 @@ class QuestionController extends Controller
     {
         $subject = Subject::find($id);
 
-        if (!$subject) {
+        if (! $subject) {
             return response()->json([
                 'error' => true,
-                'message' => 'Thème non trouvé'
+                'message' => 'Thème non trouvé',
             ], 404);
         }
 
@@ -66,13 +75,14 @@ class QuestionController extends Controller
             'question_type' => function ($query) {
                 $query->select('id', 'name');
             },
-            'answers'
+            'answers',
         ])
             ->where('subject_id', $id)
             ->get();
 
         return response()->json(compact('questions'));
     }
+
     /**
      * Filtrer les questions par thème (subject.name)
      *
@@ -82,24 +92,32 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Obtenir les questions par thème",
      *      description="Retourne toutes les questions associées à un thème (nom de la matière)",
+     *
      *      @OA\Parameter(
      *          name="theme",
      *          description="Nom du thème (correspond au nom de la matière)",
      *          required=true,
      *          in="query",
+     *
      *          @OA\Schema(type="string", example="The Witcher")
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Liste des questions filtrée avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="questions", type="array", @OA\Items(type="object"))
      *          )
      *       ),
+     *
      *      @OA\Response(
      *          response=422,
      *          description="Erreur de validation",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="error", type="boolean", example=true),
      *              @OA\Property(property="message", type="object")
      *          )
@@ -113,7 +131,7 @@ class QuestionController extends Controller
         if (!$theme) {
             return response()->json([
                 'error' => true,
-                'message' => 'Le thème est requis'
+                'message' => 'Le thème est requis',
             ]);
         } else {
             $questions = Question::with([
@@ -126,9 +144,9 @@ class QuestionController extends Controller
                 'question_type' => function ($query) {
                     $query->select('id', 'name');
                 },
-                'answers'
+                'answers',
             ])->whereHas('subject', function ($q) use ($theme) {
-                $q->where('name', 'like', '%' . $theme . '%');
+                $q->where('name', 'like', '%'.$theme.'%');
             })->get();
 
             return response()->json(compact('questions'));
@@ -144,31 +162,40 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Obtenir la liste des questions",
      *      description="Retourne la liste paginée des questions avec leurs relations",
+     *
      *      @OA\Parameter(
      *          name="current_sort",
      *          description="Champ de tri",
      *          required=false,
      *          in="query",
+     *
      *          @OA\Schema(type="string", default="id")
      *      ),
+     *
      *      @OA\Parameter(
      *          name="current_sort_dir",
      *          description="Direction du tri",
      *          required=false,
      *          in="query",
+     *
      *          @OA\Schema(type="string", enum={"asc", "desc"}, default="asc")
      *      ),
+     *
      *      @OA\Parameter(
      *          name="per_page",
      *          description="Nombre d'éléments par page",
      *          required=false,
      *          in="query",
+     *
      *          @OA\Schema(type="integer", default=15)
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Liste des questions récupérée avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="questions", type="object")
      *          )
      *       )
@@ -222,10 +249,13 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Obtenir les données pour créer une question",
      *      description="Retourne les listes des difficultés, matières et types de questions disponibles",
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Données récupérées avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="difficulties", type="array", @OA\Items(type="object")),
      *              @OA\Property(property="subjects", type="array", @OA\Items(type="object")),
      *              @OA\Property(property="question_types", type="array", @OA\Items(type="object"))
@@ -260,11 +290,13 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Créer une nouvelle question",
      *      description="Crée une nouvelle question avec 4 propositions et indique le numéro de la bonne réponse (1, 2, 3 ou 4)",
-     *      security={{"bearerAuth":{}}},
+     *
      *      @OA\RequestBody(
      *          required=true,
+     *
      *          @OA\JsonContent(
      *              required={"question","proposal_1","proposal_2","proposal_3","proposal_4","correct_answer_number","subject_id","difficulty_id","question_type_id"},
+     *
      *              @OA\Property(property="question", type="string", maxLength=500, example="Quelle est la capitale de la France ?"),
      *              @OA\Property(property="proposal_1", type="string", maxLength=100, example="Paris"),
      *              @OA\Property(property="proposal_2", type="string", maxLength=100, example="Lyon"),
@@ -276,19 +308,25 @@ class QuestionController extends Controller
      *              @OA\Property(property="question_type_id", type="integer", example=1),
      *          ),
      *      ),
+     *
      *      @OA\Response(
      *          response=201,
      *          description="Question créée avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="message", type="string", example="Question créée avec succès"),
      *              @OA\Property(property="question", type="object"),
      *              @OA\Property(property="answer", type="object")
      *          )
      *       ),
+     *
      *      @OA\Response(
      *          response=422,
      *          description="Erreur de validation",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="error", type="boolean", example=true),
      *              @OA\Property(property="message", type="object")
      *          )
@@ -326,7 +364,7 @@ class QuestionController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => true,
-                'message' => $validator->messages()
+                'message' => $validator->messages(),
             ]);
         }
 
@@ -351,7 +389,7 @@ class QuestionController extends Controller
         return response()->json([
             'message' => 'Question créée avec succès',
             'question' => $question,
-            'answer' => $answer
+            'answer' => $answer,
         ]);
     }
 
@@ -364,20 +402,26 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Afficher une question",
      *      description="Retourne les détails d'une question spécifique avec ses relations (difficulté, sujet, type, réponses)",
+     *
      *      @OA\Parameter(
      *          name="id",
      *          description="ID de la question",
      *          required=true,
      *          in="path",
+     *
      *          @OA\Schema(type="integer")
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Question récupérée avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="question", type="object")
      *          )
      *       ),
+     *
      *      @OA\Response(
      *          response=404,
      *          description="Question non trouvée"
@@ -396,13 +440,13 @@ class QuestionController extends Controller
             'question_type' => function ($query) {
                 $query->select('id', 'name');
             },
-            'answers'
+            'answers',
         ])->find($id);
 
-        if (!$question) {
+        if (! $question) {
             return response()->json([
                 'error' => true,
-                'message' => 'Question non trouvée'
+                'message' => 'Question non trouvée',
             ], 404);
         }
 
@@ -418,17 +462,22 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Obtenir les données pour éditer une question",
      *      description="Retourne les listes des difficultés, matières et types de questions disponibles pour l'édition",
+     *
      *      @OA\Parameter(
      *          name="id",
      *          description="ID de la question",
      *          required=true,
      *          in="path",
+     *
      *          @OA\Schema(type="integer")
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Données récupérées avec succès",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="difficulties", type="array", @OA\Items(type="object")),
      *              @OA\Property(property="subjects", type="array", @OA\Items(type="object")),
      *              @OA\Property(property="question_types", type="array", @OA\Items(type="object"))
@@ -470,12 +519,16 @@ class QuestionController extends Controller
      *          description="ID de la question",
      *          required=true,
      *          in="path",
+     *
      *          @OA\Schema(type="integer")
      *      ),
+     *
      *      @OA\RequestBody(
      *          required=true,
+     *
      *          @OA\JsonContent(
      *              required={"question","proposal_1","proposal_2","proposal_3","proposal_4","correct_answer_number","subject_id","difficulty_id","question_type_id"},
+     *
      *              @OA\Property(property="question", type="string", maxLength=500, example="Quelle est la capitale de la France ?"),
      *              @OA\Property(property="proposal_1", type="string", maxLength=100, example="Paris"),
      *              @OA\Property(property="proposal_2", type="string", maxLength=100, example="Lyon"),
@@ -487,11 +540,14 @@ class QuestionController extends Controller
      *              @OA\Property(property="question_type_id", type="integer", example=1),
      *          ),
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Question mise à jour avec succès",
+     *
      *          @OA\JsonContent()
      *       ),
+     *
      *      @OA\Response(
      *          response=404,
      *          description="Question non trouvée"
@@ -499,7 +555,9 @@ class QuestionController extends Controller
      *      @OA\Response(
      *          response=422,
      *          description="Erreur de validation",
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="error", type="boolean", example=true),
      *              @OA\Property(property="message", type="object")
      *          )
@@ -537,7 +595,7 @@ class QuestionController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error' => true,
-                'message' => $validator->messages()
+                'message' => $validator->messages(),
             ]);
         }
 
@@ -546,7 +604,7 @@ class QuestionController extends Controller
         if (!$question) {
             return response()->json([
                 'error' => true,
-                'message' => 'Question non trouvée'
+                'message' => 'Question non trouvée',
             ]);
         }
 
@@ -566,7 +624,7 @@ class QuestionController extends Controller
         $answer = Answer::where('question_id', $question->id)->first();
         if ($answer) {
             $answer->update([
-                'answer' => $request->correct_answer_number
+                'answer' => $request->correct_answer_number,
             ]);
         } else {
             // Si la réponse n'existe pas, la créer
@@ -579,7 +637,7 @@ class QuestionController extends Controller
         return response()->json([
             'message' => 'Question mise à jour avec succès',
             'question' => $question,
-            'answer' => $answer
+            'answer' => $answer,
         ]);
     }
 
@@ -592,18 +650,23 @@ class QuestionController extends Controller
      *      tags={"Question"},
      *      summary="Supprimer une question",
      *      description="Supprime une question existante",
+     *
      *      @OA\Parameter(
      *          name="id",
      *          description="ID de la question",
      *          required=true,
      *          in="path",
+     *
      *          @OA\Schema(type="integer")
      *      ),
+     *
      *      @OA\Response(
      *          response=200,
      *          description="Question supprimée avec succès",
+     *
      *          @OA\JsonContent()
      *       ),
+     *
      *      @OA\Response(
      *          response=404,
      *          description="Question non trouvée"
@@ -617,7 +680,7 @@ class QuestionController extends Controller
         if (!$question) {
             return response()->json([
                 'error' => true,
-                'message' => 'Question non trouvée'
+                'message' => 'Question non trouvée',
             ], 404);
         }
 
@@ -628,7 +691,7 @@ class QuestionController extends Controller
         $question->delete();
 
         return response()->json([
-            'message' => 'Question supprimée avec succès'
+            'message' => 'Question supprimée avec succès',
         ]);
     }
 }
