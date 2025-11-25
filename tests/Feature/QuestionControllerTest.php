@@ -211,6 +211,33 @@ class QuestionControllerTest extends TestCase
     }
 
     #[Test]
+    public function it_returns_error_when_creating_if_user_role_is_not_admin_or_redactor()
+    {
+        $questionData = [
+            'question' => 'Quelle est la capitale de la France ?',
+            'proposal_1' => 'Paris',
+            'proposal_2' => 'Lyon',
+            'proposal_3' => 'Marseille',
+            'proposal_4' => 'Bordeaux',
+            'correct_answer_number' => 1,
+            'subject_id' => $this->subject->id,
+            'difficulty_id' => $this->difficulty->id,
+            'question_type_id' => $this->questionType->id,
+        ];
+
+        $response = $this->postJson('/api/questions', $questionData, [
+            'Authorization' => 'Bearer ' . $this->tokens["member_token"],
+        ]);
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'error' => true,
+                'message' => 'Accès refusé : privilèges insuffisants'
+            ]);
+
+    }
+
+    #[Test]
     public function it_can_show_a_question()
     {
         $question = Question::factory()->create([
@@ -343,6 +370,44 @@ class QuestionControllerTest extends TestCase
                 'error' => true,
                 'message' => 'Question non trouvée',
             ]);
+    }
+
+    #[Test]
+    public function it_returns_error_when_updating_if_the_user_role_is_not_admin()
+    {   
+        $question = Question::factory()->create([
+            'subject_id' => $this->subject->id,
+            'difficulty_id' => $this->difficulty->id,
+            'question_type_id' => $this->questionType->id,
+        ]);
+
+        Answer::create([
+            'answer' => 1,
+            'question_id' => $question->id,
+        ]);
+
+        $updateData = [
+            'question' => 'Question mise à jour ?',
+            'proposal_1' => 'Réponse A',
+            'proposal_2' => 'Réponse B',
+            'proposal_3' => 'Réponse C',
+            'proposal_4' => 'Réponse D',
+            'correct_answer_number' => 2,
+            'subject_id' => $this->subject->id,
+            'difficulty_id' => $this->difficulty->id,
+            'question_type_id' => $this->questionType->id,
+        ];
+
+        $response = $this->putJson("/api/questions/{$question->id}", $updateData, [
+            'Authorization' => 'Bearer ' . $this->tokens["member_token"],
+        ]);
+
+        $response->assertStatus(403)
+            ->assertJson([
+                'error' => true,
+                'message' => 'Accès refusé : privilèges insuffisants'
+            ]);
+
     }
 
     #[Test]
