@@ -140,12 +140,6 @@ Ouvrez votre navigateur et accédez à:
 http://localhost:8000/
 ```
 
-### Régénérer la documentation Swagger
-Après avoir modifié les annotations dans vos controllers:
-```bash
-docker exec -it qwizzy_app php artisan l5-swagger:generate
-```
-
 ### La route user (authentification)
 
 Cliquer sur le bouton 🔓Authorize en haut du Swagger et le remplir avec "token123".
@@ -356,8 +350,8 @@ docker exec -it qwizzy_app php artisan test --filter QuestionControllerTest
 ### GitHub Actions (CI/CD)
 
 Les tests s'exécutent **automatiquement** sur GitHub lors de :
-- ✅ Push sur `main`, `master`, `develop`, `feat/*`, `fix/*`
-- ✅ Pull Request vers `main`, `master`, `develop`
+- Push sur, `master`, `develop`, `feat/*`, `fix/*`
+- Pull Request vers, `master`, `develop`
 
 Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
 
@@ -371,9 +365,7 @@ Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
 | `QuestionTypeControllerTest.php` | 6 | CRUD types de questions |
 | `AnswerControllerTest.php` | 2 | Liste des réponses |
 
-**Total : 38 tests** avec 209 assertions
-
-Pour plus de détails, consultez `TESTS_README.md` ou `TEST_SUMMARY.md`.
+**Total : 38 tests**
 
 ---
 
