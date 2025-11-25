@@ -61,10 +61,15 @@ class SubjectController extends Controller
      */
     public function index(Request $request)
     {
-        $subject =
-            Subject::select('id', 'name')
-                ->orderby($request->current_sort, $request->current_sort_dir)
-                ->paginate($request->per_page);
+        // Whitelist des colonnes autorisées pour éviter les injections SQL
+        $allowedColumns = ['id', 'name', 'created_at', 'updated_at'];
+        $sortColumn = in_array($request->current_sort, $allowedColumns) ? $request->current_sort : 'id';
+        $sortDir = in_array(strtolower($request->current_sort_dir), ['asc', 'desc']) ? $request->current_sort_dir : 'asc';
+        $perPage = max(1, min((int)$request->per_page, 100)); // Limiter entre 1 et 100
+
+        $subject = Subject::select('id', 'name')
+            ->orderBy($sortColumn, $sortDir)
+            ->paginate($perPage);
 
         return response()->json(compact('subject'));
     }
