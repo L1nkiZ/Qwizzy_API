@@ -913,10 +913,16 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
         }
 
         function setLoading(btnElement, isLoading) {
+            if (!btnElement) return;
+            
             const textSpan = btnElement.querySelector('.btn-text');
             if (isLoading) {
                 btnElement.disabled = true;
-                textSpan.innerHTML = '<span class="loading"></span> Chargement...';
+                if (textSpan) {
+                    textSpan.innerHTML = '<span class="loading"></span> Chargement...';
+                } else {
+                    btnElement.innerHTML = '<span class="loading"></span> Chargement...';
+                }
             } else {
                 btnElement.disabled = false;
             }
@@ -954,7 +960,12 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
                 showResponse('gen_response', {error: error.message}, true);
             } finally {
                 setLoading(btn, false);
-                btn.querySelector('.btn-text').textContent = 'Tester GenerateQuiz';
+                const textSpan = btn.querySelector('.btn-text');
+                if (textSpan) {
+                    textSpan.textContent = 'Tester GenerateQuiz';
+                } else {
+                    btn.textContent = 'Tester GenerateQuiz';
+                }
             }
         }
 
@@ -969,7 +980,12 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
                 showResponse('stats_response', {error: error.message}, true);
             } finally {
                 setLoading(btn, false);
-                btn.querySelector('.btn-text').textContent = 'Tester GetQuizStatistics';
+                const textSpan = btn.querySelector('.btn-text');
+                if (textSpan) {
+                    textSpan.textContent = 'Tester GetQuizStatistics';
+                } else {
+                    btn.textContent = 'Tester GetQuizStatistics';
+                }
             }
         }
 
@@ -993,7 +1009,12 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
                 showResponse('create_response', {error: error.message}, true);
             } finally {
                 setLoading(btn, false);
-                btn.querySelector('.btn-text').textContent = 'Tester CreateQuiz';
+                const textSpan = btn.querySelector('.btn-text');
+                if (textSpan) {
+                    textSpan.textContent = 'Tester CreateQuiz';
+                } else {
+                    btn.textContent = 'Tester CreateQuiz';
+                }
             }
         }
 
@@ -1013,7 +1034,12 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
                 showResponse('start_response', {error: error.message}, true);
             } finally {
                 setLoading(btn, false);
-                btn.querySelector('.btn-text').textContent = 'Tester StartQuiz';
+                const textSpan = btn.querySelector('.btn-text');
+                if (textSpan) {
+                    textSpan.textContent = 'Tester StartQuiz';
+                } else {
+                    btn.textContent = 'Tester StartQuiz';
+                }
             }
         }
 
@@ -1036,7 +1062,12 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
                 showResponse('submit_response', {error: error.message}, true);
             } finally {
                 setLoading(btn, false);
-                btn.querySelector('.btn-text').textContent = 'Tester SubmitQuizAnswers';
+                const textSpan = btn.querySelector('.btn-text');
+                if (textSpan) {
+                    textSpan.textContent = 'Tester SubmitQuizAnswers';
+                } else {
+                    btn.textContent = 'Tester SubmitQuizAnswers';
+                }
             }
         }
 
@@ -1055,7 +1086,12 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
                 showResponse('history_response', {error: error.message}, true);
             } finally {
                 setLoading(btn, false);
-                btn.querySelector('.btn-text').textContent = 'Tester GetUserQuizHistory';
+                const textSpan = btn.querySelector('.btn-text');
+                if (textSpan) {
+                    textSpan.textContent = 'Tester GetUserQuizHistory';
+                } else {
+                    btn.textContent = 'Tester GetUserQuizHistory';
+                }
             }
         }
 
@@ -1075,7 +1111,12 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
                 showResponse('leader_response', {error: error.message}, true);
             } finally {
                 setLoading(btn, false);
-                btn.querySelector('.btn-text').textContent = 'Tester GetQuizLeaderboard';
+                const textSpan = btn.querySelector('.btn-text');
+                if (textSpan) {
+                    textSpan.textContent = 'Tester GetQuizLeaderboard';
+                } else {
+                    btn.textContent = 'Tester GetQuizLeaderboard';
+                }
             }
         }
     </script>

@@ -48,7 +48,7 @@ class QuizGeneratorService
                 $query->select('id', 'name');
             },
             'answers' => function ($query) {
-                $query->select('id', 'question_id', 'answer', 'is_correct');
+                $query->select('id', 'question_id', 'answer');
             }
         ]);
 
@@ -72,18 +72,6 @@ class QuizGeneratorService
 
         foreach ($questions as $question) {
             $question->answers = $question->answers->shuffle()->values();
-        }
-
-        if ($questions->count() < $numberOfQuestions) {
-            return [
-                'success' => false,
-                'error' => sprintf(
-                    'Nombre insuffisant de questions disponibles. Demandé: %d, Disponible: %d',
-                    $numberOfQuestions,
-                    $questions->count()
-                ),
-                'quiz' => null
-            ];
         }
 
         // Formatage du quiz
@@ -163,8 +151,7 @@ class QuizGeneratorService
                 'answers' => $question->answers->map(function ($answer) {
                     return [
                         'id' => $answer->id,
-                        'answer' => $answer->answer,
-                        'is_correct' => (bool) $answer->is_correct
+                        'answer' => $answer->answer
                     ];
                 })->toArray()
             ];
