@@ -9,6 +9,8 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuestionTypeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\SoapDocumentationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +34,10 @@ Route::get('questions/theme/{id}', [QuestionController::class, 'byThemeId'])->wh
 // Metrics endpoint for Prometheus
 Route::get('/metrics', [MetricsController::class, 'metrics']);
 
+// Routes REST pour la génération de quiz
+Route::post('quiz/generate', [QuizController::class, 'generate']);
+Route::get('quiz/statistics', [QuizController::class, 'statistics']);
+
 // Routes pour les ressources
 Route::apiResource('difficulties', DifficultyController::class);
 Route::apiResource('question-types', QuestionTypeController::class);
@@ -49,3 +55,6 @@ Route::middleware('auth.token')->group(function () {
     Route::put('questions/{id}', [QuestionController::class, 'update'])->whereNumber('id');
     Route::post('auth/logout', [UserController::class, 'logout']);
 });
+
+// Endpoint pour tester SOAP depuis l'interface web
+Route::post('soap/test', [SoapDocumentationController::class, 'testMethod']);
