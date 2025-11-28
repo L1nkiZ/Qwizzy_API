@@ -24,6 +24,29 @@
       margin:0;
       background: #fafafa;
     }
+
+    .home-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        padding: 10px 20px;
+        background: #2c3e50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 13px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .home-button:hover {
+        background: #34495e;
+    }
     </style>
     @if(config('l5-swagger.defaults.ui.display.dark_mode'))
         <style>
@@ -117,6 +140,10 @@
 </head>
 
 <body @if(config('l5-swagger.defaults.ui.display.dark_mode')) id="dark-mode" @endif>
+<a href="/" class="home-button">
+    <span>←</span>
+    <span>Menu principal</span>
+</a>
 <div id="swagger-ui"></div>
 
 <script src="{{ l5_swagger_asset($documentation, 'swagger-ui-bundle.js') }}"></script>
