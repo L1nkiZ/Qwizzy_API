@@ -212,13 +212,11 @@ class UserController extends Controller
     public function login(Request $request)
     {
         //On récupère login et mdp
-        $username = $request->input('username');
         $email = $request->input('email');
         $password = $request->input('password');
 
         //On cherche l'utilisateur par son email et son nom d'utilisateur
         $user = User::where('email', $email)
-            ->orWhere('name', $username)
             ->first();
         if ($user && Hash::check($password, $user->password)) {
 
