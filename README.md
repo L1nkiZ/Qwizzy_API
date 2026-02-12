@@ -4,16 +4,14 @@
 
 - [Vue d'ensemble](#vue-densemble)
 - [Architecture Docker](#architecture-docker)
-- [Accès aux Services](#acces-aux-services)
-- [Installation et Démarrage](#installation-et-demarrage)
-- [Tableau récapitulatif des services](#tableau-récapitulatif-des-services)
+- [Accès aux Services](#accès-aux-services)
+- [Installation et Démarrage](#installation-et-démarrage)
 - [Documentation API (Swagger)](#documentation-api-swagger)
-- [Gestion de la Base de Données](#gestion-de-la-base-de-donnees)
+- [Gestion de la Base de Données](#gestion-de-la-base-de-données)
 - [Commandes Utiles](#commandes-utiles)
 - [Structure de l'API](#structure-de-lapi)
-- [Tests Automatisés](#tests-automatises)
-- [Monitoring & Métriques](#monitoring--metriques)
-- [Logs des conteneurs](#logs-des-conteneurs)
+- [Tests Automatisés](#tests-automatisés)
+- [Monitoring & Métriques](#monitoring--métriques)
 - [Notes importantes](#notes-importantes)
 - [Analyse Comparative REST vs SOAP dans le cadre de Qwizzy](#analyse-comparative-rest-vs-soap-dans-le-cadre-de-qwizzy)
 
@@ -127,6 +125,20 @@ Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 - URL : http://localhost:9090
 - Collecte automatique des métriques toutes les 5 secondes
 - Consultez les targets : Status → Targets
+
+### Tableau récapitulatif des services
+
+Une fois les conteneurs démarrés, vous pouvez accéder à:
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
+| **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
+| **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
+| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
+| **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
+| **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
+
 ---
 
 ## Installation et Démarrage
@@ -160,20 +172,6 @@ docker-compose up -d --build
 
 ---
 
-## Accès aux Services
-
-Une fois les conteneurs démarrés, vous pouvez accéder à:
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
-| **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
-| **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
-| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
-| **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
-| **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
-
----
 
 ## Documentation API (Swagger)
 
