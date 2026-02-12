@@ -143,7 +143,7 @@ class QuestionController extends Controller
                 },
                 'answers',
             ])->whereHas('subject', function ($q) use ($theme) {
-                $q->where('name', 'like', '%'.$theme.'%');
+                $q->where('name', 'like', '%' . $theme . '%');
             })->get();
 
             return response()->json(compact('questions'));
@@ -564,6 +564,14 @@ class QuestionController extends Controller
     public function update(Request $request, string $id)
     {
         $token = $request->bearerToken() ?? $request->header('Authorization');
+
+        if ($token == null) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Accès refusé : utilisateur non connecté'
+            ], 401);
+        }
+
         if ($token && Str::startsWith($token, 'Bearer ')) {
             $token = substr($token, 7);
         }

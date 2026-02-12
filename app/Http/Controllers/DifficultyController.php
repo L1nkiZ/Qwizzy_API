@@ -78,6 +78,74 @@ class DifficultyController extends Controller
     }
 
     /**
+     * Récupère une difficulté par son ID.
+     *
+     * @OA\Get(
+     *     path="/api/difficulties/{id}",
+     *     operationId="getDifficulty",
+     *     tags={"Difficulty"},
+     *     summary="Récupérer une difficulté",
+     *     description="Retourne les détails d'une difficulté par son ID",
+     *
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la difficulté",
+     *         required=true,
+     *
+     *         @OA\Schema(type="integer")
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="Difficulté récupérée avec succès",
+     *
+     *         @OA\JsonContent(
+     *             @OA\Property(property="difficulty", type="object")
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=404,
+     *         description="Difficulté non trouvée"
+     *     )
+     * )
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:200|unique:difficulty,name',
+            'point' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => true,
+                'message' => $validator->messages(),
+            ], 500);
+        }
+
+        $difficulty = Difficulty::create([
+            'name' => $request->name,
+            'point' => $request->point,
+        ]);
+
+        if ($difficulty) {
+            return response()->json($this->success('La difficulté', 'créée', $difficulty));
+        }
+
+        return response()->json($this->error);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @OA\Post(
@@ -110,43 +178,6 @@ class DifficultyController extends Controller
      *          description="Erreur de validation"
      *      )
      * )
-     */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:200|unique:difficulty,name',
-            'point' => 'required|integer|min:1|max:5',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'error' => true,
-                'message' => $validator->messages(),
-            ]);
-        }
-
-        $difficulty = Difficulty::create([
-            'name' => $request->name,
-            'point' => $request->point,
-        ]);
-
-        if ($difficulty) {
-            return response()->json($this->success('La difficulté', 'créée', $difficulty));
-        }
-
-        return response()->json($this->error);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
