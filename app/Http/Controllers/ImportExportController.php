@@ -9,12 +9,50 @@ use App\Models\QuestionType;
 use App\Models\Answer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
 class ImportExportController extends Controller
 {
     /**
+     * @OA\Post(
+     *     path="/api/import/questions",
+     *     summary="Import questions from CSV file",
+     *     tags={"Import/Export"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="file",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="CSV file to import"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Import successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean"),
+     *             @OA\Property(property="message", type="string"),
+     *             @OA\Property(
+     *                 property="stats",
+     *                 type="object",
+     *                 @OA\Property(property="imported", type="integer"),
+     *                 @OA\Property(property="skipped", type="integer"),
+     *                 @OA\Property(property="errors", type="array", @OA\Items(type="string"))
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error"
+     *     )
+     * )
+     *
      * Structure attendue du fichier Excel (CSV) :
      *
      * Colonne A: Question (String)
@@ -99,7 +137,6 @@ class ImportExportController extends Controller
                 ]);
 
                 // Create Answers
-                // Note: Le modèle actuel semble gérer les réponses dans la table answers liée
                 $answers = [$prop1, $prop2, $prop3, $prop4];
 
                 foreach ($answers as $key => $ansText) {
@@ -133,6 +170,26 @@ class ImportExportController extends Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/export/questions",
+     *     summary="Export questions to CSV",
+     *     tags={"Import/Export"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Download CSV file",
+     *         @OA\Header(
+     *             header="Content-Type",
+     *             description="text/csv",
+     *             @OA\Schema(type="string")
+     *         ),
+     *         @OA\Header(
+     *             header="Content-Disposition",
+     *             description="attachment; filename=questions_export_....csv",
+     *             @OA\Schema(type="string")
+     *         )
+     *     )
+     * )
+     *
      * Exporte les questions en CSV
      */
     public function exportQuestions()
@@ -162,12 +219,10 @@ class ImportExportController extends Controller
 
             foreach ($questions as $q) {
                 // Trouver l'index de la bonne réponse
-                // Par défaut on cherche lequel est correct
                 $correctIdx = 1;
                 foreach($q->answers as $ans) {
-                     // Si la table answers a une colonne is_correct
                      if($ans->is_correct) {
-                         $correctIdx = $ans->answer; // Si 'answer' contient '1', '2', etc.
+                         $correctIdx = $ans->answer;
                          break;
                      }
                 }

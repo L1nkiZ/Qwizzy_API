@@ -11,6 +11,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SoapDocumentationController;
+use App\Http\Controllers\ImportExportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,3 +69,6 @@ Route::middleware('auth.token')->group(function () {
 
 // Endpoint pour tester SOAP depuis l'interface web
 Route::post('soap/test', [SoapDocumentationController::class, 'testMethod']);
+
+// Route pour le serveur SOAP
+Route::match(['get', 'post'], '/soap/import-export', [ImportExportController::class, 'server']);
