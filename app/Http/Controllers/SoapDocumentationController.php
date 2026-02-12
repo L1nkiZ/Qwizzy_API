@@ -22,14 +22,43 @@ class SoapDocumentationController extends Controller
     public function testMethod(Request $request)
     {
         try {
+            $method = $request->input('method');
             $params = $request->input('params', []);
+            $result = null;
 
-            $result = $this->soapController->GenerateQuiz(
-                $params['numberOfQuestions'] ?? 10,
-                $params['subjectId'] ?? null,
-                $params['difficultyId'] ?? null,
-                $params['questionTypeId'] ?? null
-            );
+            switch ($method) {
+                case 'GenerateQuiz':
+                    $result = $this->soapController->GenerateQuiz(
+                        $params['numberOfQuestions'] ?? 10,
+                        $params['subjectId'] ?? null,
+                        $params['difficultyId'] ?? null,
+                        $params['questionTypeId'] ?? null
+                    );
+                    break;
+
+                case 'SubmitQuizAnswers':
+                    // Mapping frontend userQuizId/answers to backend userId/quizName/answers
+                    // Note: This matches the current QuizSoapController signature
+                    $result = $this->soapController->SubmitQuizAnswers(
+                        $params['userId'] ?? ($params['userQuizId'] ?? 1),
+                        'Test Quiz',
+                        $params['answers'] ?? []
+                    );
+                    break;
+
+                case 'GetUserQuizHistory':
+                    $result = $this->soapController->GetUserQuizHistory($params['userId'] ?? 1);
+                    break;
+
+                case 'GetQuizLeaderboard':
+                    $result = $this->soapController->GetQuizLeaderboard($params['limit'] ?? 10);
+                    break;
+
+                default:
+                     // Fallback for GenerateQuiz if method not matched (legacy behavior) or throw error
+                     // Better to throw error for clarity
+                     throw new \Exception("Method '$method' not implemented in test controller");
+            }
 
             // Convertir en XML
             $xml = $this->arrayToXml($result, 'response');
@@ -38,9 +67,12 @@ class SoapDocumentationController extends Controller
                 'xml' => $xml,
                 'data' => $result
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('SoapTest Error: ' . $e->getMessage());
             return response()->json([
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ], 400);
         }
     }

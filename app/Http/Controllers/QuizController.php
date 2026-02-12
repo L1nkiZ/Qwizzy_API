@@ -24,6 +24,64 @@ class QuizController extends Controller
     }
 
     /**
+     * Crée un nouveau quiz (CRUD)
+     */
+    public function store(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $quiz = \App\Models\Quiz::create($request->only(['name', 'description']));
+
+        return response()->json(['message' => 'Quiz créé', 'quiz' => $quiz], 201);
+    }
+
+    /**
+     * Met à jour un quiz (CRUD)
+     */
+    public function update(Request $request, $id) {
+        $quiz = \App\Models\Quiz::find($id);
+        if (!$quiz) return response()->json(['error' => 'Quiz introuvable'], 404);
+
+        $quiz->update($request->only(['name', 'description']));
+
+        return response()->json(['message' => 'Quiz mis à jour', 'quiz' => $quiz]);
+    }
+
+    /**
+     * Supprime un quiz (CRUD)
+     */
+    public function destroy($id) {
+        $quiz = \App\Models\Quiz::find($id);
+        if (!$quiz) return response()->json(['error' => 'Quiz introuvable'], 404);
+
+        $quiz->delete();
+        return response()->json(['message' => 'Quiz supprimé']);
+    }
+
+    /**
+     * Ajoute des questions à un quiz existant
+     */
+    public function addQuestions(Request $request, $id) {
+        $quiz = \App\Models\Quiz::find($id);
+        if (!$quiz) return response()->json(['error' => 'Quiz introuvable'], 404);
+
+        $request->validate([
+            'question_ids' => 'required|array',
+            'question_ids.*' => 'exists:question,id'
+        ]);
+
+        $quiz->questions()->syncWithoutDetaching($request->question_ids);
+
+        return response()->json(['message' => 'Questions ajoutées au quiz']);
+    }
+
+    /**
      * Génère un quiz personnalisé
      *
      * @OA\Post(

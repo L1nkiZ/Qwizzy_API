@@ -34,9 +34,19 @@ Route::get('questions/theme/{id}', [QuestionController::class, 'byThemeId'])->wh
 // Metrics endpoint for Prometheus
 Route::get('/metrics', [MetricsController::class, 'metrics']);
 
-// Routes REST pour la génération de quiz
+// Routes REST pour la génération et gestion de quiz
 Route::post('quiz/generate', [QuizController::class, 'generate']);
 Route::get('quiz/statistics', [QuizController::class, 'statistics']);
+
+// CRUD Quiz
+Route::post('quizzes', [QuizController::class, 'store']);
+Route::put('quizzes/{id}', [QuizController::class, 'update'])->whereNumber('id');
+Route::delete('quizzes/{id}', [QuizController::class, 'destroy'])->whereNumber('id');
+Route::post('quizzes/{id}/questions', [QuizController::class, 'addQuestions'])->whereNumber('id'); // Ajout questions à un quiz
+
+// Import / Export
+Route::post('import/questions', [\App\Http\Controllers\ImportExportController::class, 'importQuestions']);
+Route::get('export/questions', [\App\Http\Controllers\ImportExportController::class, 'exportQuestions']);
 
 // Routes pour les ressources
 Route::apiResource('difficulties', DifficultyController::class);
