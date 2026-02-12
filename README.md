@@ -1,26 +1,26 @@
 # 🙋‍♂️❓ Qwizzy API - Documentation Complète 
 
 ## 📋 Table des matières
-- [Vue d'ensemble](#-vue-densemble)
-- [Architecture Docker](#-architecture-docker)
-- [Accès aux Services](#-accès-aux-services)
-- [Installation et Démarrage](#-installation-et-démarrage)
-- [Tableau récapitulatif des services](#-tableau-récapitulatif-des-services)
-- [Documentation API (Swagger)](#-documentation-api-swagger)
-- [Gestion de la Base de Données](#-gestion-de-la-base-de-données)
-- [Commandes Utiles](#-commandes-utiles)
-- [Structure de l'API](#-structure-de-lapi)
-- [Tests Automatisés](#-tests-automatisés)
-- [Monitoring & Métriques](#-monitoring--métriques)
-- [Logs des conteneurs](#-logs-des-conteneurs)
-- [Notes importantes](#-notes-importantes)
+
+- [Vue d'ensemble](#vue-densemble)
+- [Architecture Docker](#architecture-docker)
+- [Accès aux Services](#accès-aux-services)
+- [Installation et Démarrage](#installation-et-démarrage)
+- [Documentation API (Swagger)](#documentation-api-swagger)
+- [Gestion de la Base de Données](#gestion-de-la-base-de-données)
+- [Commandes Utiles](#commandes-utiles)
+- [Structure de l'API](#structure-de-lapi)
+- [Tests Automatisés](#tests-automatisés)
+- [Monitoring & Métriques](#monitoring--métriques)
+- [Notes importantes](#notes-importantes)
+- [Analyse Comparative REST vs SOAP dans le cadre de Qwizzy](#analyse-comparative-rest-vs-soap-dans-le-cadre-de-qwizzy)
 
 ---
 
-## 🎯 Vue d'ensemble
+## Vue d'ensemble
 
 Qwizzy API est une application Laravel pour la gestion de questions et de quiz. L'API utilise PostgreSQL comme base de données et est entièrement conteneurisée avec Docker.
-
+4
 **Technologies utilisées:**
 - Laravel 13
 - PHP 8.2
@@ -30,7 +30,7 @@ Qwizzy API est une application Laravel pour la gestion de questions et de quiz. 
 
 ---
 
-## 🐳 Architecture Docker
+## Architecture Docker
 
 Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
@@ -76,7 +76,7 @@ Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 ---
 
-## 🌐 Accès aux Services
+## Accès aux Services
 
 ### **Application Laravel**
 - URL : http://localhost:8000
@@ -125,9 +125,23 @@ Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 - URL : http://localhost:9090
 - Collecte automatique des métriques toutes les 5 secondes
 - Consultez les targets : Status → Targets
+
+### Tableau récapitulatif des services
+
+Une fois les conteneurs démarrés, vous pouvez accéder à:
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
+| **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
+| **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
+| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
+| **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
+| **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
+
 ---
 
-## 🚀 Installation et Démarrage
+## Installation et Démarrage
 
 ### Prérequis
 - `Docker`
@@ -158,22 +172,8 @@ docker-compose up -d --build
 
 ---
 
-## 🌐 Accès aux Services
 
-Une fois les conteneurs démarrés, vous pouvez accéder à:
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
-| **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
-| **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
-| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
-| **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
-| **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
-
----
-
-## 📖 Documentation API (Swagger)
+## Documentation API (Swagger)
 
 ### Accéder aux choix du Swagger
 
@@ -191,7 +191,6 @@ http://localhost:8000/api/documentation
 ```
 http://localhost:8000/soap/documentation
 ```
-
 
 ### La route user (authentification)
 
@@ -212,7 +211,7 @@ la réponse si le token est invalide ou manquant :
 
 ---
 
-## 🗄️ Gestion de la Base de Données
+## Gestion de la Base de Données
 
 ### Se connecter à pgAdmin
 
@@ -247,7 +246,7 @@ docker exec -it qwizzy_db psql -U qwizzy_user -d qwizzy_api
 
 ---
 
-## ⚙️ Commandes Utiles
+## Commandes Utiles
 
 ### Docker
 
@@ -348,7 +347,7 @@ docker exec -it qwizzy_app php artisan test --parallel
 
 ---
 
-## 🏗️ Structure de l'API
+## Structure de l'API
 
 ### Endpoints disponibles
 
@@ -382,6 +381,19 @@ docker exec -it qwizzy_app php artisan test --parallel
 | DELETE | `/api/questions/{id}` | Supprimer une question |
 | **Answers** |||
 | GET | `/api/answers` | Liste des réponses |
+| **Quiz** |||
+| POST | `/api/quizzes` | Créer un quiz |
+| PUT | `/api/quizzes/{id}` | Modifier un quiz |
+| DELETE | `/api/quizzes/{id}` | Supprimer un quiz |
+| POST | `/api/quizzes/{id}/questions` | Ajouter des questions à un quiz |
+| **Import/Export** |||
+| POST | `/api/import/questions` | Importer des questions |
+| GET | `/api/export/questions` | Exporter les questions |
+| **Quiz (SOAP)** |||
+| POST | `QuizSoapController->GenerateQuiz` | Générer un quiz avec filtres optionnels (Testable depuis le Swagger SOAP) |
+| POST | `QuizSoapController->SubmitQuizAnswers` | Soumettre les réponses et obtenir la correction (Testable depuis le Swagger SOAP) |
+| GET | `QuizSoapController->GetUserQuizHistory` | Récupérer l'historique des quiz d'un utilisateur (Testable depuis le Swagger SOAP) |
+| GET | `QuizSoapController->GetQuizLeaderboard` | Récupérer le classement général (top scores) (Testable depuis le Swagger SOAP) |
 
 ### Paramètres de pagination
 
@@ -397,7 +409,7 @@ GET /api/questions?current_sort=created_at&current_sort_dir=desc&per_page=20
 
 ---
 
-## 🧪 Tests Automatisés
+## Tests Automatisés
 
 Le projet inclut **38 tests automatisés** couvrant tous les controllers de l'API.
 
@@ -436,7 +448,7 @@ Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
 
 ---
 
-## 📊 Monitoring & Métriques
+## Monitoring & Métriques
 
 ### Accès au monitoring
 
@@ -477,7 +489,7 @@ for ($i=1; $i -le 150; $i++) {
 # Après 100 requêtes → Erreur 429 (Too Many Requests)
 ```
 
-## 📝 Notes importantes
+## Notes importantes
 
 ### Pour PowerShell
 
@@ -491,6 +503,18 @@ docker exec -it qwizzy_app php artisan l5-swagger:generate
 # Migration fresh
 docker exec qwizzy_app php artisan migrate:fresh
 ```
+
+## Analyse Comparative REST vs SOAP dans le cadre de Qwizzy
+
+Contrairement à nos endpoints REST, ceux fait via un serveur SOAP ont l'air bien moins flexibles. Nous reléguons par exemple la tâche de la création d'un quiz à notre QuizGeneratorService pour REST, tandis que notre même endpoint SOAP le fait dans la même méthode. Ce qui signifierait que si notre application était complètement en SOAP, nos fichiers seraient plus verbeux de manière générale, et que l'on pourrait créer du couplage.
+
+Nous avons dû créer une vue spécifique afin de pouvoir consulter et tester les endpoints SOAP, tandis que nous avons pu implémenter un Swagger opérationnel automatiquement avec les en-têtes des fonctions de nos Controllers REST.
+
+Un des principaux inconvénients d'un service SOAP tient à ses réponses au format XML : il faut que le destinataire sache les interpréter et les déchiffrer. Elles sont également plus difficiles à lire telles quelles pour un humain, ce qui peut compliquer le débogage.
+
+Nos endpoints REST sont aussi plus sécurisés grâce à un token d'authentification, qui manque à nos endpoints SOAP.
+
+Etant donné que les systèmes SOAP sont implémentés de manière générale dans des services bancaires, notre application ne nécessite pas autant de complexité métier pour fonctionner.
 
 ---
 
