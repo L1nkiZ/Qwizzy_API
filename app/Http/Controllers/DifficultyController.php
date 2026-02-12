@@ -127,7 +127,7 @@ class DifficultyController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => $validator->messages(),
-            ]);
+            ], 500);
         }
 
         $difficulty = Difficulty::create([
