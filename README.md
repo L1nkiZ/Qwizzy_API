@@ -14,6 +14,7 @@
 - [Monitoring & Métriques](#-monitoring--métriques)
 - [Logs des conteneurs](#-logs-des-conteneurs)
 - [Notes importantes](#-notes-importantes)
+- [Analyse Comparative REST vs SOAP dans le cadre de Qwizzy](#-analyse-comparative)
 
 ---
 
@@ -175,10 +176,21 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 
 ## 📖 Documentation API (Swagger)
 
-### Accéder à Swagger
+### Accéder aux choix du Swagger
+
 Ouvrez votre navigateur et accédez à:
 ```
 http://localhost:8000/
+```
+
+#### Swagger API REST
+```
+http://localhost:8000/api/documentation
+```
+
+#### Swagger API SOAP
+```
+http://localhost:8000/soap/documentation
 ```
 
 ### La route user (authentification)
@@ -370,6 +382,19 @@ docker exec -it qwizzy_app php artisan test --parallel
 | DELETE | `/api/questions/{id}` | Supprimer une question |
 | **Answers** |||
 | GET | `/api/answers` | Liste des réponses |
+| **Quiz** |||
+| POST | `/api/quizzes` | Créer un quiz |
+| PUT | `/api/quizzes/{id}` | Modifier un quiz |
+| DELETE | `/api/quizzes/{id}` | Supprimer un quiz |
+| POST | `/api/quizzes/{id}/questions` | Ajouter des questions à un quiz |
+| **Import/Export** |||
+| POST | `/api/import/questions` | Importer des questions |
+| GET | `/api/export/questions` | Exporter les questions |
+| **Quiz (SOAP)** |||
+| POST | `QuizSoapController->GenerateQuiz` | Générer un quiz avec filtres optionnels (Testable depuis le Swagger SOAP) |
+| POST | `QuizSoapController->SubmitQuizAnswers` | Soumettre les réponses et obtenir la correction (Testable depuis le Swagger SOAP) |
+| GET | `QuizSoapController->GetUserQuizHistory` | Récupérer l'historique des quiz d'un utilisateur (Testable depuis le Swagger SOAP) |
+| GET | `QuizSoapController->GetQuizLeaderboard` | Récupérer le classement général (top scores) (Testable depuis le Swagger SOAP) |
 
 ### Paramètres de pagination
 
@@ -479,6 +504,18 @@ docker exec -it qwizzy_app php artisan l5-swagger:generate
 # Migration fresh
 docker exec qwizzy_app php artisan migrate:fresh
 ```
+
+## Analyse Comparative REST vs SOAP dans le cadre de Qwizzy
+
+Contrairement à nos endpoints REST, ceux fait via un serveur SOAP ont l'air bien moins flexibles. Nous reléguons par exemple la tâche de la création d'un quiz à notre QuizGeneratorService pour REST, tandis que notre même endpoint SOAP le fait dans la même méthode. Ce qui signifierait que si notre application était complètement en SOAP, nos fichiers seraient plus verbeux de manière générale, et que l'on pourrait créer du couplage.
+
+Nous avons dû créer une vue spécifique afin de pouvoir consulter et tester les endpoints SOAP, tandis que nous avons pu implémenter un Swagger opérationnel automatiquement avec les en-têtes des fonctions de nos Controllers REST.
+
+L'un des principaux défauts d'un service SOAP se trouve dans ses réponses en XML, car il est beaucoup plus difficile de le lire en cas d'erreur. L'avantage d'une réponse en JSON est qu'elle est plus facile à lire et donc à débugger.
+
+Nos endpoints REST sont aussi plus sécurisés grâce à un token d'authentification, qui manque à nos endpoints SOAP.
+
+Etant donné que les systèmes SOAP sont implémentés de manière générale dans des services bancaires, notre application ne nécessite pas autant de complexité métier pour fonctionner.
 
 ---
 
