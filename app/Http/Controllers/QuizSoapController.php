@@ -111,7 +111,7 @@ class QuizSoapController extends Controller
 
     /**
      * Soumet les réponses d'un quiz et retourne la correction
-     * 
+     *
      * @param int $userId ID de l'utilisateur
      * @param string $quizName Nom du quiz (généré automatiquement)
      * @param array $answers Tableau [questionId => numeroReponse] où numeroReponse est 1, 2, 3 ou 4
@@ -121,7 +121,7 @@ class QuizSoapController extends Controller
     {
         try {
             $userId = (int) $userId;
-            
+
             // Vérifier l'utilisateur
             $user = User::find($userId);
             if (!$user) {
@@ -167,7 +167,7 @@ class QuizSoapController extends Controller
             // Enregistrer le résultat
             $userQuiz = UserQuiz::create([
                 'user_id' => $userId,
-                'quiz_id' => null, // Pas de quiz permanent
+                'quiz_id' => null,
                 'score' => $score,
                 'max_score' => $maxScore,
                 'started_at' => now(),
@@ -196,7 +196,7 @@ class QuizSoapController extends Controller
 
     /**
      * Récupère l'historique des quiz d'un utilisateur
-     * 
+     *
      * @param int $userId ID de l'utilisateur
      * @return array Historique des quiz
      */
@@ -241,7 +241,7 @@ class QuizSoapController extends Controller
 
     /**
      * Récupère le classement général (top scores)
-     * 
+     *
      * @param int $limit Nombre de résultats (défaut: 10)
      * @return array Classement
      */
