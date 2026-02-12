@@ -10,13 +10,14 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libzip-dev \
-    libpq-dev
+    libpq-dev \
+    libxslt-dev
 
 # Nettoyer le cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Installer les extensions PHP (avec support PostgreSQL)
-RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip
+# Installer les extensions PHP (avec support PostgreSQL et SOAP)
+RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip soap
 
 # Installer APCu pour le stockage des métriques Prometheus
 RUN pecl install apcu && docker-php-ext-enable apcu

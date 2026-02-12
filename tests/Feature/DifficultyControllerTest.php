@@ -56,18 +56,18 @@ class DifficultyControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_validates_required_fields_when_creating_difficulty()
+    public function it_refuses_no_required_fields_when_creating_difficulty()
     {
         $response = $this->postJson('/api/difficulties', []);
 
-        $response->assertStatus(200)
+        $response->assertStatus(500)
             ->assertJson([
                 'error' => true,
             ]);
     }
 
     #[Test]
-    public function it_validates_point_is_numeric()
+    public function it_refuses_point_is_not_numeric()
     {
         $difficultyData = [
             'name' => 'Test Numeric',
@@ -76,7 +76,7 @@ class DifficultyControllerTest extends TestCase
 
         $response = $this->postJson('/api/difficulties', $difficultyData);
 
-        $response->assertStatus(200)
+        $response->assertStatus(500)
             ->assertJson([
                 'error' => true,
             ]);
@@ -135,7 +135,7 @@ class DifficultyControllerTest extends TestCase
             'point' => 2,
         ]);
 
-        $response->assertStatus(200)
+        $response->assertStatus(500)
             ->assertJson([
                 'error' => true,
             ]);

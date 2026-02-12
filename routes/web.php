@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SoapDocumentationController;
+use App\Http\Controllers\QuizSoapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,4 +16,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// La route '/' est gérée par L5-Swagger pour afficher la documentation
+// Page d'accueil avec choix de documentation
+Route::get('/', [HomeController::class, 'index']);
+
+// Documentation Swagger (REST API) - géré automatiquement par L5-Swagger
+// Route: /api/documentation
+
+// Serveur SOAP
+Route::match(['get', 'post'], '/soap/quiz', [QuizSoapController::class, 'server']);
+
+// Documentation SOAP interactive
+Route::get('/soap/documentation', [SoapDocumentationController::class, 'index']);
