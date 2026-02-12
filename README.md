@@ -1,27 +1,28 @@
 # 🙋‍♂️❓ Qwizzy API - Documentation Complète 
 
 ## 📋 Table des matières
-- [Vue d'ensemble](#-vue-densemble)
-- [Architecture Docker](#-architecture-docker)
-- [Accès aux Services](#-accès-aux-services)
-- [Installation et Démarrage](#-installation-et-démarrage)
-- [Tableau récapitulatif des services](#-tableau-récapitulatif-des-services)
-- [Documentation API (Swagger)](#-documentation-api-swagger)
-- [Gestion de la Base de Données](#-gestion-de-la-base-de-données)
-- [Commandes Utiles](#-commandes-utiles)
-- [Structure de l'API](#-structure-de-lapi)
-- [Tests Automatisés](#-tests-automatisés)
-- [Monitoring & Métriques](#-monitoring--métriques)
-- [Logs des conteneurs](#-logs-des-conteneurs)
-- [Notes importantes](#-notes-importantes)
-- [Analyse Comparative REST vs SOAP dans le cadre de Qwizzy](#-analyse-comparative)
+
+- [Vue d'ensemble](#vue-densemble)
+- [Architecture Docker](#architecture-docker)
+- [Accès aux Services](#acces-aux-services)
+- [Installation et Démarrage](#installation-et-demarrage)
+- [Tableau récapitulatif des services](#tableau-récapitulatif-des-services)
+- [Documentation API (Swagger)](#documentation-api-swagger)
+- [Gestion de la Base de Données](#gestion-de-la-base-de-donnees)
+- [Commandes Utiles](#commandes-utiles)
+- [Structure de l'API](#structure-de-lapi)
+- [Tests Automatisés](#tests-automatises)
+- [Monitoring & Métriques](#monitoring--metriques)
+- [Logs des conteneurs](#logs-des-conteneurs)
+- [Notes importantes](#notes-importantes)
+- [Analyse Comparative REST vs SOAP dans le cadre de Qwizzy](#analyse-comparative-rest-vs-soap-dans-le-cadre-de-qwizzy)
 
 ---
 
-## 🎯 Vue d'ensemble
+## Vue d'ensemble
 
 Qwizzy API est une application Laravel pour la gestion de questions et de quiz. L'API utilise PostgreSQL comme base de données et est entièrement conteneurisée avec Docker.
-
+4
 **Technologies utilisées:**
 - Laravel 13
 - PHP 8.2
@@ -31,7 +32,7 @@ Qwizzy API est une application Laravel pour la gestion de questions et de quiz. 
 
 ---
 
-## 🐳 Architecture Docker
+## Architecture Docker
 
 Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
@@ -77,7 +78,7 @@ Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 ---
 
-## 🌐 Accès aux Services
+## Accès aux Services
 
 ### **Application Laravel**
 - URL : http://localhost:8000
@@ -128,7 +129,7 @@ Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 - Consultez les targets : Status → Targets
 ---
 
-## 🚀 Installation et Démarrage
+## Installation et Démarrage
 
 ### Prérequis
 - `Docker`
@@ -159,7 +160,7 @@ docker-compose up -d --build
 
 ---
 
-## 🌐 Accès aux Services
+## Accès aux Services
 
 Une fois les conteneurs démarrés, vous pouvez accéder à:
 
@@ -174,7 +175,7 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 
 ---
 
-## 📖 Documentation API (Swagger)
+## Documentation API (Swagger)
 
 ### Accéder aux choix du Swagger
 
@@ -212,7 +213,7 @@ la réponse si le token est invalide ou manquant :
 
 ---
 
-## 🗄️ Gestion de la Base de Données
+## Gestion de la Base de Données
 
 ### Se connecter à pgAdmin
 
@@ -247,7 +248,7 @@ docker exec -it qwizzy_db psql -U qwizzy_user -d qwizzy_api
 
 ---
 
-## ⚙️ Commandes Utiles
+## Commandes Utiles
 
 ### Docker
 
@@ -348,7 +349,7 @@ docker exec -it qwizzy_app php artisan test --parallel
 
 ---
 
-## 🏗️ Structure de l'API
+## Structure de l'API
 
 ### Endpoints disponibles
 
@@ -410,7 +411,7 @@ GET /api/questions?current_sort=created_at&current_sort_dir=desc&per_page=20
 
 ---
 
-## 🧪 Tests Automatisés
+## Tests Automatisés
 
 Le projet inclut **38 tests automatisés** couvrant tous les controllers de l'API.
 
@@ -449,7 +450,7 @@ Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
 
 ---
 
-## 📊 Monitoring & Métriques
+## Monitoring & Métriques
 
 ### Accès au monitoring
 
@@ -490,7 +491,7 @@ for ($i=1; $i -le 150; $i++) {
 # Après 100 requêtes → Erreur 429 (Too Many Requests)
 ```
 
-## 📝 Notes importantes
+## Notes importantes
 
 ### Pour PowerShell
 
@@ -511,7 +512,7 @@ Contrairement à nos endpoints REST, ceux fait via un serveur SOAP ont l'air bie
 
 Nous avons dû créer une vue spécifique afin de pouvoir consulter et tester les endpoints SOAP, tandis que nous avons pu implémenter un Swagger opérationnel automatiquement avec les en-têtes des fonctions de nos Controllers REST.
 
-L'un des principaux défauts d'un service SOAP se trouve dans ses réponses en XML, car il est beaucoup plus difficile de le lire en cas d'erreur. L'avantage d'une réponse en JSON est qu'elle est plus facile à lire et donc à débugger.
+Un des principaux inconvénients d'un service SOAP tient à ses réponses au format XML : il faut que le destinataire sache les interpréter et les déchiffrer. Elles sont également plus difficiles à lire telles quelles pour un humain, ce qui peut compliquer le débogage.
 
 Nos endpoints REST sont aussi plus sécurisés grâce à un token d'authentification, qui manque à nos endpoints SOAP.
 
