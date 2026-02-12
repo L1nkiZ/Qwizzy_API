@@ -120,7 +120,7 @@ class DifficultyController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:200|unique:difficulty,name',
-            'point' => 'required|integer|min:1|max:5',
+            'point' => 'required|integer|min:1',
         ]);
 
         if ($validator->fails()) {
