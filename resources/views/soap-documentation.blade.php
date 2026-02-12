@@ -28,21 +28,22 @@
         }
 
         .sidebar-header {
-            padding: 20px;
-            background: #2c3e50;
-            color: white;
-            border-bottom: 1px solid #34495e;
+            padding: 18px;
+            background: #34495e;
+            color: #ecf0f1;
+            border-bottom: 1px solid #2c3e50;
         }
 
         .sidebar-header h1 {
-            font-size: 20px;
-            margin-bottom: 5px;
-            font-weight: 600;
+            font-size: 19px;
+            margin-bottom: 6px;
+            font-weight: 500;
         }
 
         .sidebar-header p {
-            font-size: 12px;
-            opacity: 0.9;
+            font-size: 11px;
+            opacity: 0.85;
+            color: #bdc3c7;
         }
 
         .btn-home {
@@ -61,6 +62,55 @@
 
         .btn-home:hover {
             background: rgba(255, 255, 255, 0.25);
+        }
+
+        .top-header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 280px;
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid #e1e8ed;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-left: 15px;
+        }
+
+        .btn-menu {
+            padding: 8px 16px;
+            background: #34495e;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .btn-menu:hover {
+            background: #2c3e50;
+        }
+
+        .content {
+            margin-left: 280px;
+            margin-top: 60px;
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
         }
 
         .nav-section {
@@ -85,15 +135,15 @@
         }
 
         .nav-item:hover {
-            background: #f8f9fa;
-            border-left-color: #3498db;
+            background: #f4f6f7;
+            border-left-color: #2980b9;
         }
 
         .nav-item.active {
-            background: #ecf0f1;
-            border-left-color: #3498db;
+            background: #e8eaed;
+            border-left-color: #2980b9;
             color: #2c3e50;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .nav-item-title {
@@ -133,16 +183,16 @@
         }
 
         .method-header {
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 14px;
+            margin-bottom: 22px;
         }
 
         .method-title {
-            font-size: 24px;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-weight: 600;
+            font-size: 23px;
+            color: #34495e;
+            margin-bottom: 9px;
+            font-weight: 500;
         }
 
         .method-badge {
@@ -418,109 +468,51 @@
     </style>
 </head>
 <body>
+    <!-- Top Header -->
+    <div class="top-header">
+        <div>
+            <span class="header-title">Qwizzy - API SOAP</span>
+            <span class="header-subtitle">Services web XML</span>
+        </div>
+        <a href="/" class="btn-menu">← Menu</a>
+    </div>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
-            <h1>🧼 SOAP API</h1>
-            <p>Documentation Interactive</p>
-            <a href="/" class="btn-home">← Retour au menu principal</a>
+            <h1>API SOAP</h1>
+            <p>Tests webservices</p>
         </div>
 
         <div class="nav-section">
-            <div class="nav-item active" onclick="showSection('home')">
-                <div class="nav-item-title">🏠 Accueil</div>
-                <div class="nav-item-desc">Vue d'ensemble</div>
-            </div>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">📋 Génération de Quiz</div>
-            <div class="nav-item" onclick="showSection('generateQuiz')">
+            <div class="nav-section-title">📋 Quiz</div>
+            <div class="nav-item active" onclick="showSection('generateQuiz')">
                 <div class="nav-item-title">GenerateQuiz</div>
-                <div class="nav-item-desc">Générer un quiz aléatoire</div>
-            </div>
-            <div class="nav-item" onclick="showSection('getStatistics')">
-                <div class="nav-item-title">GetQuizStatistics</div>
-                <div class="nav-item-desc">Statistiques des questions</div>
-            </div>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">🎯 Gestion des Quiz</div>
-            <div class="nav-item" onclick="showSection('createQuiz')">
-                <div class="nav-item-title">CreateQuiz</div>
-                <div class="nav-item-desc">Créer un quiz</div>
-            </div>
-            <div class="nav-item" onclick="showSection('startQuiz')">
-                <div class="nav-item-title">StartQuiz</div>
-                <div class="nav-item-desc">Démarrer un quiz</div>
+                <div class="nav-item-desc">Générer un quiz</div>
             </div>
             <div class="nav-item" onclick="showSection('submitAnswers')">
                 <div class="nav-item-title">SubmitQuizAnswers</div>
-                <div class="nav-item-desc">Soumettre les réponses</div>
+                <div class="nav-item-desc">Corriger et noter</div>
             </div>
         </div>
 
         <div class="nav-section">
-            <div class="nav-section-title">📊 Scores & Historique</div>
+            <div class="nav-section-title">📊 Historique</div>
             <div class="nav-item" onclick="showSection('getUserHistory')">
                 <div class="nav-item-title">GetUserQuizHistory</div>
-                <div class="nav-item-desc">Historique utilisateur</div>
+                <div class="nav-item-desc">Mes résultats</div>
             </div>
             <div class="nav-item" onclick="showSection('getLeaderboard')">
                 <div class="nav-item-title">GetQuizLeaderboard</div>
-                <div class="nav-item-desc">Classement</div>
+                <div class="nav-item-desc">Top scores</div>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="content">
-        <!-- Home -->
-        <div id="home" class="home-container method-container active">
-            <h1 class="home-title">Bienvenue sur l'API SOAP Qwizzy</h1>
-            <p class="home-subtitle">Documentation interactive et interface de test</p>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">7</div>
-                    <div class="stat-label">Méthodes SOAP</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">Mode</div>
-                    <div class="stat-label">Non-WSDL</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">✓</div>
-                    <div class="stat-label">Tests Interactifs</div>
-                </div>
-            </div>
-
-            <div class="section" style="margin-top: 40px; text-align: left;">
-                <div class="section-title">🚀 Démarrage Rapide</div>
-                <div class="code-block">
-$client = new SoapClient(null, [
-    'location' => 'http://localhost:8000/soap/quiz',
-    'uri' => 'http://localhost:8000/soap/quiz',
-    'trace' => 1,
-    'exceptions' => true
-]);
-
-// Générer un quiz
-$quiz = $client->GenerateQuiz(10, null, null, null);</div>
-            </div>
-
-            <div class="section" style="text-align: left;">
-                <div class="section-title">📖 Navigation</div>
-                <p class="method-description">
-                    Utilisez le menu de gauche pour naviguer entre les différentes méthodes SOAP.
-                    Chaque méthode dispose d'un formulaire de test interactif pour tester l'API en temps réel.
-                </p>
-            </div>
-        </div>
-
         <!-- GenerateQuiz -->
-        <div id="generateQuiz" class="method-container">
+        <div id="generateQuiz" class="method-container active">
             <div class="method-header">
                 <h2 class="method-title">GenerateQuiz</h2>
                 <span class="method-badge">SOAP Method</span>
@@ -901,20 +893,49 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
 
         function showResponse(containerId, data, isError = false) {
             const container = document.getElementById(containerId);
+
+            let xmlContent = '';
+            let jsonContent = '';
+
+            if (data.xml) {
+                // Afficher le XML formaté
+                xmlContent = `
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #2c3e50;">📄 Réponse XML SOAP :</h4>
+                        <pre style="background: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; overflow-x: auto; font-size: 12px;">${escapeHtml(data.xml)}</pre>
+                    </div>
+                `;
+                jsonContent = `
+                    <div>
+                        <h4 style="margin: 0 0 10px 0; color: #2c3e50;">📊 Données parsées :</h4>
+                        <pre class="response-json">${JSON.stringify(data.data, null, 2)}</pre>
+                    </div>
+                `;
+            } else {
+                jsonContent = `<pre class="response-json">${JSON.stringify(data, null, 2)}</pre>`;
+            }
+
             container.innerHTML = `
                 <div class="response-header ${isError ? 'error' : 'success'}">
-                    <span>${isError ? '❌ Erreur' : '✅ Succès'}</span>
+                    <span>${isError ? '❌ Erreur' : '✅ Réponse SOAP'}</span>
                 </div>
                 <div class="response-body">
-                    <pre class="response-json">${JSON.stringify(data, null, 2)}</pre>
+                    ${xmlContent}
+                    ${jsonContent}
                 </div>
             `;
             container.classList.add('show');
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function setLoading(btnElement, isLoading) {
             if (!btnElement) return;
-            
+
             const textSpan = btnElement.querySelector('.btn-text');
             if (isLoading) {
                 btnElement.disabled = true;
@@ -955,7 +976,8 @@ $quiz = $client->GenerateQuiz(10, null, null, null);</div>
                 };
 
                 const result = await callSoapMethod('GenerateQuiz', params);
-                showResponse('gen_response', result, !result.success);
+                const hasError = result.error || (result.data && result.data.error);
+                showResponse('gen_response', result, hasError);
             } catch (error) {
                 showResponse('gen_response', {error: error.message}, true);
             } finally {
