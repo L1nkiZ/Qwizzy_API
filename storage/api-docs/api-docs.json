@@ -212,6 +212,45 @@
             }
         },
         "/api/difficulties/{id}": {
+            "get": {
+                "tags": [
+                    "Difficulty"
+                ],
+                "summary": "Récupérer une difficulté",
+                "description": "Retourne les détails d'une difficulté par son ID",
+                "operationId": "getDifficulty",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la difficulté",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Difficulté récupérée avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "difficulty": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Difficulté non trouvée"
+                    }
+                }
+            },
             "put": {
                 "tags": [
                     "Difficulty"
@@ -1085,6 +1124,298 @@
                 }
             }
         },
+        "/api/quiz/generate": {
+            "post": {
+                "tags": [
+                    "Quiz"
+                ],
+                "summary": "Générer un quiz personnalisé",
+                "description": "Génère un quiz avec un nombre spécifié de questions, filtré par thème, difficulté et/ou type de question",
+                "operationId": "generateQuiz",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "numberOfQuestions"
+                                ],
+                                "properties": {
+                                    "numberOfQuestions": {
+                                        "description": "Nombre de questions souhaitées (1-100)",
+                                        "type": "integer",
+                                        "example": 10
+                                    },
+                                    "subjectId": {
+                                        "description": "ID du thème (optionnel)",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "difficultyId": {
+                                        "description": "ID de la difficulté (optionnel)",
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "questionTypeId": {
+                                        "description": "ID du type de question (optionnel)",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Quiz généré avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Quiz généré avec succès"
+                                        },
+                                        "quiz": {
+                                            "properties": {
+                                                "metadata": {
+                                                    "properties": {
+                                                        "total_questions": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "subject_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "difficulty_id": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        },
+                                                        "question_type_id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "generated_at": {
+                                                            "type": "string",
+                                                            "example": "2025-11-28T10:30:00Z"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "questions": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "question": {
+                                                                "type": "string",
+                                                                "example": "Quelle est la capitale de la France ?"
+                                                            },
+                                                            "subject": {
+                                                                "type": "string",
+                                                                "example": "Géographie"
+                                                            },
+                                                            "difficulty": {
+                                                                "type": "string",
+                                                                "example": "Facile"
+                                                            },
+                                                            "question_type": {
+                                                                "type": "string",
+                                                                "example": "QCM"
+                                                            },
+                                                            "proposals": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string",
+                                                                    "example": "Paris"
+                                                                }
+                                                            },
+                                                            "answers": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "answer": {
+                                                                            "type": "string",
+                                                                            "example": "Paris"
+                                                                        },
+                                                                        "is_correct": {
+                                                                            "type": "boolean",
+                                                                            "example": true
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erreur de validation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Le nombre de questions doit être supérieur à 0"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation des données",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Les données fournies sont invalides"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/quiz/statistics": {
+            "get": {
+                "tags": [
+                    "Quiz"
+                ],
+                "summary": "Obtenir les statistiques des questions",
+                "description": "Retourne les statistiques sur le nombre de questions disponibles par thème et par difficulté",
+                "operationId": "getQuizStatistics",
+                "responses": {
+                    "200": {
+                        "description": "Statistiques récupérées avec succès",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "statistics": {
+                                            "properties": {
+                                                "total_questions": {
+                                                    "type": "integer",
+                                                    "example": 150
+                                                },
+                                                "by_subject": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "subject_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "subject_name": {
+                                                                "type": "string",
+                                                                "example": "Géographie"
+                                                            },
+                                                            "count": {
+                                                                "type": "integer",
+                                                                "example": 50
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "by_difficulty": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "difficulty_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "difficulty_name": {
+                                                                "type": "string",
+                                                                "example": "Facile"
+                                                            },
+                                                            "count": {
+                                                                "type": "integer",
+                                                                "example": 60
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur serveur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Erreur lors de la récupération des statistiques"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/subjects": {
             "get": {
                 "tags": [
@@ -1548,6 +1879,10 @@
         {
             "name": "Answer",
             "description": "Endpoints pour gérer les réponses aux questions"
+        },
+        {
+            "name": "Quiz",
+            "description": "Endpoints pour générer et gérer des quiz"
         },
         {
             "name": "QuestionType",

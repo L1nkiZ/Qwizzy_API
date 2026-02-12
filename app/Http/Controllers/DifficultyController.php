@@ -83,37 +83,37 @@ class DifficultyController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Récupère une difficulté par son ID.
      *
-     * @OA\Post(
-     *      path="/api/difficulties",
-     *      operationId="storeDifficulty",
-     *      tags={"Difficulty"},
-     *      summary="Créer une nouvelle difficulté",
-     *      description="Crée un nouveau niveau de difficulté",
+     * @OA\Get(
+     *     path="/api/difficulties/{id}",
+     *     operationId="getDifficulty",
+     *     tags={"Difficulty"},
+     *     summary="Récupérer une difficulté",
+     *     description="Retourne les détails d'une difficulté par son ID",
      *
-     *      @OA\RequestBody(
-     *          required=true,
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la difficulté",
+     *         required=true,
      *
-     *          @OA\JsonContent(
-     *              required={"name","point"},
+     *         @OA\Schema(type="integer")
+     *     ),
      *
-     *              @OA\Property(property="name", type="string", maxLength=200, example="Facile"),
-     *              @OA\Property(property="point", type="integer", minimum=1, maximum=5, example=1),
-     *          ),
-     *      ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Difficulté récupérée avec succès",
      *
-     *      @OA\Response(
-     *          response=200,
-     *          description="Difficulté créée avec succès",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="difficulty", type="object")
+     *         )
+     *     ),
      *
-     *          @OA\JsonContent()
-     *       ),
-     *
-     *      @OA\Response(
-     *          response=422,
-     *          description="Erreur de validation"
-     *      )
+     *     @OA\Response(
+     *         response=404,
+     *         description="Difficulté non trouvée"
+     *     )
      * )
      */
     public function store(Request $request)
@@ -151,7 +151,38 @@ class DifficultyController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Store a newly created resource in storage.
+     *
+     * @OA\Post(
+     *      path="/api/difficulties",
+     *      operationId="storeDifficulty",
+     *      tags={"Difficulty"},
+     *      summary="Créer une nouvelle difficulté",
+     *      description="Crée un nouveau niveau de difficulté",
+     *
+     *      @OA\RequestBody(
+     *          required=true,
+     *
+     *          @OA\JsonContent(
+     *              required={"name","point"},
+     *
+     *              @OA\Property(property="name", type="string", maxLength=200, example="Facile"),
+     *              @OA\Property(property="point", type="integer", minimum=1, maximum=5, example=1),
+     *          ),
+     *      ),
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Difficulté créée avec succès",
+     *
+     *          @OA\JsonContent()
+     *       ),
+     *
+     *      @OA\Response(
+     *          response=422,
+     *          description="Erreur de validation"
+     *      )
+     * )
      */
     public function edit(string $id)
     {
