@@ -175,11 +175,23 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 
 ## 📖 Documentation API (Swagger)
 
-### Accéder à Swagger
+### Accéder aux choix du Swagger
+
 Ouvrez votre navigateur et accédez à:
 ```
 http://localhost:8000/
 ```
+
+#### Swagger API REST
+```
+http://localhost:8000/api/documentation
+```
+
+#### Swagger API SOAP
+```
+http://localhost:8000/soap/documentation
+```
+
 
 ### La route user (authentification)
 
