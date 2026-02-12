@@ -19,9 +19,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Installer les extensions PHP (avec support PostgreSQL et SOAP)
 RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip soap
 
-# Installer APCu pour le stockage des métriques Prometheus
-RUN pecl install apcu && docker-php-ext-enable apcu
-
 # Obtenir Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -30,6 +27,9 @@ WORKDIR /var/www
 
 # Copier les fichiers du projet
 COPY . /var/www
+
+# Installer les dépendances PHP
+RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 # Définir les permissions
 RUN chown -R www-data:www-data /var/www \

@@ -32,7 +32,7 @@ Qwizzy API est une application Laravel pour la gestion de questions et de quiz. 
 
 ## Architecture Docker
 
-Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
+Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 ### 1. **qwizzy_app** - Application Laravel
 - **Image**: PHP 8.2-FPM
@@ -57,21 +57,6 @@ Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 - **Container**: `qwizzy_pgadmin`
 - **Login/Mot de passe**:
   - Email: `admin@qwizzy.com`
-  - Password: `admin`
-
-### 4. **qwizzy_prometheus** - Collecte des métriques
-- **Image**: `prom/prometheus:latest`
-- **Port**: `9090`
-- **Rôle**: Collecte et stocke les métriques de l'API
-- **Container**: `qwizzy_prometheus`
-
-### 5. **qwizzy_grafana** - Visualisation des métriques
-- **Image**: `grafana/grafana:latest`
-- **Port**: `3000`
-- **Rôle**: Dashboards de monitoring en temps réel
-- **Container**: `qwizzy_grafana`
-- **Login/Mot de passe**:
-  - Username: `admin`
   - Password: `admin`
 
 ---
@@ -262,23 +247,9 @@ docker-compose logs -f
 
 # Voir les logs d'un conteneur spécifique
 docker logs -f qwizzy_app
-docker logs -f qwizzy_db
-docker logs -f qwizzy_pgadmin
-docker logs -f qwizzy_prometheus
-docker logs -f qwizzy_grafana
-
-# Voir les 50 dernières lignes de logs
-docker logs qwizzy_app --tail 50
-
-# Suivre les logs en temps réel
-docker logs qwizzy_app -f --tail 100
 
 # Redémarrer un conteneur
 docker restart qwizzy_app
-
-# Vérifier l'état des conteneurs
-docker ps
-docker ps -a  # Inclut les conteneurs arrêtés
 
 # Reconstruire les images
 docker-compose up -d --build
@@ -491,9 +462,9 @@ for ($i=1; $i -le 150; $i++) {
 
 ## Notes importantes
 
-### Pour PowerShell
+### Pour powershell
 
-Si vous utilisez PowerShell, certaines commandes peuvent nécessiter des ajustements:
+Si vous utilisez powershell, certaines commandes peuvent nécessiter des ajustements:
 
 ```powershell
 # Restart et génération Swagger
