@@ -19,12 +19,29 @@ class QuizSoapController extends Controller
      */
     public function server()
     {
-        $server = new SoapServer(null, [
-            'uri' => 'http://localhost:8000/soap/quiz'
-        ]);
+        // Si ?wsdl est demandé, on retourne le fichier WSDL
+        if (request()->has('wsdl')) {
+            $wsdlPath = resource_path('wsdl/quiz.wsdl');
+            if (file_exists($wsdlPath)) {
+                return response()->file($wsdlPath, ['Content-Type' => 'text/xml']);
+            }
+        }
 
-        $server->setObject($this);
-        $server->handle();
+        // Sinon, on initialise le serveur avec le WSDL
+        $options = [
+            'uri' => 'http://localhost:8000/soap/quiz', // Fallback
+            'cache_wsdl' => WSDL_CACHE_NONE
+        ];
+
+        try {
+            $wsdlPath = resource_path('wsdl/quiz.wsdl');
+            $server = new SoapServer($wsdlPath, $options);
+            $server->setObject($this);
+            $server->handle();
+        } catch (\Exception $e) {
+            Log::error('SOAP Server Error: ' . $e->getMessage());
+            return response()->make('SOAP Error', 500);
+        }
         exit;
     }
 

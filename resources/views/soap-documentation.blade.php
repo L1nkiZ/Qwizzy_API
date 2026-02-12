@@ -507,13 +507,6 @@
                 <div class="nav-item-desc">Top scores</div>
             </div>
         </div>
-        <div class="nav-section">
-            <div class="nav-section-title">📥 Donnees</div>
-            <div class="nav-item" onclick="showSection('importExport')">
-                <div class="nav-item-title">Import / Export</div>
-                <div class="nav-item-desc">CSV Questions</div>
-            </div>
-        </div>
     </div>
 
     <!-- Main Content -->
@@ -877,42 +870,6 @@
                 <div class="response-container" id="leader_response"></div>
             </div>
         </div>
-
-        <!-- Import / Export Tests -->
-        <div id="importExport" class="method-container">
-            <div class="method-header">
-                <h2 class="method-title">Import / Export (REST)</h2>
-                <span class="method-badge" style="background:var(--secondary);color:white;">REST API</span>
-                <p class="method-description">
-                    Tests pour l'import et l export de questions (CSV).
-                </p>
-            </div>
-
-            <div class="section">
-                <h3 class="section-title">📤 Export CSV</h3>
-                <div class="test-form">
-                    <p class="param-desc" style="margin-bottom:1rem;">Télécharger toutes les questions au format CSV.</p>
-                    <a href="/api/export/questions" class="btn-test" style="text-decoration:none; display:inline-block; text-align:center;">
-                        <span class="btn-text">Exporter les questions</span>
-                    </a>
-                </div>
-            </div>
-
-             <div class="section" style="margin-top:2rem;">
-                <h3 class="section-title">📥 Import CSV</h3>
-                <div class="test-form">
-                    <div class="form-group">
-                        <label class="form-label">Fichier CSV</label>
-                        <input type="file" class="form-input" id="import_file" accept=".csv">
-                        <small class="form-input-small">Format: Question, Sujet, Difficulté, Prop1, Prop2, Prop3, Prop4, IndexBonneRep(1-4)</small>
-                    </div>
-                    <button class="btn-test" onclick="testImport()">
-                        <span class="btn-text">Tester Import</span>
-                    </button>
-                </div>
-                <div class="response-container" id="import_response"></div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -1165,14 +1122,18 @@
             setLoading(btn, true);
 
             try {
+                const limitInput = document.getElementById('leader_limit');
+                const quizInput = document.getElementById('leader_quizId');
+
                 const params = {
-                    limit: parseInt(document.getElementById('leaderboard_limit').value) || 10
+                    limit: parseInt(limitInput.value) || 10,
+                    quizId: parseInt(quizInput.value) || 1
                 };
 
                 const result = await callSoapMethod('GetQuizLeaderboard', params);
-                showResponse('leaderboard_response', result, !result.success);
+                showResponse('leader_response', result, !result.success);
             } catch (error) {
-                showResponse('leaderboard_response', {error: error.message}, true);
+                showResponse('leader_response', {error: error.message}, true);
             } finally {
                 setLoading(btn, false);
                 const textSpan = btn.querySelector('.btn-text');
@@ -1180,48 +1141,6 @@
                     textSpan.textContent = 'Tester GetQuizLeaderboard';
                 } else {
                     btn.textContent = 'Tester GetQuizLeaderboard';
-                }
-            }
-        }
-
-        async function testImport() {
-            const btn = event.target;
-            setLoading(btn, true);
-            const responseContainer = document.getElementById('import_response');
-
-            try {
-                const fileInput = document.getElementById('import_file');
-                if(fileInput.files.length === 0) {
-                    throw new Error("Veuillez sélectionner un fichier CSV");
-                }
-
-                const formData = new FormData();
-                formData.append('file', fileInput.files[0]);
-
-                const response = await fetch('/api/import/questions', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                // Formater le résultat comme les autres réponses
-                const formattedResult = {
-                    success: result.success,
-                    data: result
-                };
-
-                showResponse('import_response', formattedResult, !result.success);
-
-            } catch (error) {
-                showResponse('import_response', {error: error.message}, true);
-            } finally {
-                setLoading(btn, false);
-                const textSpan = btn.querySelector('.btn-text');
-                if (textSpan) {
-                    textSpan.textContent = 'Tester Import';
-                } else {
-                    btn.textContent = 'Tester Import';
                 }
             }
         }

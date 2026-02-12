@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="QuizService"
+             targetNamespace="http://localhost:8000/soap/quiz"
+             xmlns:tns="http://localhost:8000/soap/quiz"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <types>
+        <xsd:schema targetNamespace="http://localhost:8000/soap/quiz">
+            <xsd:complexType name="ArrayOfInt">
+                <xsd:complexContent>
+                    <xsd:restriction base="soapenc:Array">
+                        <xsd:attribute ref="soapenc:arrayType" wsdl:arrayType="xsd:int[]"/>
+                    </xsd:restriction>
+                </xsd:complexContent>
+            </xsd:complexType>
+             <xsd:complexType name="QuizAnswer">
+                <xsd:all>
+                    <xsd:element name="question_id" type="xsd:int"/>
+                    <xsd:element name="answer_id" type="xsd:int"/>
+                </xsd:all>
+            </xsd:complexType>
+            <xsd:complexType name="ArrayOfQuizAnswer">
+                <xsd:complexContent>
+                    <xsd:restriction base="soapenc:Array">
+                        <xsd:attribute ref="soapenc:arrayType" wsdl:arrayType="tns:QuizAnswer[]"/>
+                    </xsd:restriction>
+                </xsd:complexContent>
+            </xsd:complexType>
+        </xsd:schema>
+    </types>
+
+    <message name="GenerateQuizRequest">
+        <part name="numberOfQuestions" type="xsd:int"/>
+        <part name="subjectId" type="xsd:int"/>
+        <part name="difficultyId" type="xsd:int"/>
+        <part name="questionTypeId" type="xsd:int"/>
+    </message>
+
+    <message name="GenerateQuizResponse">
+        <part name="return" type="xsd:anyType"/>
+    </message>
+
+    <message name="SubmitQuizAnswersRequest">
+        <part name="userId" type="xsd:int"/>
+        <part name="quizName" type="xsd:string"/>
+        <part name="answers" type="tns:ArrayOfQuizAnswer"/>
+    </message>
+
+    <message name="SubmitQuizAnswersResponse">
+        <part name="return" type="xsd:anyType"/>
+    </message>
+
+    <message name="GetUserQuizHistoryRequest">
+        <part name="userId" type="xsd:int"/>
+    </message>
+
+    <message name="GetUserQuizHistoryResponse">
+        <part name="return" type="xsd:anyType"/>
+    </message>
+
+    <message name="GetQuizLeaderboardRequest">
+        <part name="limit" type="xsd:int"/>
+    </message>
+
+    <message name="GetQuizLeaderboardResponse">
+        <part name="return" type="xsd:anyType"/>
+    </message>
+
+    <portType name="QuizServicePortType">
+        <operation name="GenerateQuiz">
+            <input message="tns:GenerateQuizRequest"/>
+            <output message="tns:GenerateQuizResponse"/>
+        </operation>
+        <operation name="SubmitQuizAnswers">
+            <input message="tns:SubmitQuizAnswersRequest"/>
+            <output message="tns:SubmitQuizAnswersResponse"/>
+        </operation>
+        <operation name="GetUserQuizHistory">
+            <input message="tns:GetUserQuizHistoryRequest"/>
+            <output message="tns:GetUserQuizHistoryResponse"/>
+        </operation>
+        <operation name="GetQuizLeaderboard">
+            <input message="tns:GetQuizLeaderboardRequest"/>
+            <output message="tns:GetQuizLeaderboardResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="QuizServiceBinding" type="tns:QuizServicePortType">
+        <soap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="GenerateQuiz">
+            <soap:operation soapAction="http://localhost:8000/soap/quiz/GenerateQuiz"/>
+            <input>
+                <soap:body use="encoded" namespace="http://localhost:8000/soap/quiz" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </input>
+            <output>
+                <soap:body use="encoded" namespace="http://localhost:8000/soap/quiz" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </output>
+        </operation>
+        <operation name="SubmitQuizAnswers">
+            <soap:operation soapAction="http://localhost:8000/soap/quiz/SubmitQuizAnswers"/>
+            <input>
+                <soap:body use="encoded" namespace="http://localhost:8000/soap/quiz" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </input>
+            <output>
+                <soap:body use="encoded" namespace="http://localhost:8000/soap/quiz" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </output>
+        </operation>
+        <operation name="GetUserQuizHistory">
+            <soap:operation soapAction="http://localhost:8000/soap/quiz/GetUserQuizHistory"/>
+            <input>
+                <soap:body use="encoded" namespace="http://localhost:8000/soap/quiz" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </input>
+            <output>
+                <soap:body use="encoded" namespace="http://localhost:8000/soap/quiz" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </output>
+        </operation>
+        <operation name="GetQuizLeaderboard">
+             <soap:operation soapAction="http://localhost:8000/soap/quiz/GetQuizLeaderboard"/>
+            <input>
+                <soap:body use="encoded" namespace="http://localhost:8000/soap/quiz" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </input>
+            <output>
+                <soap:body use="encoded" namespace="http://localhost:8000/soap/quiz" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+            </output>
+        </operation>
+    </binding>
+
+    <service name="QuizService">
+        <port name="QuizServicePort" binding="tns:QuizServiceBinding">
+            <soap:address location="http://localhost:8000/soap/quiz"/>
+        </port>
+    </service>
+</definitions>

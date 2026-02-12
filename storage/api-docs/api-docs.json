@@ -346,6 +346,100 @@
                 }
             }
         },
+        "/api/import/questions": {
+            "post": {
+                "tags": [
+                    "Import/Export"
+                ],
+                "summary": "Import questions from CSV file",
+                "operationId": "c8cbcea0506a8112b7bab8547b34a74a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "description": "CSV file to import",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Import successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "stats": {
+                                            "properties": {
+                                                "imported": {
+                                                    "type": "integer"
+                                                },
+                                                "skipped": {
+                                                    "type": "integer"
+                                                },
+                                                "errors": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/export/questions": {
+            "get": {
+                "tags": [
+                    "Import/Export"
+                ],
+                "summary": "Export questions to CSV",
+                "operationId": "349877ac6eabd102e5fc041553d8b65b",
+                "responses": {
+                    "200": {
+                        "description": "Download CSV file",
+                        "headers": {
+                            "Content-Type": {
+                                "description": "text/csv",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "Content-Disposition": {
+                                "description": "attachment; filename=questions_export_....csv",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/questions/theme/{id}": {
             "get": {
                 "tags": [
@@ -1883,6 +1977,10 @@
         {
             "name": "Quiz",
             "description": "Endpoints pour générer et gérer des quiz"
+        },
+        {
+            "name": "Import/Export",
+            "description": "Import/Export"
         },
         {
             "name": "QuestionType",

@@ -27,6 +27,7 @@ class SoapDocumentationController extends Controller
             $result = null;
 
             switch ($method) {
+                // ... Existing Quiz Methods ...
                 case 'GenerateQuiz':
                     $result = $this->soapController->GenerateQuiz(
                         $params['numberOfQuestions'] ?? 10,
@@ -38,7 +39,6 @@ class SoapDocumentationController extends Controller
 
                 case 'SubmitQuizAnswers':
                     // Mapping frontend userQuizId/answers to backend userId/quizName/answers
-                    // Note: This matches the current QuizSoapController signature
                     $result = $this->soapController->SubmitQuizAnswers(
                         $params['userId'] ?? ($params['userQuizId'] ?? 1),
                         'Test Quiz',
@@ -55,8 +55,6 @@ class SoapDocumentationController extends Controller
                     break;
 
                 default:
-                     // Fallback for GenerateQuiz if method not matched (legacy behavior) or throw error
-                     // Better to throw error for clarity
                      throw new \Exception("Method '$method' not implemented in test controller");
             }
 
@@ -98,3 +96,4 @@ class SoapDocumentationController extends Controller
         return $xml->asXML();
     }
 }
+
