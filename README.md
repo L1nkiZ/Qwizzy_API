@@ -11,6 +11,7 @@
 - [Commandes Utiles](#commandes-utiles)
 - [Structure de l'API](#structure-de-lapi)
 - [Tests Automatisés](#tests-automatisés)
+- [Couverture de Code](#couverture-de-code)
 - [Monitoring & Métriques](#monitoring--métriques)
 - [Notes importantes](#notes-importantes)
 - [Analyse Comparative REST vs SOAP dans le cadre de Qwizzy](#analyse-comparative-rest-vs-soap-dans-le-cadre-de-qwizzy)
@@ -123,6 +124,7 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 | **Grafana** | `http://localhost:4000` | Dashboards de monitoring temps réel (admin/admin) |
 | **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
 | **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
+| **Couverture de Code** | `http://localhost:8000/coverage/` | Rapport HTML de couverture des tests (généré après exécution) |
 
 ---
 
@@ -422,6 +424,38 @@ Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
 | `AnswerControllerTest.php` | 2 | Liste des réponses |
 
 **Total : 38 tests**
+
+---
+
+## Couverture de Code
+
+Le projet utilise **pcov** (extension PHP légère) pour mesurer la couverture de code des tests. Le rapport est généré au format HTML et accessible directement via le navigateur.
+
+### Générer le rapport de couverture
+
+```bash
+# Générer le rapport HTML (disponible sur http://localhost:8000/coverage/)
+docker exec -it qwizzy_app composer test:coverage
+
+# Alternative : via php artisan (résumé texte dans le terminal)
+docker exec -it qwizzy_app php artisan test --coverage
+```
+
+### Accéder au rapport
+
+1. Lancez la génération avec la commande ci-dessus
+2. Ouvrez votre navigateur et accédez à :
+
+```
+http://localhost:8000/coverage/
+```
+
+Le rapport affiche :
+- **Taux de couverture global** par fichier et par classe
+- **Lignes couvertes / non couvertes** avec code source annoté
+- **Seuils colorés** : 🔴 < 50% · 🟡 50–90% · 🟢 > 90%
+
+> ⚠️ Le rapport est regénéré à chaque exécution de `composer test:coverage`. Le dossier `public/coverage/` est ignoré par Git.
 
 ---
 
