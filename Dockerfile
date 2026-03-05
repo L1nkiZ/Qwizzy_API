@@ -19,6 +19,12 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Installer les extensions PHP (avec support PostgreSQL et SOAP)
 RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd zip soap
 
+# Installer APCu pour le stockage des métriques Prometheus
+RUN pecl install apcu && docker-php-ext-enable apcu
+
+# Installer pcov pour la couverture de code des tests
+RUN pecl install pcov && docker-php-ext-enable pcov
+
 # Obtenir Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
