@@ -33,7 +33,7 @@ Qwizzy API est une application Laravel pour la gestion de questions et de quiz. 
 
 ## Architecture Docker
 
-Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
+Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 ### 1. **qwizzy_app** - Application Laravel
 - **Image**: PHP 8.2-FPM
@@ -58,6 +58,21 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 - **Container**: `qwizzy_pgadmin`
 - **Login/Mot de passe**:
   - Email: `admin@qwizzy.com`
+  - Password: `admin`
+
+### 4. **qwizzy_prometheus** - Collecte de métriques
+- **Image**: `prom/prometheus:latest`
+- **Port**: `9090`
+- **Rôle**: Collecte et stockage des métriques de l'API
+- **Container**: `qwizzy_prometheus`
+
+### 5. **qwizzy_grafana** - Visualisation des métriques
+- **Image**: `grafana/grafana:latest`
+- **Port**: `4000` (interne conteneur `3000`)
+- **Rôle**: Visualisation des métriques Prometheus via dashboards
+- **Container**: `qwizzy_grafana`
+- **Login/Mot de passe**:
+  - Username: `admin`
   - Password: `admin`
 
 ---
@@ -394,10 +409,6 @@ GET /api/questions?current_sort=created_at&current_sort_dir=desc&per_page=20
 
 ---
 
-## Tests Automatisés
-
-Le projet inclut **38 tests automatisés** couvrant tous les controllers de l'API.
-
 ### Exécution locale
 
 ```bash
@@ -418,18 +429,6 @@ Les tests s'exécutent **automatiquement** sur GitHub lors de :
 - Pull Request vers, `master`, `develop`
 
 Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
-
-### Fichiers de test
-
-| Fichier | Tests | Description |
-|---------|-------|-------------|
-| `QuestionControllerTest.php` | 15 | CRUD questions, filtrage par thème |
-| `SubjectControllerTest.php` | 6 | CRUD sujets, validation |
-| `DifficultyControllerTest.php` | 7 | CRUD difficultés, validation points |
-| `QuestionTypeControllerTest.php` | 6 | CRUD types de questions |
-| `AnswerControllerTest.php` | 2 | Liste des réponses |
-
-**Total : 38 tests**
 
 ---
 
@@ -471,7 +470,7 @@ Le rapport affiche :
 
 Le projet inclut du monitoring avec **Prometheus** et **Grafana**.
 
-**Dashboard Grafana** : http://localhost:3000
+**Dashboard Grafana** : http://localhost:4000
 - Username: `admin`
 - Password: `admin`
 
