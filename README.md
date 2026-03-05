@@ -152,6 +152,12 @@ cp .env.example .env
 docker-compose up -d --build
 ```
 
+3 bis. **Démarrer les conteneurs Docker de l'application**
+```bash
+# Construire et démarrer tous les conteneurs sans le monitoring
+docker compose -f docker-compose.app.yml up -d
+```
+
 4. **Accès au swagger de l'api**
 `http://localhost:8000/`
 

@@ -34,9 +34,6 @@ WORKDIR /var/www
 # Copier les fichiers du projet
 COPY . /var/www
 
-# Installer les dépendances PHP
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-
 # Définir les permissions
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage \

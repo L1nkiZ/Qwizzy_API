@@ -1,8 +1,8 @@
 services:
-  # Service PHP - Backend Laravel
+  # Service PHP avec serveur intégré Laravel
   app:
     build:
-      context: ../Qwizzy_API
+      context: .
       dockerfile: Dockerfile
     container_name: qwizzy_app
     restart: unless-stopped
@@ -10,7 +10,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ../Qwizzy_API:/var/www
+      - ./:/var/www
       - /var/www/vendor
       - /var/www/node_modules
     networks:
@@ -58,7 +58,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ../Qwizzy_API/prometheus:/etc/prometheus
+      - ./prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     networks:
       - qwizzy_network
@@ -75,15 +75,15 @@ services:
     container_name: qwizzy_grafana
     restart: unless-stopped
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana_data:/var/lib/grafana
-      - ../Qwizzy_API/grafana/provisioning:/etc/grafana/provisioning
-      - ../Qwizzy_API/grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     networks:
       - qwizzy_network
     depends_on:
