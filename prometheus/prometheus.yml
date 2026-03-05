@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'qwizzy-monitor'
+
+scrape_configs:
+  - job_name: 'qwizzy_api'
+    scrape_interval: 5s
+    metrics_path: '/api/metrics'
+    static_configs:
+      - targets: ['app:8000']
+        labels:
+          service: 'qwizzy-api'
+          environment: 'production'

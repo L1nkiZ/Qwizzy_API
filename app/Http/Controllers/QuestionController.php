@@ -6,6 +6,7 @@ use App\Http\Helpers\RoleHelper;
 use Illuminate\Http\Request;
 use Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Traits\ErrorTrait;
 
 use App\Models\Question;
@@ -62,20 +63,22 @@ class QuestionController extends Controller
             ], 404);
         }
 
-        $questions = Question::with([
-            'difficulty' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'subject' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'question_type' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'answers',
-        ])
-            ->where('subject_id', $id)
-            ->get();
+        $questions = Cache::remember("questions_theme_{$id}", config('cache.ttl', 3600), function () use ($id) {
+            return Question::with([
+                'difficulty' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'subject' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'question_type' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'answers',
+            ])
+                ->where('subject_id', $id)
+                ->get();
+        });
 
         return response()->json(compact('questions'));
     }
@@ -131,20 +134,24 @@ class QuestionController extends Controller
                 'message' => 'Le thème est requis',
             ]);
         } else {
-            $questions = Question::with([
-                'difficulty' => function ($query) {
-                    $query->select('id', 'name');
-                },
-                'subject' => function ($query) {
-                    $query->select('id', 'name');
-                },
-                'question_type' => function ($query) {
-                    $query->select('id', 'name');
-                },
-                'answers',
-            ])->whereHas('subject', function ($q) use ($theme) {
-                $q->where('name', 'like', '%' . $theme . '%');
-            })->get();
+            $cacheKey = "questions_by_theme_" . md5($theme);
+
+            $questions = Cache::remember($cacheKey, config('cache.ttl', 3600), function () use ($theme) {
+                return Question::with([
+                    'difficulty' => function ($query) {
+                        $query->select('id', 'name');
+                    },
+                    'subject' => function ($query) {
+                        $query->select('id', 'name');
+                    },
+                    'question_type' => function ($query) {
+                        $query->select('id', 'name');
+                    },
+                    'answers',
+                ])->whereHas('subject', function ($q) use ($theme) {
+                    $q->where('name', 'like', '%' . $theme . '%');
+                })->get();
+            });
 
             return response()->json(compact('questions'));
         }
@@ -200,39 +207,58 @@ class QuestionController extends Controller
      */
     public function index(Request $request)
     {
-        $questions = Question::with([
-            'difficulty' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'subject' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'question_type' => function ($query) {
-                $query->select('id', 'name');
-            },
-        ])
-            ->orderBy($request->current_sort, $request->current_sort_dir)
-            ->paginate($request->per_page);
+        $perPage = $request->per_page ?? 15;
+        $page = $request->page ?? 1;
+        $sortBy = $request->current_sort ?? 'id';
+        $sortDir = $request->current_sort_dir ?? 'asc';
+
+        $cacheKey = "questions_index_" . md5("{$sortBy}_{$sortDir}_{$perPage}_{$page}");
+
+        $questions = Cache::remember($cacheKey, config('cache.ttl', 3600), function () use ($request) {
+            return Question::with([
+                'difficulty' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'subject' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'question_type' => function ($query) {
+                    $query->select('id', 'name');
+                },
+            ])
+                ->orderBy($request->current_sort ?? 'id', $request->current_sort_dir ?? 'asc')
+                ->paginate($request->per_page ?? 15);
+        });
 
         return response()->json(compact('questions'));
     }
 
     public function indexFiltered(Request $request)
     {
-        $questions = Question::with([
-            'difficulty' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'subject' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'question_type' => function ($query) {
-                $query->select('id', 'name');
-            },
-        ])
-            ->where('subject_id', $request->subject_id)
-            ->orderBy($request->current_sort, $request->current_sort_dir)
-            ->paginate($request->per_page);
+        $subjectId = $request->subject_id ?? null;
+        $perPage = $request->per_page ?? 15;
+        $page = $request->page ?? 1;
+        $sortBy = $request->current_sort ?? 'id';
+        $sortDir = $request->current_sort_dir ?? 'asc';
+
+        $cacheKey = "questions_filtered_{$subjectId}_" . md5("{$sortBy}_{$sortDir}_{$perPage}_{$page}");
+
+        $questions = Cache::remember($cacheKey, config('cache.ttl', 3600), function () use ($request, $subjectId) {
+            return Question::with([
+                'difficulty' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'subject' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'question_type' => function ($query) {
+                    $query->select('id', 'name');
+                },
+            ])
+                ->where('subject_id', $subjectId)
+                ->orderBy($request->current_sort ?? 'id', $request->current_sort_dir ?? 'asc')
+                ->paginate($request->per_page ?? 15);
+        });
 
         return response()->json(compact('questions'));
     }
@@ -383,6 +409,9 @@ class QuestionController extends Controller
             'question_id' => $question->id,
         ]);
 
+        // Invalider les caches
+        $this->clearQuestionsCaches($question->subject_id);
+
         return response()->json([
             'message' => 'Question créée avec succès',
             'question' => $question,
@@ -427,18 +456,20 @@ class QuestionController extends Controller
      */
     public function show(string $id)
     {
-        $question = Question::with([
-            'difficulty' => function ($query) {
-                $query->select('id', 'name', 'point');
-            },
-            'subject' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'question_type' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'answers',
-        ])->find($id);
+        $question = Cache::remember("question_{$id}", config('cache.ttl', 3600), function () use ($id) {
+            return Question::with([
+                'difficulty' => function ($query) {
+                    $query->select('id', 'name', 'point');
+                },
+                'subject' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'question_type' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'answers',
+            ])->find($id);
+        });
 
         if (! $question) {
             return response()->json([
@@ -639,6 +670,10 @@ class QuestionController extends Controller
             ]);
         }
 
+        // Vider les caches
+        $this->clearQuestionsCaches($question->subject_id);
+        Cache::forget("question_{$id}");
+
         return response()->json([
             'message' => 'Question mise à jour avec succès',
             'question' => $question,
@@ -689,14 +724,38 @@ class QuestionController extends Controller
             ], 404);
         }
 
+        $subjectId = $question->subject_id;
+
         // Supprimer la ou les réponses associées
         Answer::where('question_id', $question->id)->delete();
 
         // Supprimer la question
         $question->delete();
 
+        // Invalider les caches
+        $this->clearQuestionsCaches($subjectId);
+        Cache::forget("question_{$id}");
+
         return response()->json([
             'message' => 'Question supprimée avec succès',
         ]);
+    }
+
+    /**
+     * Nettoie tous les caches liés aux questions
+     */
+    private function clearQuestionsCaches($subjectId = null)
+    {
+        // Supprimer les caches généraux
+        Cache::forget('questions_index_*');
+        Cache::forget('questions_filtered_*');
+
+        // Supprimer les caches spécifiques au thème
+        if ($subjectId) {
+            Cache::forget("questions_theme_{$subjectId}");
+        }
+
+        // Clear tous les caches qui contiennent des questions
+        Cache::flush();
     }
 }

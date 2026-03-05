@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -183,13 +184,6 @@ class UserController extends Controller
      *      summary="Vérifier l'authentification de l'user",
      *      description="Login de l'utilisateur dans le système",
      *      @OA\Parameter(
-     *          name="username",
-     *          description="Nom d'utilisateur",
-     *          required=true,
-     *          in="query",
-     *          @OA\Schema(type="string", example="Guiguiz")
-     *      ),
-     *      @OA\Parameter(
      *          name="email",
      *          description="Adresse e-mail de l'utilisateur",
      *          required=true,
@@ -256,8 +250,56 @@ class UserController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => "Échec de l'authentification : identifiants invalides"
-            ]);
+            ], 500);
         }
+    }
+
+    /**
+     * @OA\Get(
+     *   path="/api/auth/me",
+     *   operationId="getAuthenticatedUser",
+     *   tags={"User"},
+     *   summary="Obtenir l'utilisateur connecté",
+     *   description="Retourne les informations de l'utilisateur authentifié à partir du token JWT.",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(
+     *       response=200,
+     *       description="Utilisateur authentifié récupéré",
+     *       @OA\JsonContent(
+     *           @OA\Property(property="error", type="boolean", example=false),
+     *           @OA\Property(property="user", type="object",
+     *               @OA\Property(property="id", type="integer", example=1),
+     *               @OA\Property(property="name", type="string", example="Member"),
+     *               @OA\Property(property="email", type="string", example="member@example.com"),
+     *               @OA\Property(property="role_id", type="integer", example=1)
+     *           )
+     *       )
+     *   ),
+     *   @OA\Response(
+     *       response=401,
+     *       description="Token absent ou invalide",
+     *       @OA\JsonContent(
+     *           @OA\Property(property="error", type="boolean", example=true),
+     *           @OA\Property(property="message", type="string", example="Token invalide ou manquant")
+     *       )
+     *   )
+     * )
+     */
+    public function me(Request $request)
+    {
+        $user = $request->user() ?? Auth::user();
+
+        if (! $user) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Utilisateur non authentifié'
+            ], 401);
+        }
+
+        return response()->json([
+            'error' => false,
+            'user' => $user,
+        ]);
     }
 
     /**

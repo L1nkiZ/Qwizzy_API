@@ -11,6 +11,7 @@
 - [Commandes Utiles](#commandes-utiles)
 - [Structure de l'API](#structure-de-lapi)
 - [Tests Automatisés](#tests-automatisés)
+- [Couverture de Code](#couverture-de-code)
 - [Monitoring & Métriques](#monitoring--métriques)
 - [Notes importantes](#notes-importantes)
 - [Analyse Comparative REST vs SOAP dans le cadre de Qwizzy](#analyse-comparative-rest-vs-soap-dans-le-cadre-de-qwizzy)
@@ -32,7 +33,7 @@ Qwizzy API est une application Laravel pour la gestion de questions et de quiz. 
 
 ## Architecture Docker
 
-Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
+Le projet utilise **5 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 ### 1. **qwizzy_app** - Application Laravel
 - **Image**: PHP 8.2-FPM
@@ -59,9 +60,36 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
   - Email: `admin@qwizzy.com`
   - Password: `admin`
 
+### 4. **qwizzy_prometheus** - Collecte de métriques
+- **Image**: `prom/prometheus:latest`
+- **Port**: `9090`
+- **Rôle**: Collecte et stockage des métriques de l'API
+- **Container**: `qwizzy_prometheus`
+
+### 5. **qwizzy_grafana** - Visualisation des métriques
+- **Image**: `grafana/grafana:latest`
+- **Port**: `4000` (interne conteneur `3000`)
+- **Rôle**: Visualisation des métriques Prometheus via dashboards
+- **Container**: `qwizzy_grafana`
+- **Login/Mot de passe**:
+  - Username: `admin`
+  - Password: `admin`
+
 ---
 
 ## Accès aux Services
+
+### **Éléments de connexion**
+
+Pour accéder au site web (Front) sans avoir à vous créer de compte, voici des logins par défaut :
+
+Utilisateur lambda :
+- Login : member@example.com
+- Mot de passe : password
+
+Utilisateur Admin :
+- Login : admin@example.com
+- Mot de passe : password
 
 ### **Application Laravel**
 - URL : http://localhost:8000
@@ -94,7 +122,7 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 
 ### **Grafana** (Monitoring & Dashboards)
-1. Ouvrez : http://localhost:3000
+1. Ouvrez : http://localhost:4000
 2. Connectez-vous avec :
    - Username : `admin`
    - Password : `admin`
@@ -120,9 +148,10 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 | **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
 | **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
 | **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
-| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
+| **Grafana** | `http://localhost:4000` | Dashboards de monitoring temps réel (admin/admin) |
 | **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
 | **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
+| **Couverture de Code** | `http://localhost:8000/coverage/` | Rapport HTML de couverture des tests (généré après exécution) |
 
 ---
 
@@ -150,6 +179,12 @@ cp .env.example .env
 ```bash
 # Construire et démarrer tous les conteneurs
 docker-compose up -d --build
+```
+
+3 bis. **Démarrer les conteneurs Docker de l'application**
+```bash
+# Construire et démarrer tous les conteneurs sans le monitoring
+docker compose -f docker-compose.app.yml up -d
 ```
 
 4. **Accès au swagger de l'api**
@@ -306,14 +341,8 @@ docker exec -it qwizzy_app php artisan test --testdox
 # Exécuter un fichier de test spécifique
 docker exec -it qwizzy_app php artisan test --filter QuestionControllerTest
 
-# Exécuter les tests avec couverture de code (nécessite xdebug)
+# Exécuter les tests avec couverture de code
 docker exec -it qwizzy_app php artisan test --coverage
-
-# Exécuter uniquement les tests d'un groupe spécifique
-docker exec -it qwizzy_app php artisan test tests/Feature
-
-# Exécuter les tests en mode parallèle (plus rapide)
-docker exec -it qwizzy_app php artisan test --parallel
 ```
 
 ---
@@ -380,10 +409,6 @@ GET /api/questions?current_sort=created_at&current_sort_dir=desc&per_page=20
 
 ---
 
-## Tests Automatisés
-
-Le projet inclut **38 tests automatisés** couvrant tous les controllers de l'API.
-
 ### Exécution locale
 
 ```bash
@@ -405,17 +430,37 @@ Les tests s'exécutent **automatiquement** sur GitHub lors de :
 
 Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
 
-### Fichiers de test
+---
 
-| Fichier | Tests | Description |
-|---------|-------|-------------|
-| `QuestionControllerTest.php` | 15 | CRUD questions, filtrage par thème |
-| `SubjectControllerTest.php` | 6 | CRUD sujets, validation |
-| `DifficultyControllerTest.php` | 7 | CRUD difficultés, validation points |
-| `QuestionTypeControllerTest.php` | 6 | CRUD types de questions |
-| `AnswerControllerTest.php` | 2 | Liste des réponses |
+## Couverture de Code
 
-**Total : 38 tests**
+Le projet utilise **pcov** (extension PHP légère) pour mesurer la couverture de code des tests. Le rapport est généré au format HTML et accessible directement via le navigateur.
+
+### Générer le rapport de couverture
+
+```bash
+# Générer le rapport HTML (disponible sur http://localhost:8000/coverage/)
+docker exec -it qwizzy_app composer test:coverage
+
+# Alternative : via php artisan (résumé texte dans le terminal)
+docker exec -it qwizzy_app php artisan test --coverage
+```
+
+### Accéder au rapport
+
+1. Lancez la génération avec la commande ci-dessus
+2. Ouvrez votre navigateur et accédez à :
+
+```
+http://localhost:8000/coverage/
+```
+
+Le rapport affiche :
+- **Taux de couverture global** par fichier et par classe
+- **Lignes couvertes / non couvertes** avec code source annoté
+- **Seuils colorés** : 🔴 < 50% · 🟡 50–90% · 🟢 > 90%
+
+> ⚠️ Le rapport est regénéré à chaque exécution de `composer test:coverage`. Le dossier `public/coverage/` est ignoré par Git.
 
 ---
 
@@ -425,7 +470,7 @@ Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
 
 Le projet inclut du monitoring avec **Prometheus** et **Grafana**.
 
-**Dashboard Grafana** : http://localhost:3000
+**Dashboard Grafana** : http://localhost:4000
 - Username: `admin`
 - Password: `admin`
 
