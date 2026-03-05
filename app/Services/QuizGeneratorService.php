@@ -168,4 +168,40 @@ class QuizGeneratorService
             'questions' => $formattedQuestions
         ];
     }
+
+    /**
+     * Retourne les statistiques des questions disponibles
+     *
+     * @return array
+     */
+    public function getQuizStatistics(): array
+    {
+        $totalQuestions = Question::count();
+
+        $bySubject = Subject::withCount('questions')
+            ->get()
+            ->map(fn ($s) => [
+                'subject_id'   => $s->id,
+                'subject_name' => $s->name,
+                'count'        => $s->questions_count,
+            ])
+            ->values()
+            ->toArray();
+
+        $byDifficulty = Difficulty::withCount('questions')
+            ->get()
+            ->map(fn ($d) => [
+                'difficulty_id'   => $d->id,
+                'difficulty_name' => $d->name,
+                'count'           => $d->questions_count,
+            ])
+            ->values()
+            ->toArray();
+
+        return [
+            'total_questions' => $totalQuestions,
+            'by_subject'      => $bySubject,
+            'by_difficulty'   => $byDifficulty,
+        ];
+    }
 }
