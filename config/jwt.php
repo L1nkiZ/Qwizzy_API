@@ -14,7 +14,16 @@ return [
     |
     */
 
-    'secret' => env('JWT_SECRET', env('APP_KEY')),
+    'secret' => (function () {
+        $secret = env('JWT_SECRET', env('APP_KEY'));
+        
+        // If the secret is base64-encoded (Laravel format), decode it
+        if (strpos($secret, 'base64:') === 0) {
+            $secret = base64_decode(substr($secret, 7));
+        }
+        
+        return $secret;
+    })(),
 
     'ttl_minutes' => env('JWT_TTL_MINUTES', 60 * 24 * 7),
 ];
