@@ -191,6 +191,30 @@ class UserControllerTest extends TestCase
     // ─── Logout ───────────────────────────────────────────────────────────────
 
     #[Test]
+    public function it_can_get_authenticated_user_with_valid_token()
+    {
+        $token = TokenHelper::createToken(User::find(1));
+
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+            ->getJson('/api/auth/me');
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'error' => false,
+            ])
+            ->assertJsonPath('user.email', 'member@example.com');
+    }
+
+    #[Test]
+    public function it_returns_error_on_me_without_token()
+    {
+        $response = $this->getJson('/api/auth/me');
+
+        $response->assertStatus(401)
+            ->assertJson(['error' => true]);
+    }
+
+    #[Test]
     public function it_can_logout_with_valid_token()
     {
         // The migration seeds a user with id=3 (admin), which TokenHelper uses
