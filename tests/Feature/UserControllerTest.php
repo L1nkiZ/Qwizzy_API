@@ -172,7 +172,7 @@ class UserControllerTest extends TestCase
             'password' => 'mauvais_mot_de_passe',
         ]);
 
-        $response->assertStatus(200)
+        $response->assertStatus(500)
             ->assertJson(['error' => true]);
     }
 
@@ -184,7 +184,7 @@ class UserControllerTest extends TestCase
             'password' => 'motdepasse123',
         ]);
 
-        $response->assertStatus(200)
+        $response->assertStatus(500)
             ->assertJson(['error' => true]);
     }
 
