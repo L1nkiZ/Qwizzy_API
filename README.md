@@ -94,7 +94,7 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 
 ### **Grafana** (Monitoring & Dashboards)
-1. Ouvrez : http://localhost:3000
+1. Ouvrez : http://localhost:4000
 2. Connectez-vous avec :
    - Username : `admin`
    - Password : `admin`
@@ -120,7 +120,7 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 | **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
 | **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
 | **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
-| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
+| **Grafana** | `http://localhost:4000` | Dashboards de monitoring temps réel (admin/admin) |
 | **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
 | **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
 
