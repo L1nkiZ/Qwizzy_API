@@ -10,6 +10,7 @@ use App\Http\Controllers\QuestionTypeController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\GameController;
 use App\Http\Controllers\SoapDocumentationController;
 use App\Http\Controllers\ImportExportController;
 
@@ -44,6 +45,11 @@ Route::post('quizzes', [QuizController::class, 'store']);
 Route::put('quizzes/{id}', [QuizController::class, 'update'])->whereNumber('id');
 Route::delete('quizzes/{id}', [QuizController::class, 'destroy'])->whereNumber('id');
 Route::post('quizzes/{id}/questions', [QuizController::class, 'addQuestions'])->whereNumber('id'); // Ajout questions à un quiz
+
+// Routes de jeu (lot de questions + vérification de réponse)
+Route::post('game/getQuestions', [GameController::class, 'getQuestions']);
+Route::post('game/questions/options', [GameController::class, 'getQuestionOptions']);
+Route::post('game/answers/check', [GameController::class, 'checkAnswer']);
 
 // Import / Export
 Route::post('import/questions', [\App\Http\Controllers\ImportExportController::class, 'importQuestions']);

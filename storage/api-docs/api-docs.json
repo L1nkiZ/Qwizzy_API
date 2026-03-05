@@ -346,6 +346,249 @@
                 }
             }
         },
+        "/api/game/getQuestions": {
+            "post": {
+                "tags": [
+                    "Game"
+                ],
+                "summary": "Recuperer un lot de questions",
+                "description": "Genere un lot de questions sur un theme precise ou en mix aleatoire sur tous les themes. Cette route ne retourne pas les propositions",
+                "operationId": "getGameQuestions",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "numberOfQuestions"
+                                ],
+                                "properties": {
+                                    "numberOfQuestions": {
+                                        "type": "integer",
+                                        "maximum": 100,
+                                        "minimum": 1,
+                                        "example": 10
+                                    },
+                                    "subjectId": {
+                                        "description": "ID du theme. Si absent, les questions sont melangees sur tous les themes",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lot de questions recupere",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 10
+                                        },
+                                        "questions": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 12
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Quelle est la capitale de la France ?"
+                                                    },
+                                                    "subject": {
+                                                        "type": "string",
+                                                        "example": "Geographie"
+                                                    },
+                                                    "difficulty": {
+                                                        "type": "string",
+                                                        "example": "Facile"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/game/questions/options": {
+            "post": {
+                "tags": [
+                    "Game"
+                ],
+                "summary": "Recuperer les propositions selon le mode",
+                "description": "Retourne 2, 4 ou 0 propositions selon le mode choisi par l'utilisateur",
+                "operationId": "getGameQuestionOptions",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "question_id",
+                                    "mode"
+                                ],
+                                "properties": {
+                                    "question_id": {
+                                        "type": "integer",
+                                        "example": 12
+                                    },
+                                    "mode": {
+                                        "description": "1=J'suis pas sûr, 2=J'crois je l'ai, 3=Let me cook",
+                                        "type": "integer",
+                                        "enum": [
+                                            1,
+                                            2,
+                                            3
+                                        ],
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Propositions recuperees",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "question_id": {
+                                            "type": "integer",
+                                            "example": 12
+                                        },
+                                        "mode": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "mode_label": {
+                                            "type": "string",
+                                            "example": "J'suis pas sûr"
+                                        },
+                                        "proposals": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "position": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "label": {
+                                                        "type": "string",
+                                                        "example": "Paris"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question ou reponse introuvable"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
+        "/api/game/answers/check": {
+            "post": {
+                "tags": [
+                    "Game"
+                ],
+                "summary": "Obtenir la bonne reponse",
+                "description": "Retourne la bonne reponse associee a une question",
+                "operationId": "checkGameAnswer",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "question_id"
+                                ],
+                                "properties": {
+                                    "question_id": {
+                                        "type": "integer",
+                                        "example": 12
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Bonne reponse retournee",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "question_id": {
+                                            "type": "integer",
+                                            "example": 12
+                                        },
+                                        "correct_answer_position": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "correct_answer_label": {
+                                            "type": "string",
+                                            "example": "Paris"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reponse introuvable"
+                    },
+                    "422": {
+                        "description": "Erreur de validation"
+                    }
+                }
+            }
+        },
         "/api/import/questions": {
             "post": {
                 "tags": [
@@ -1963,6 +2206,10 @@
         {
             "name": "Answer",
             "description": "Endpoints pour gérer les réponses aux questions"
+        },
+        {
+            "name": "Game",
+            "description": "Endpoints jeu style quiz: generation de questions par theme ou aleatoire et recuperation de la bonne reponse"
         },
         {
             "name": "Quiz",
