@@ -23,6 +23,6 @@ class HomeControllerTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+        $response->assertHeader('Content-Type', 'text/html; charset=utf-8');
     }
 }

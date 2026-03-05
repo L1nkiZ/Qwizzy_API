@@ -6,6 +6,7 @@ use Illuminate\Http\Response;
 use Prometheus\CollectorRegistry;
 use Prometheus\RenderTextFormat;
 use Prometheus\Storage\APC;
+use Prometheus\Storage\InMemory;
 
 class MetricsController extends Controller
 {
@@ -16,7 +17,13 @@ class MetricsController extends Controller
      */
     public function metrics(): Response
     {
-        $registry = new CollectorRegistry(new APC());
+        if (extension_loaded('apcu') && apcu_enabled()) {
+            $storage = new APC();
+        } else {
+            $storage = new InMemory();
+        }
+
+        $registry = new CollectorRegistry($storage);
 
         $renderer = new RenderTextFormat();
         $result = $renderer->render($registry->getMetricFamilySamples());
