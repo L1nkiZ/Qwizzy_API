@@ -11,6 +11,7 @@
 - [Commandes Utiles](#commandes-utiles)
 - [Structure de l'API](#structure-de-lapi)
 - [Tests Automatisés](#tests-automatisés)
+- [Couverture de Code](#couverture-de-code)
 - [Monitoring & Métriques](#monitoring--métriques)
 - [Notes importantes](#notes-importantes)
 - [Analyse Comparative REST vs SOAP dans le cadre de Qwizzy](#analyse-comparative-rest-vs-soap-dans-le-cadre-de-qwizzy)
@@ -94,7 +95,7 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 
 ### **Grafana** (Monitoring & Dashboards)
-1. Ouvrez : http://localhost:3000
+1. Ouvrez : http://localhost:4000
 2. Connectez-vous avec :
    - Username : `admin`
    - Password : `admin`
@@ -120,9 +121,10 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 | **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
 | **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
 | **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
-| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
+| **Grafana** | `http://localhost:4000` | Dashboards de monitoring temps réel (admin/admin) |
 | **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
 | **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
+| **Couverture de Code** | `http://localhost:8000/coverage/` | Rapport HTML de couverture des tests (généré après exécution) |
 
 ---
 
@@ -150,6 +152,12 @@ cp .env.example .env
 ```bash
 # Construire et démarrer tous les conteneurs
 docker-compose up -d --build
+```
+
+3 bis. **Démarrer les conteneurs Docker de l'application**
+```bash
+# Construire et démarrer tous les conteneurs sans le monitoring
+docker compose -f docker-compose.app.yml up -d
 ```
 
 4. **Accès au swagger de l'api**
@@ -306,14 +314,8 @@ docker exec -it qwizzy_app php artisan test --testdox
 # Exécuter un fichier de test spécifique
 docker exec -it qwizzy_app php artisan test --filter QuestionControllerTest
 
-# Exécuter les tests avec couverture de code (nécessite xdebug)
+# Exécuter les tests avec couverture de code
 docker exec -it qwizzy_app php artisan test --coverage
-
-# Exécuter uniquement les tests d'un groupe spécifique
-docker exec -it qwizzy_app php artisan test tests/Feature
-
-# Exécuter les tests en mode parallèle (plus rapide)
-docker exec -it qwizzy_app php artisan test --parallel
 ```
 
 ---
@@ -416,6 +418,38 @@ Voir les résultats dans l'onglet **Actions** de votre repo GitHub.
 | `AnswerControllerTest.php` | 2 | Liste des réponses |
 
 **Total : 38 tests**
+
+---
+
+## Couverture de Code
+
+Le projet utilise **pcov** (extension PHP légère) pour mesurer la couverture de code des tests. Le rapport est généré au format HTML et accessible directement via le navigateur.
+
+### Générer le rapport de couverture
+
+```bash
+# Générer le rapport HTML (disponible sur http://localhost:8000/coverage/)
+docker exec -it qwizzy_app composer test:coverage
+
+# Alternative : via php artisan (résumé texte dans le terminal)
+docker exec -it qwizzy_app php artisan test --coverage
+```
+
+### Accéder au rapport
+
+1. Lancez la génération avec la commande ci-dessus
+2. Ouvrez votre navigateur et accédez à :
+
+```
+http://localhost:8000/coverage/
+```
+
+Le rapport affiche :
+- **Taux de couverture global** par fichier et par classe
+- **Lignes couvertes / non couvertes** avec code source annoté
+- **Seuils colorés** : 🔴 < 50% · 🟡 50–90% · 🟢 > 90%
+
+> ⚠️ Le rapport est regénéré à chaque exécution de `composer test:coverage`. Le dossier `public/coverage/` est ignoré par Git.
 
 ---
 
