@@ -1,19 +1,57 @@
+# Dependencies
 /node_modules
+/vendor
+
+# Build / compiled assets
 /public/build
-/public/coverage
 /public/hot
+
+# Storage (generated at runtime)
 /public/storage
 /storage/*.key
-/vendor
+/storage/app/public
+/storage/logs/*.log
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/testing
+/storage/framework/views
+
+# Test coverage reports
+/public/coverage
+/storage/coverage.xml
+
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache
+phpunit.xml.bak
+
+# Environment files
 .env
 .env.backup
 .env.production
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
+.env.testing.local
+.env.*.local
+
+# Docker generated files
+docker-compose.override.yml
+
+# IDE / editor
 /.fleet
 /.idea
 /.vscode
+
+# Vagrant
+Homestead.json
+Homestead.yaml
+
+# Composer auth
+auth.json
+
+# Logs
+npm-debug.log
+yarn-error.log
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
