@@ -95,7 +95,7 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 
 ### **Grafana** (Monitoring & Dashboards)
-1. Ouvrez : http://localhost:3000
+1. Ouvrez : http://localhost:4000
 2. Connectez-vous avec :
    - Username : `admin`
    - Password : `admin`
@@ -121,8 +121,8 @@ Une fois les conteneurs démarrés, vous pouvez accéder à:
 | **API Laravel** | `http://localhost:8000` | Application principale, avec le swagger sur la page par défaut |
 | **pgAdmin** | `http://localhost:8080` | Interface de gestion PostgreSQL → login plus haut [Vue d'ensemble](#-vue-densemble) |
 | **PostgreSQL** | `localhost:5432` | Connexion directe à la base de données → login plus haut [Vue d'ensemble](#-vue-densemble) |
-| **Grafana** | `http://localhost:3000` | Dashboards de monitoring temps réel (admin/admin) |
-| **Prometheus** | `*http://localhost:9090*` | Interface de collecte de métriques |
+| **Grafana** | `http://localhost:4000` | Dashboards de monitoring temps réel (admin/admin) |
+| **Prometheus** | `http://localhost:9090` | Interface de collecte de métriques |
 | **Métriques API** | `http://localhost:8000/api/metrics` | Endpoint des métriques Prometheus (format texte) |
 | **Couverture de Code** | `http://localhost:8000/coverage/` | Rapport HTML de couverture des tests (généré après exécution) |
 
@@ -152,6 +152,12 @@ cp .env.example .env
 ```bash
 # Construire et démarrer tous les conteneurs
 docker-compose up -d --build
+```
+
+3 bis. **Démarrer les conteneurs Docker de l'application**
+```bash
+# Construire et démarrer tous les conteneurs sans le monitoring
+docker compose -f docker-compose.app.yml up -d
 ```
 
 4. **Accès au swagger de l'api**
