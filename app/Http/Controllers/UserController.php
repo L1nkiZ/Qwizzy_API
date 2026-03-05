@@ -250,7 +250,7 @@ class UserController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => "Échec de l'authentification : identifiants invalides"
-            ]);
+            ], 500);
         }
     }
 
