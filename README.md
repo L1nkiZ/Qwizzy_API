@@ -64,6 +64,18 @@ Le projet utilise **3 conteneurs Docker** orchestrés via `docker-compose.yml`:
 
 ## Accès aux Services
 
+### **Éléments de connexion**
+
+Pour accéder au site web (Front) sans avoir à vous créer de compte, voici des logins par défaut :
+
+Utilisateur lambda :
+- Login : member@example.com
+- Mot de passe : password
+
+Utilisateur Admin :
+- Login : admin@example.com
+- Mot de passe : password
+
 ### **Application Laravel**
 - URL : http://localhost:8000
 - Serveur de développement Laravel intégré
