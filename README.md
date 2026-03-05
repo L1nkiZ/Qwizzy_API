@@ -314,14 +314,8 @@ docker exec -it qwizzy_app php artisan test --testdox
 # Exécuter un fichier de test spécifique
 docker exec -it qwizzy_app php artisan test --filter QuestionControllerTest
 
-# Exécuter les tests avec couverture de code (nécessite xdebug)
+# Exécuter les tests avec couverture de code
 docker exec -it qwizzy_app php artisan test --coverage
-
-# Exécuter uniquement les tests d'un groupe spécifique
-docker exec -it qwizzy_app php artisan test tests/Feature
-
-# Exécuter les tests en mode parallèle (plus rapide)
-docker exec -it qwizzy_app php artisan test --parallel
 ```
 
 ---
