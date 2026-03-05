@@ -183,13 +183,6 @@ class UserController extends Controller
      *      summary="Vérifier l'authentification de l'user",
      *      description="Login de l'utilisateur dans le système",
      *      @OA\Parameter(
-     *          name="username",
-     *          description="Nom d'utilisateur",
-     *          required=true,
-     *          in="query",
-     *          @OA\Schema(type="string", example="Guiguiz")
-     *      ),
-     *      @OA\Parameter(
      *          name="email",
      *          description="Adresse e-mail de l'utilisateur",
      *          required=true,

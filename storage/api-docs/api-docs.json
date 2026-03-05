@@ -1852,16 +1852,6 @@
                 "operationId": "getUserAuth",
                 "parameters": [
                     {
-                        "name": "username",
-                        "in": "query",
-                        "description": "Nom d'utilisateur",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "Guiguiz"
-                        }
-                    },
-                    {
                         "name": "email",
                         "in": "query",
                         "description": "Adresse e-mail de l'utilisateur",
